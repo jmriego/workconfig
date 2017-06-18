@@ -1,0 +1,39 @@
+set -o vi
+
+alias tmux='tmux -S ~/tmp -2'
+export http_proxy=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
+export https_proxy=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
+export ftp_proxy=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
+export HTTP_PROXY=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
+export HTTPS_PROXY=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
+stty -ixon
+
+RED="$(tput setaf 1)"
+GREEN="$(tput setaf 2)"
+RESET="$(tput sgr0)"
+
+settitle() {
+ESC=$(printf "\e")
+printf "$ESC]2${1}$ESC\\"
+}
+
+beforeprompt() {
+    export SHORTPWD=$(echo $PWD | sed "s|^$HOME|~|" | awk 'BEGIN{FS=OFS="/";} NF<=5{print;} NF>5 {print $1,$2,$3,"...",$(NF-1),$NF;}')
+}
+
+show_error_code() {
+  exit_code=$?
+  if [[ $exit_code -gt 0 ]]
+  then
+    echo "$exit_code "
+  fi
+}
+
+if [ -n "$TMUX" ]
+then
+  PROMPT_COMMAND='beforeprompt; settitle "$(hostname -s):$SHORTPWD"'
+  PS1="\[\033[0;31m\]\$(show_error_code)\[\033[0m\]\$ "
+else
+  PROMPT_COMMAND='beforeprompt'
+  PS1="\[\033[0;31m\]\$(show_error_code)\[\033[0m\]\h:\${SHORTPWD}\$ "
+fi
