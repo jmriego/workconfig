@@ -1,7 +1,8 @@
-call plug#begin('C:\Users\riegjos\Documents\vimfiles\plugged')
+call plug#begin()
 Plug 'altercation/vim-colors-solarized'
 Plug 'junegunn/vim-easy-align'
 Plug 'SirVer/ultisnips'
+Plug 'jmcantrell/vim-virtualenv'
 Plug 'wilywampa/vim-ipython'
 Plug 'tmhedberg/SimpylFold'
 Plug 'Konfekt/FastFold'
@@ -96,10 +97,11 @@ endif
 " Plugin solarized
 if &runtimepath =~ 'solarized'
     try
-        colorscheme solarized
         set background=light
-        let g:solarized_termcolors=256
-        let &t_Co=256
+	let g:solarized_visibility = "high"
+	let g:solarized_contrast = "high"
+        let g:solarized_termcolors=16
+        colorscheme solarized
     catch
     endtry
 endif
@@ -118,18 +120,24 @@ endif
 if &runtimepath =~ 'vim-ipython'
     let g:ipy_perform_mappings = 0
     let g:ipy_completefunc = 'global'
-    noremap <Leader>k :IPython<CR>
-    nmap <Leader>d <Plug>(IPython-OpenPyDoc)
+
+    nmap <Plug>(IPython-UpdateShell) :Python2or3 if update_subchannel_msgs(force=True): echo("vim-ipython shell updated",'operator')<CR>
+    map  <Leader><CR> <Plug>(IPython-UpdateShell)
+
     nmap <C-CR> m`Vic<Plug>(IPython-RunLines)``
     vmap <C-CR> <Plug>(IPython-RunLines)
     nmap <S-CR> Vic<Plug>(IPython-RunLines)jj^
     vmap <S-CR> <Plug>(IPython-RunLines)jj
+    map  <Leader><S-CR> :call ToggleMonitorSubchannel()
+    
+    noremap <Leader>k :IPython<CR>
+    nmap <Leader>d <Plug>(IPython-OpenPyDoc)
 endif
 
 " Plugin jedi-vim
 if &runtimepath =~ 'jedi-vim'
     let g:jedi#auto_vim_configuration = 0
-    let g:jedi#force_py_version = "3"
+    "let g:jedi#force_py_version = "3"
     let g:jedi#popup_select_first = 0
     let g:jedi#completions_enabled = 1
     let g:jedi#smart_auto_mappings = 0
@@ -198,10 +206,7 @@ endif
 " Create cell text objects which are regions of text delimited by
 " lines starting with ##
 if &runtimepath =~ 'vim-textobj-user'
-    try
-        source expand('<sfile>:h/python_cell_userobj.vim')
-    catch
-    endtry
+    exec 'source ' . expand('<sfile>:h') . '/python_cell_userobj.vim'
 endif
 
 " Plugin vim-airline
@@ -233,7 +238,12 @@ endif
 
 " Plugin ludovicchabant/vim-gutentags
 if &runtimepath =~ 'vim-gutentags'
-    let g:gutentags_cache_dir = "C:/Users/riegjos/temp"
+    let g:gutentags_cache_dir = "~/temp"
+endif
+
+" Plugin tomtom/tcomment_vim
+if &runtimepath =~ 'tcomment_vim'
+    let g:tcommentTextObjectInlineComment = 'iC'
 endif
 
 "Python files
