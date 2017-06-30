@@ -1,11 +1,5 @@
 set -o vi
 
-alias tmux='tmux -S ~/tmp -2'
-export http_proxy=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
-export https_proxy=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
-export ftp_proxy=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
-export HTTP_PROXY=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
-export HTTPS_PROXY=http://riegjos:Melaspiro01@userproxy.intranet.db.com:8080
 stty -ixon
 
 RED="$(tput setaf 1)"
@@ -33,6 +27,7 @@ if [ -n "$TMUX" ]
 then
   PROMPT_COMMAND='beforeprompt; settitle "$(hostname -s):$SHORTPWD"'
   PS1="\[\033[0;31m\]\$(show_error_code)\[\033[0m\]\$ "
+  export TERM=screen-256color
 else
   PROMPT_COMMAND='beforeprompt'
   PS1="\[\033[0;31m\]\$(show_error_code)\[\033[0m\]\h:\${SHORTPWD}\$ "
