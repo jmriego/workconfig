@@ -98,8 +98,8 @@ endif
 if &runtimepath =~ 'solarized'
     try
         set background=light
-	let g:solarized_visibility = "high"
-	let g:solarized_contrast = "high"
+        let g:solarized_visibility = "high"
+        let g:solarized_contrast = "high"
         let g:solarized_termcolors=16
         colorscheme solarized
     catch
@@ -126,10 +126,10 @@ if &runtimepath =~ 'vim-ipython'
 
     nmap <C-CR> m`Vic<Plug>(IPython-RunLines)``
     vmap <C-CR> <Plug>(IPython-RunLines)
-    nmap <S-CR> Vic<Plug>(IPython-RunLines)jj^
+    nmap <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>
     vmap <S-CR> <Plug>(IPython-RunLines)jj
     map  <Leader><S-CR> :call ToggleMonitorSubchannel()
-    
+
     noremap <Leader>k :IPython<CR>
     nmap <Leader>d <Plug>(IPython-OpenPyDoc)
 endif
@@ -142,6 +142,7 @@ if &runtimepath =~ 'jedi-vim'
     let g:jedi#completions_enabled = 1
     let g:jedi#smart_auto_mappings = 0
     let g:jedi#auto_close_doc = 0
+    let g:jedi#documentation_command = "<leader>D"
     let g:jedi#usages_command = "<leader>u"
     let g:jedi#goto_assignments_command = ""
     let g:jedi#goto_command = "<leader>g"
