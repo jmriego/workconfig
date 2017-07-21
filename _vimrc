@@ -29,6 +29,25 @@ if has('mac')
     set directory=~/tmp,.
     set backupdir=~/tmp,.
     set undodir=~/tmp,.
+
+    " map C-CR, S-CR and A-CR in iTerm as F13, F14 and F15
+    "   it requires mapping them to the escape sequences O2P, O2Q and O2R
+    if exists('$TMUX') " Tmux has different escape sequences
+        execute "set <F13>=\e[1;2P"
+        execute "set <F14>=\e[1;2Q"
+        execute "set <F15>=\e[1;2R"
+    else
+        execute "set <F13>=\eO2P"
+        execute "set <F14>=\eO2Q"
+        execute "set <F15>=\eO2R"
+    endif
+
+    map  <F13> <C-CR>
+    map! <F13> <C-CR>
+    map  <F14> <S-CR>
+    map! <F14> <S-CR>
+    map  <F15> <A-CR>
+    map! <F15> <A-CR>
 elseif has('unix')
     " Directory for swap files
     set directory=~/tmp,.
@@ -61,6 +80,7 @@ set cursorline
 set fdm=syntax
 set linespace=0
 set ruler
+set showcmd
 
 " Set basic options
 let mapleader=" "
@@ -128,6 +148,7 @@ if &runtimepath =~ 'vim-ipython'
     vmap <C-CR> <Plug>(IPython-RunLines)
     nmap <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>
     vmap <S-CR> <Plug>(IPython-RunLines)jj
+    nmap <A-CR> <Plug>(IPython-RunLine)
     map  <Leader><S-CR> :call ToggleMonitorSubchannel()
 
     noremap <Leader>k :IPython<CR>
@@ -151,7 +172,7 @@ endif
 
 " Plugin vim-flake
 if &runtimepath =~ 'vim-flake8'
-    let g:flake8_cmd="/opt/strangebin/flake8000"
+    let g:flake8_cmd="flake8"
 endif
 
 " Plugin neocomplete
@@ -196,10 +217,14 @@ endif
 
 " Plugin UltiSnips
 if &runtimepath =~ 'ultisnips'
-    let g:UltiSnipsSnippetsDir="H:\vimfiles\UltiSnips"
-    let g:UltiSnipsExpandTrigger="<tab>"
-    let g:UltiSnipsJumpForwardTrigger="<c-b>"
-    let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+    if has('win32')  || has('win64')
+        let g:UltiSnipsSnippetDirectories=$HOME.'/vimfiles/UltiSnips'
+    else
+        let g:UltiSnipsSnippetDirectories=$HOME.'/.vim/UltiSnips'
+    endif
+"     let g:UltiSnipsExpandTrigger="<tab>"
+"     let g:UltiSnipsJumpForwardTrigger="<c-b>"
+"     let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 endif
 
 
