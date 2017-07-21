@@ -1,3 +1,4 @@
+export EDITOR=vim
 set -o vi
 
 stty -ixon
