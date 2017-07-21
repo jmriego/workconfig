@@ -17,7 +17,7 @@ endfunction
 " par1 : b for searching back, any other thing for searching forward
 " [par2] : if 1, it will only move there if there is no source code before it
 function! s:search_cell_marker(...)
-    let cell_marker_re = '^##'
+    let cell_marker_re = '^\(##\|# <[a-z]*cell>\)'
     let source_code_re = '^\s*[^\s#]'
     let search_option = a:1 ==? 'b' ? 'bc' : 'c'
     let only_through_no_code = a:0 > 1 ? 1 : 0
