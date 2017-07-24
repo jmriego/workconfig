@@ -251,6 +251,19 @@ if &runtimepath =~ 'vim-airline'
     "endfor
     endfunction
     let g:airline_theme_patch_func = 'AirlineThemePatch'
+    let g:airline_mode_map = {
+        \ '__' : '-',
+        \ 'n'  : 'N',
+        \ 'i'  : 'I',
+        \ 'R'  : 'R',
+        \ 'c'  : 'C',
+        \ 'v'  : 'V',
+        \ 'V'  : 'V',
+        \ '' : 'V',
+        \ 's'  : 'S',
+        \ 'S'  : 'S',
+        \ '' : 'S',
+        \ }
 
 endif
 
