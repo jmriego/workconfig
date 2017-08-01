@@ -19,14 +19,22 @@ last_event = nil
 -- keyboard keys to be used in mission control and the program/window to open
 -- the name of the app should be the names found in Applications folder
 key_params = {
-    ["g"] = {"Google Chrome", "Google Hangouts", false};
-    ["h"] = {"Google Chrome", "Google Hangouts", true};
+    -- ["g"] = {"Google Chrome", "Google Hangouts", false};
+    -- ["h"] = {"Google Chrome", "Google Hangouts", true};
+    ["g"] = "Google Chrome";
+    ["h"] = "Hangouts";
+    ["c"] = "Google Calendar";
+    ["m"] = "GMail";
+    ["n"] = "Notes";
     ["f"] = "Finder";
-    ["t"] = "iTerm";
+    ["t"] = "iTerm2";
     ["p"] = "PSequel";
     ["s"] = "Sequel Pro";
-    ["o"] = "Microsoft Outlook";
+    ["x"] = "Microsoft Excel";
+    ["w"] = "Microsoft Word";
+    ["o"] = "Oracle Data Modeler";
     ["k"] = "Slack";
+    ["i"] = "iTunes";
     ["d"] = "Deezer"
 }
 
@@ -74,12 +82,14 @@ function launchOrFocus(app_win_inc)
         win = ''
         inclusive = true
     else
+	print(app_win_inc)
         app = app_win_inc[1]
         win = app_win_inc[2]
         inclusive = app_win_inc[3]
     end
 
     local app_windows = hs.window.filter.new(app)
+    -- local app_main_window = hs.application.get(app):mainWindow()
 
     for k, window in pairs(app_windows:getWindows()) do
         local title = window:title()
@@ -87,16 +97,21 @@ function launchOrFocus(app_win_inc)
         if title:len() > 0 and (title:find(win)==nil) ~= inclusive and found_window==nil
         then
             found_window = window
-            found_window:raise()
-            print('focus')
+	    -- found_window:becomeMain()
+	    found_window:application():activate(false)
+	    -- app_main_window:becomeMain()
+
+	    --
+            -- found_window:raise()
+            -- print('focus')
             -- for some reason hangouts tends to lose focus just after gaining it first
-            hs.timer.doAfter(0.5, function() found_window:focus(); end)
+            -- hs.timer.doAfter(0.5, function() found_window:focus(); end)
         -- else
         --     window:sendToBack()
         --     print('focus')
         end
     end
-
+    print(app)
     hs.application.launchOrFocus(app)
 end
 
@@ -183,12 +198,12 @@ end)
 -- it also detects left mouse button pressed and in that key it does nothing. whatever you pressed will be proccessed normally
 e = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
     e:stop()
-    k:exit()
+    hs.timer.doAfter(0.1, function() k:exit(); end)
     return false
 end)
 e:stop()
 
--- app_switcher opens mission control and starts monitoring the button presses
+-- app_switcher opens mission control and starts monitoring the button presses
 -- function app_switcher()
 --     if (not e:isEnabled())
 --     then
@@ -201,19 +216,40 @@ e:stop()
 -- 
 -- hs.hotkey.bind({}, "F20", app_switcher)
 
+hs.hotkey.bind({"cmd"}, "pagedown", function() hs.deezer.next() end)
+hs.hotkey.bind({"cmd"}, "pageup", function() hs.deezer.previous() end)
 
 k = hs.hotkey.modal.new('', 'F20')
 
 for index, value in pairs(key_params) do
     k:bind('', index, function()
+        -- hs.timer.waitWhile(
+        --     -- if mission_control is still opening, wait for it to finish the animation. wait also for f20 key to be released
+        --     function()
+        --         -- return f20_event_up:isEnabled() or mission_control_opening:running()
+        --         return mission_control_opening:running()
+        --     end,
+        --     function()
+        --         launchOrFocus(key_params[pressed_key])
+        --         hs.eventtap.keyStroke({}, "escape")
+        --     end,
+        --     0.1
+        -- )
+
         launchOrFocus(value)
         k:exit()
     end)
 end
 
-k:bind('', 'escape', function() k:exit() end)
+k:bind('', 'escape', function() k:exit(); hs.eventtap.keyStroke({}, "escape") end)
 -- k:bind('', 'F20', function() k:exit() end)
 -- k:bind({'ctrl'}, 'down', function() k:exit() end)
+
+hs.hotkey.bind({'cmd'}, '.', function()
+    launchOrFocus("Google Chrome")
+    hs.eventtap.keyStroke({'ctrl'}, ".")
+end)
+
 
 function k:entered()
     mission_control = hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil)
@@ -225,19 +261,6 @@ end
 function k:exited()
     hs.alert'Exited mode'
     e:stop()
-
-    hs.timer.waitWhile(
-        -- if mission_control is still opening, wait for it to finish the animation. wait also for f20 key to be released
-        function()
-            -- return f20_event_up:isEnabled() or mission_control_opening:running()
-            return mission_control_opening:running()
-        end,
-        function()
-            launchOrFocus(key_params[pressed_key])
-            hs.eventtap.keyStroke({}, "escape")
-        end,
-        0.1
-    )
 
     hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
 end
