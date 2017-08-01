@@ -203,7 +203,7 @@ e = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
 end)
 e:stop()
 
--- app_switcher opens mission control and starts monitoring the button presses
+-- app_switcher opens mission control and starts monitoring the button presses
 -- function app_switcher()
 --     if (not e:isEnabled())
 --     then
