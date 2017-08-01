@@ -94,6 +94,13 @@ set nowrapscan
 set backspace=indent
 set tagcase=match
 
+" Set whitespace options
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set autoindent
+
 
 " Completion options
 set completeopt=longest,menuone
@@ -218,13 +225,13 @@ endif
 " Plugin UltiSnips
 if &runtimepath =~ 'ultisnips'
     if has('win32')  || has('win64')
-        let g:UltiSnipsSnippetDirectories=$HOME.'/vimfiles/UltiSnips'
+        let g:UltiSnipsSnippetDir=$HOME.'/vimfiles/UltiSnips'
     else
-        let g:UltiSnipsSnippetDirectories=$HOME.'/.vim/UltiSnips'
+        let g:UltiSnipsSnippetDir=$HOME.'/.vim/UltiSnips'
     endif
-"     let g:UltiSnipsExpandTrigger="<tab>"
-"     let g:UltiSnipsJumpForwardTrigger="<c-b>"
-"     let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+    let g:UltiSnipsExpandTrigger="<tab>"
+    let g:UltiSnipsJumpForwardTrigger="<tab>"
+    let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 endif
 
 
