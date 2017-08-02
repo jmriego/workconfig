@@ -4,6 +4,7 @@ mission_control_opening = nil
 mission_control_opening = hs.timer.new(0.5, function() mission_control_opening:stop(); end)
 e = nil
 last_event = nil
+p = nil
 
 -- detect when f20 key has been pressed but not yet released
 -- f20_event_up = nil
@@ -37,6 +38,14 @@ key_params = {
     ["i"] = "iTunes";
     ["d"] = "Deezer"
 }
+
+
+function leftClick(point)
+    print(point.x .. ' , ' .. point.y)
+    local clickState = hs.eventtap.event.properties.mouseEventClickState
+    hs.eventtap.event.newMouseEvent(hs.eventtap.event.types["leftMouseDown"], point):setProperty(clickState, 1):post()
+    hs.eventtap.event.newMouseEvent(hs.eventtap.event.types["leftMouseUp"], point):setProperty(clickState, 1):post()
+end
 
 -- this function accepts only one parameter: app_win_inc
 -- you can pass either the name of an app. eg. Slack
@@ -82,7 +91,7 @@ function launchOrFocus(app_win_inc)
         win = ''
         inclusive = true
     else
-	print(app_win_inc)
+    print(app_win_inc)
         app = app_win_inc[1]
         win = app_win_inc[2]
         inclusive = app_win_inc[3]
@@ -97,11 +106,11 @@ function launchOrFocus(app_win_inc)
         if title:len() > 0 and (title:find(win)==nil) ~= inclusive and found_window==nil
         then
             found_window = window
-	    -- found_window:becomeMain()
-	    found_window:application():activate(false)
-	    -- app_main_window:becomeMain()
+        -- found_window:becomeMain()
+        found_window:application():activate(false)
+        -- app_main_window:becomeMain()
 
-	    --
+        --
             -- found_window:raise()
             -- print('focus')
             -- for some reason hangouts tends to lose focus just after gaining it first
@@ -213,7 +222,7 @@ e:stop()
 --         e:start()
 --     end
 -- end
--- 
+--
 -- hs.hotkey.bind({}, "F20", app_switcher)
 
 hs.hotkey.bind({"cmd"}, "pagedown", function() hs.deezer.next() end)
@@ -237,6 +246,13 @@ for index, value in pairs(key_params) do
         -- )
 
         launchOrFocus(value)
+
+        if (value == "Gmail")
+        then
+            gmail_frame = hs.window.focusedWindow():frame()
+            p = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+60.0}
+        end
+
         k:exit()
     end)
 end
@@ -257,10 +273,15 @@ function k:entered()
     mission_control_opening:start()
     e:start()
 end
-    
+
 function k:exited()
     hs.alert'Exited mode'
     e:stop()
 
     hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
+    if p ~= nil
+    then
+        print(p)
+        hs.timer.doAfter(0.1, function() leftClick(p); p=nil; end)
+    end
 end
