@@ -1,21 +1,8 @@
 mission_control = nil
 --detect when mission control is opening with just a short countdown
-mission_control_opening = nil
-mission_control_opening = hs.timer.new(0.5, function() mission_control_opening:stop(); end)
 e = nil
-last_event = nil
-p = nil
-
--- detect when f20 key has been pressed but not yet released
--- f20_event_up = nil
--- f20_event_up = hs.eventtap.new({hs.eventtap.event.types.keyUp}, function(event)
---     local pressed_keycode = event:getProperty(hs.eventtap.event.properties.keyboardEventKeycode)
---     local pressed_key = hs.keycodes.map[pressed_keycode]
---     if (pressed_key == "f20")
---     then
---         f20_event_up:stop()
---     end
--- end)
+t = nil
+point_click = nil -- point in current screen to click on
 
 -- keyboard keys to be used in mission control and the program/window to open
 -- the name of the app should be the names found in Applications folder
@@ -28,15 +15,15 @@ key_params = {
     ["m"] = "Gmail";
     ["n"] = "Notes";
     ["f"] = "Finder";
-    ["t"] = "iTerm2";
+    ["t"] = "iTerm";
     ["p"] = "PSequel";
-    ["s"] = "Sequel Pro";
+    ["q"] = "Sequel Pro";
     ["x"] = "Microsoft Excel";
     ["w"] = "Microsoft Word";
     ["o"] = "Oracle Data Modeler";
     ["k"] = "Slack";
     ["i"] = "iTunes";
-    ["d"] = "Deezer"
+    ["s"] = "Spotify"
 }
 
 
@@ -46,41 +33,6 @@ function leftClick(point)
     hs.eventtap.event.newMouseEvent(hs.eventtap.event.types["leftMouseDown"], point):setProperty(clickState, 1):post()
     hs.eventtap.event.newMouseEvent(hs.eventtap.event.types["leftMouseUp"], point):setProperty(clickState, 1):post()
 end
-
--- this function accepts only one parameter: app_win_inc
--- you can pass either the name of an app. eg. Slack
--- or a table with three values: app, window title, inclusive:
---     inclusive means whether you are searching for a window with that title (true)
---     or for a window that doesn't have that title (false)
--- function launchOrFocus(app_win_inc)
---     if type(app_win_inc) == 'string'
---     then
---         hs.application.launchOrFocus(app_win_inc)
---     elseif type(app_win_inc) == 'table' then
---         app = app_win_inc[1]
---         win = app_win_inc[2]
---         inclusive = app_win_inc[3]
---         local application = hs.application.get(app)
---         if application==nil
---         then
---             hs.application.launchOrFocus(app)
---             hs.timer.doAfter(0.5, function() hs.application.launchOrFocus(app); end)
---         else
---             local app_windows = application:allWindows()
---
---             for k, window in pairs(app_windows) do
---                 local title = window:title()
---                 if title:len() > 0 and (title:find(win)==nil) ~= inclusive
---                 then
---                     window:focus()
---                     -- for some reason hangouts tends to lose focus just after gaining it first
---                     hs.timer.doAfter(0.5, function() window:focus(); end)
---                 end
---             end
---         end
---     end
--- end
-
 
 function launchOrFocus(app_win_inc)
     local found_window = nil
@@ -124,6 +76,15 @@ function launchOrFocus(app_win_inc)
     hs.application.launchOrFocus(app)
 end
 
+
+function getCurrentWindowTitle()
+    local success, title = pcall(function() return hs.uielement.focusedElement():title(); end)
+    if not success
+    then
+       title = nil
+    end
+    return title
+end
 
 -- is the value in the table?
 function has_value (tab, val)
@@ -212,45 +173,36 @@ e = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
 end)
 e:stop()
 
--- app_switcher opens mission control and starts monitoring the button presses
--- function app_switcher()
---     if (not e:isEnabled())
---     then
---         mission_control = hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil)
---         mission_control:start() -- no key will be proccessed until this timer finishes
---         mission_control_opening:start()
---         e:start()
---     end
--- end
---
--- hs.hotkey.bind({}, "F20", app_switcher)
+-- ---------------
+-- bind shortcuts
+-- ---------------
 
-hs.hotkey.bind({"cmd"}, "pagedown", function() hs.deezer.next() end)
-hs.hotkey.bind({"cmd"}, "pageup", function() hs.deezer.previous() end)
+-- Music control
+hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
+hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
+hs.hotkey.bind({"cmd", "shift"}, "pagedown", function() hs.spotify.ff() end)
+hs.hotkey.bind({"cmd", "shift"}, "pageup", function() hs.spotify.rw() end)
 
+-- Switch to Google Chrome and press ctrl+. for Tabli
+hs.hotkey.bind({'cmd'}, '.', function()
+    launchOrFocus("Google Chrome")
+    hs.eventtap.keyStroke({'ctrl'}, ".")
+end)
+
+
+-- app switching
 k = hs.hotkey.modal.new('', 'F20')
 
 for index, value in pairs(key_params) do
     k:bind('', index, function()
-        -- hs.timer.waitWhile(
-        --     -- if mission_control is still opening, wait for it to finish the animation. wait also for f20 key to be released
-        --     function()
-        --         -- return f20_event_up:isEnabled() or mission_control_opening:running()
-        --         return mission_control_opening:running()
-        --     end,
-        --     function()
-        --         launchOrFocus(key_params[pressed_key])
-        --         hs.eventtap.keyStroke({}, "escape")
-        --     end,
-        --     0.1
-        -- )
 
         launchOrFocus(value)
 
         if (value == "Gmail")
         then
+            -- click on the Gmail website after focusing it so that they keyboard shortcuts work
             gmail_frame = hs.window.focusedWindow():frame()
-            p = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+60.0}
+            point_click = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+60.0}
         end
 
         k:exit()
@@ -258,19 +210,28 @@ for index, value in pairs(key_params) do
 end
 
 k:bind('', 'escape', function() k:exit(); hs.eventtap.keyStroke({}, "escape") end)
--- k:bind('', 'F20', function() k:exit() end)
 -- k:bind({'ctrl'}, 'down', function() k:exit() end)
 
-hs.hotkey.bind({'cmd'}, '.', function()
+k:bind('', 'j', function()
     launchOrFocus("Google Chrome")
-    hs.eventtap.keyStroke({'ctrl'}, ".")
+    k:exit()
+    hs.timer.doAfter(1.0, function() hs.eventtap.keyStroke({'ctrl'}, "."); end)
+    t = hs.timer.waitUntil(
+        function()
+            return getCurrentWindowTitle()==""
+        end,
+        function()
+            hs.eventtap.keyStrokes("filter=50263")
+            hs.eventtap.keyStroke('', "return")
+        end,
+        0.5
+    )
+    hs.timer.doAfter(5.0, function() t:stop(); end)
 end)
-
 
 function k:entered()
     mission_control = hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil)
     mission_control:start() -- no key will be proccessed until this timer finishes
-    mission_control_opening:start()
     e:start()
 end
 
@@ -279,9 +240,9 @@ function k:exited()
     e:stop()
 
     hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
-    if p ~= nil
+    if point_click ~= nil
     then
-        print(p)
-        hs.timer.doAfter(0.1, function() leftClick(p); p=nil; end)
+        print(point_click)
+        hs.timer.doAfter(0.1, function() leftClick(point_click); point_click=nil; end)
     end
 end
