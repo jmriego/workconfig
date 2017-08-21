@@ -3,6 +3,8 @@ mission_control = nil
 e = nil
 t = nil
 point_click = nil -- point in current screen to click on
+app = nil
+
 
 -- keyboard keys to be used in mission control and the program/window to open
 -- the name of the app should be the names found in Applications folder
@@ -72,8 +74,10 @@ function launchOrFocus(app_win_inc)
         --     print('focus')
         end
     end
-    print(app)
-    hs.application.launchOrFocus(app)
+
+    if not found_window then
+        hs.application.launchOrFocus(app)
+    end
 end
 
 
@@ -180,8 +184,8 @@ e:stop()
 -- Music control
 hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
 hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
-hs.hotkey.bind({"cmd", "shift"}, "pagedown", function() hs.spotify.ff() end)
-hs.hotkey.bind({"cmd", "shift"}, "pageup", function() hs.spotify.rw() end)
+hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
+hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
 
 -- Switch to Google Chrome and press ctrl+. for Tabli
 hs.hotkey.bind({'cmd'}, '.', function()
@@ -230,13 +234,16 @@ k:bind('', 'j', function()
 end)
 
 function k:entered()
+    app = nil
     mission_control = hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil)
     mission_control:start() -- no key will be proccessed until this timer finishes
     e:start()
 end
 
 function k:exited()
-    hs.alert'Exited mode'
+    if app then
+        hs.alert(app)
+    end
     e:stop()
 
     hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
