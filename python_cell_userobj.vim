@@ -132,3 +132,20 @@ function! s:python_cell_object(object_type)
 
     return ['V', start_selection, end_selection]
 endfunction
+
+
+function! GotoPreviousCell()
+    let start_current_cell = s:python_cell_object('a')[1]
+    call setpos('.', [0, start_current_cell[1]-1, 1, 0])
+    let start_previous_cell = s:python_cell_object('i')[1]
+    call setpos('.', [0, start_previous_cell[1], 1, 0])
+endfunction
+
+function! GotoNextCell()
+    let end_current_cell = s:python_cell_object('a')[2]
+    call setpos('.', [0, end_current_cell[1]+1, 1, 0])
+    if line('.') < line('$')
+        let start_next_cell = s:python_cell_object('i')[1]
+        call setpos('.', [0, start_next_cell[1], 1, 0])
+    endif
+endfunction

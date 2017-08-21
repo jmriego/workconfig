@@ -240,6 +240,8 @@ endif
 " lines starting with ##
 if &runtimepath =~ 'vim-textobj-user'
     exec 'source ' . expand('<sfile>:h') . '/python_cell_userobj.vim'
+    nnoremap <expr> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
+    nnoremap <expr> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 endif
 
 " Plugin vim-airline
