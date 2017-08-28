@@ -1,7 +1,9 @@
 call plug#begin()
 Plug 'altercation/vim-colors-solarized'
 Plug 'junegunn/vim-easy-align'
-Plug 'SirVer/ultisnips'
+if has('python') || has ('python3')
+    Plug 'SirVer/ultisnips'
+endif
 Plug 'jmcantrell/vim-virtualenv'
 Plug 'wilywampa/vim-ipython'
 Plug 'tmhedberg/SimpylFold'
@@ -10,7 +12,9 @@ Plug 'davidhalter/jedi-vim'
 Plug 'nvie/vim-flake8'
 Plug 'kien/ctrlp.vim'
 Plug 'kana/vim-textobj-user'
-Plug 'Shougo/neocomplete.vim'
+if has('lua')
+    Plug 'Shougo/neocomplete.vim'
+endif
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'christoomey/vim-tmux-navigator'
@@ -20,7 +24,9 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
-Plug 'ludovicchabant/vim-gutentags'
+if executable('ctags')
+    Plug 'ludovicchabant/vim-gutentags'
+endif
 Plug 'tomtom/tcomment_vim'
 call plug#end()
 
@@ -58,11 +64,13 @@ elseif has('win32')  || has('win64')
     " Directory for finding files and Python
     "set path=C:/Users/riegjos/Documents/SVN/**
     " Get the location of Anaconda and its packages
-    let conda_info = json_decode(system('conda info --json'))
-    let conda_root = conda_info['root_prefix']
-    let conda_packages_root = conda_root . '\Lib\site-packages'
-    let $PATH .= '; ' . conda_root
-    let $PATH .= '; ' . conda_packages_root
+    if executable('conda')
+        let conda_info = json_decode(system('conda info --json'))
+        let conda_root = conda_info['root_prefix']
+        let conda_packages_root = conda_root . '\Lib\site-packages'
+        let $PATH .= '; ' . conda_root
+        let $PATH .= '; ' . conda_packages_root
+    endif
     " Directory for swap files
     set directory=%USERPROFILE%/tmp,.
     set backupdir=%USERPROFILE%/tmp,.
