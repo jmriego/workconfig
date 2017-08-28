@@ -10,6 +10,7 @@ Plug 'tmhedberg/SimpylFold'
 Plug 'Konfekt/FastFold'
 Plug 'davidhalter/jedi-vim'
 Plug 'nvie/vim-flake8'
+Plug 'tell-k/vim-autopep8'
 Plug 'kien/ctrlp.vim'
 Plug 'kana/vim-textobj-user'
 if has('lua')
