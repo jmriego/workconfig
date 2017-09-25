@@ -156,16 +156,16 @@ endif
 if &runtimepath =~ 'vim-ipython'
     let g:ipy_perform_mappings = 0
     let g:ipy_completefunc = 'global'
+    let g:ipy_monitor_subchannel = 1
 
-    nmap <Plug>(IPython-UpdateShell) :Python2or3 if update_subchannel_msgs(force=True): echo("vim-ipython shell updated",'operator')<CR>
-    map  <Leader><CR> <Plug>(IPython-UpdateShell)
+    nmap <Leader><CR> <Plug>(IPython-UpdateShell)
+    nmap <Leader>i :silent IPythonInput<CR><Plug>(IPython-UpdateShell)
 
     nmap <C-CR> m`Vic<Plug>(IPython-RunLines)``
     vmap <C-CR> <Plug>(IPython-RunLines)
     nmap <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>
     vmap <S-CR> <Plug>(IPython-RunLines)jj
     nmap <A-CR> <Plug>(IPython-RunLine)
-    map  <Leader><S-CR> :call ToggleMonitorSubchannel()
 
     noremap <Leader>k :IPython<CR>
     nmap <Leader>d <Plug>(IPython-OpenPyDoc)
@@ -184,6 +184,7 @@ if &runtimepath =~ 'jedi-vim'
     let g:jedi#goto_assignments_command = ""
     let g:jedi#goto_command = "<leader>g"
     let g:jedi#popup_on_dot = 0
+    let g:jedi#show_call_signatures = 0
 endif
 
 " Plugin vim-flake
