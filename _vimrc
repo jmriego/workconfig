@@ -451,3 +451,7 @@ function! s:DiffWithSaved()
 endfunction
 com! DiffSaved call s:DiffWithSaved()
 
+if exists('$TMUX') " set transparent background for tmux
+    hi! Normal ctermbg=NONE
+    " hi! NonText ctermbg=NONE
+endif
