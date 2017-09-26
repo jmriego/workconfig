@@ -79,6 +79,12 @@ elseif has('win32')  || has('win64')
     set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:
 endif
 
+" The Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  " set grepprg=ag\ --nogroup\ --nocolor
+endif
+
 " Ignore these files. It also affects ctrlp
 set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe,*.pyc
 
@@ -230,6 +236,13 @@ if &runtimepath =~ 'ctrlp.vim'
     nnoremap <Leader><C-]> :CtrlPTag<CR>
     nnoremap <C-\> :CtrlPBuffer<CR>
     nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
+
+    if executable('ag')
+        " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+        " ag is fast enough that CtrlP doesn't need to cache
+        let g:ctrlp_use_caching = 0
+    endif
 endif
 
 " Plugin UltiSnips
