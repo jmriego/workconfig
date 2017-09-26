@@ -17,6 +17,7 @@ key_params = {
     ["m"] = "Gmail";
     ["n"] = "Notes";
     ["f"] = "Finder";
+    ["d"] = "Cyberduck";
     ["t"] = "iTerm";
     ["p"] = "PSequel";
     ["q"] = "Sequel Pro";
