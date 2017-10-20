@@ -300,6 +300,13 @@ if &runtimepath =~ 'vim-airline'
     let g:airline_section_z = airline#section#create(['%4l', '%{g:airline_symbols.linenr}', '%3v'])
 endif
 
+if &runtimepath =~ 'vim-fugitive'
+    nnoremap <Leader>gd :Gdiff<CR>
+    nnoremap <Leader>gs :Gstatus<CR>
+    nnoremap <Leader>gb :Gblame<CR>
+    nnoremap <Leader>gl :Glog<CR>
+endif
+
 " Plugin benmills/vimux
 if &runtimepath =~ 'vimux'
     map <Leader>vp :VimuxPromptCommand<CR>
