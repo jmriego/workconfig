@@ -313,6 +313,17 @@ if &runtimepath =~ 'vimux'
     map <Leader>vl :VimuxRunLastCommand<CR>
     map <Leader>vi :VimuxInspectRunner<CR>
     map <Leader>vz :VimuxZoomRunner<CR>
+
+    function! VimuxSlime()
+        call VimuxSendText(@v)
+        if @v !~ '\n$'
+            call VimuxSendKeys("Enter")
+        endif
+    endfunction
+    " If text is selected, save it in the v buffer and send that buffer it to tmux
+    vmap <Leader>vs "vy :call VimuxSlime()<CR>
+    " Select current paragraph and send it to tmux
+    nmap <Leader>vs vip<Leader>vs<CR>
 endif
 
 " Plugin ludovicchabant/vim-gutentags
