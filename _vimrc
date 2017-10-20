@@ -297,6 +297,7 @@ if &runtimepath =~ 'vim-airline'
         \ '' : 'S',
         \ }
 
+    let g:airline_section_z = airline#section#create(['%4l', '%{g:airline_symbols.linenr}', '%3v'])
 endif
 
 " Plugin benmills/vimux
