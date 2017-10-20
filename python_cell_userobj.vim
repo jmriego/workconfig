@@ -47,6 +47,7 @@ endfunction
 
 " If we are in an empty cell, we will increase the selection range
 function! s:python_cell_object(object_type)
+    let cell_marker_blocker_re = '^# <[a-z]*cell>'
     let prev_marker = s:search_cell_marker('b')
     " if we find it, the next line would be the start
     if len(prev_marker) > 0
@@ -65,10 +66,10 @@ function! s:python_cell_object(object_type)
             break
         endif
 
-        if line('.') > 1
-            normal! k$
-        else
+        if line('.') == 1 || getline('.') =~ cell_marker_blocker_re
             break
+        else
+            normal! k$
         endif
     endwhile
 
@@ -85,10 +86,10 @@ function! s:python_cell_object(object_type)
             break
         endif
 
-        if line('.') < line('$')
-            normal! j0
-        else
+        if line('.') == line('$') || getline('.') =~ cell_marker_blocker_re
             break
+        else
+            normal! j0
         endif
     endwhile
 
