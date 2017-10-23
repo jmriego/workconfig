@@ -11,21 +11,20 @@ app = nil
 key_params = {
     -- ["g"] = {"Google Chrome", "Google Hangouts", false};
     -- ["h"] = {"Google Chrome", "Google Hangouts", true};
-    ["g"] = "Google Chrome";
+    ["i"] = "Google Chrome";
     ["h"] = "YakYak";
     ["c"] = "Google Calendar";
-    ["m"] = "Gmail";
+    ["g"] = "Gmail";
     ["n"] = "Notes";
     ["f"] = "Finder";
     ["d"] = "Cyberduck";
     ["t"] = "iTerm";
     ["p"] = "PSequel";
-    ["q"] = "Sequel Pro";
+    ["m"] = "Sequel Pro";
     ["x"] = "Microsoft Excel";
     ["w"] = "Microsoft Word";
     ["o"] = "Oracle Data Modeler";
     ["k"] = "Slack";
-    ["i"] = "iTunes";
     ["s"] = "Spotify"
 }
 
@@ -207,7 +206,7 @@ for index, value in pairs(key_params) do
         then
             -- click on the Gmail website after focusing it so that they keyboard shortcuts work
             gmail_frame = hs.window.focusedWindow():frame()
-            point_click = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+60.0}
+            point_click = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+gmail_frame["h"]-15.0}
         end
 
         k:exit()
