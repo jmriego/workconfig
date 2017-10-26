@@ -165,7 +165,7 @@ if &runtimepath =~ 'vim-ipython'
     let g:ipy_monitor_subchannel = 1
 
     nmap <Leader><CR> <Plug>(IPython-UpdateShell)
-    nmap <Leader>i :silent IPythonInput<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell)
+    nmap <Leader>i :IPythonInput<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell)
 
     nmap <C-CR> m`Vic<Plug>(IPython-RunLines)``:sleep 500m<CR><Plug>(IPython-UpdateShell)
     vmap <C-CR> <Plug>(IPython-RunLines):sleep 500m<CR><Plug>(IPython-UpdateShell)
