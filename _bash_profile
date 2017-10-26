@@ -24,6 +24,13 @@ show_error_code() {
   fi
 }
 
+tmux_session_name() {
+    tty=$(tty)
+    for s in $(tmux list-sessions -F '#{session_name}' 2>/dev/null); do
+        tmux list-panes -F '#{pane_tty} #{session_name}' -t "$s"
+    done | grep "$tty" | awk '{print $2}'
+}
+
 if [ -n "$TMUX" ]
 then
   PROMPT_COMMAND='beforeprompt; settitle "$(hostname -s):$SHORTPWD"'
@@ -33,3 +40,7 @@ else
   PROMPT_COMMAND='beforeprompt'
   PS1="\[\033[0;31m\]\$(show_error_code)\[\033[0m\]\h:\${SHORTPWD}\$ "
 fi
+
+# activate python virtualenv if it matches current tmux session name
+TMUX_SESSION_NAME="$(tmux_session_name)"
+[[ -n $TMUX_SESSION_NAME ]] && lsvirtualenv -b 2>/dev/null | grep -q "^$TMUX_SESSION_NAME$" && workon $TMUX_SESSION_NAME
