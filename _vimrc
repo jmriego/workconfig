@@ -424,7 +424,7 @@ if has('gui_running')
     set guioptions=i " by default, hide gui menus
 
     set noballooneval
-    set guifont=Ubuntu\ Mono\ derivative\ Powerline:h11
+    set guifont=Ubuntu\ Mono\ derivative\ Powerline:h11,Ubuntu_Mono_derivative_Powerlin:h12
 endif
 
 " Making vim work properly in a terminal
