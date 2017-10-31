@@ -164,17 +164,19 @@ if &runtimepath =~ 'vim-ipython'
     let g:ipy_completefunc = 'global'
     let g:ipy_monitor_subchannel = 1
 
-    nmap <Leader><CR> <Plug>(IPython-UpdateShell)
-    nmap <Leader>i :IPythonInput<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell)
+    noremap  <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
+    autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
 
-    nmap <C-CR> m`Vic<Plug>(IPython-RunLines)``:sleep 500m<CR><Plug>(IPython-UpdateShell)
-    vmap <C-CR> <Plug>(IPython-RunLines):sleep 500m<CR><Plug>(IPython-UpdateShell)
-    nmap <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>:sleep 500m<CR><Plug>(IPython-UpdateShell)
-    vmap <S-CR> <Plug>(IPython-RunLines)jj:sleep 500m<CR><Plug>(IPython-UpdateShell)
-    nmap <A-CR> <Plug>(IPython-RunLine):sleep 500m<CR><Plug>(IPython-UpdateShell)
+    autocmd FileType python nmap <buffer> <C-CR> Vic<Plug>(IPython-RunLines)<C-o>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python vmap <buffer> <C-CR> <Plug>(IPython-RunLines):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python nmap <buffer> <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python vmap <buffer> <S-CR> <Plug>(IPython-RunLines)jj:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python nmap <buffer> <A-CR> <Plug>(IPython-RunLine):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python vmap <buffer> <A-CR> <Plug>(IPython-RunLines):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)gv
 
     noremap <Leader>k :IPython<CR>
-    nmap <Leader>d <Plug>(IPython-OpenPyDoc)
+    autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
 endif
 
 " Plugin jedi-vim
@@ -314,16 +316,33 @@ if &runtimepath =~ 'vimux'
     map <Leader>vi :VimuxInspectRunner<CR>
     map <Leader>vz :VimuxZoomRunner<CR>
 
-    function! VimuxSlime()
-        call VimuxSendText(@v)
-        if @v !~ '\n$'
+    function! s:GetVisualSelection()
+        " Why is this not a built-in Vim script function?!
+        let [line_start, column_start] = getpos("'<")[1:2]
+        let [line_end, column_end] = getpos("'>")[1:2]
+        let lines = getline(line_start, line_end)
+        if len(lines) == 0
+            return ''
+        endif
+        let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+        let lines[0] = lines[0][column_start - 1:]
+        return join(lines, "\n")
+    endfunction
+
+    function! VimuxSlime() range
+        let s:selected_text = s:GetVisualSelection()
+        call VimuxSendText(s:selected_text)
+        if s:selected_text !~ '\n$'
             call VimuxSendKeys("Enter")
         endif
     endfunction
-    " If text is selected, save it in the v buffer and send that buffer it to tmux
-    vmap <Leader>vs "vy :call VimuxSlime()<CR>
-    " Select current paragraph and send it to tmux
-    nmap <Leader>vs vip<Leader>vs<CR>
+
+    nmap <C-CR> Vip:call VimuxSlime()<CR><C-o>
+    vmap <C-CR> :call VimuxSlime()<CR>
+    nmap <S-CR> Vip:call VimuxSlime()<CR>})
+    vmap <S-CR> :call VimuxSlime()<CR>gv<Esc>j
+    nmap <A-CR> V:call VimuxSlime()<CR>
+    vmap <A-CR> :call VimuxSlime()<CR>gv
 endif
 
 " Plugin ludovicchabant/vim-gutentags
