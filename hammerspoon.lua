@@ -12,10 +12,12 @@ key_params = {
     -- ["g"] = {"Google Chrome", "Google Hangouts", false};
     -- ["h"] = {"Google Chrome", "Google Hangouts", true};
     ["i"] = "Google Chrome";
+    ["j"] = "Google Chrome"; -- actually it will go to the jira tab or open it
     ["h"] = "YakYak";
     ["c"] = "Google Calendar";
     ["g"] = "Gmail";
     ["n"] = "Notes";
+    ["e"] = "TextEdit";
     ["f"] = "Finder";
     ["d"] = "Cyberduck";
     ["t"] = "iTerm";
@@ -202,11 +204,20 @@ for index, value in pairs(key_params) do
 
         launchOrFocus(value)
 
+        -- special tasks needed after switching to certain apps
+
+        -- click on the lower bottom corner off the Gmail window to focus and allow hotkeys
         if (value == "Gmail")
         then
             -- click on the Gmail website after focusing it so that they keyboard shortcuts work
             gmail_frame = hs.window.focusedWindow():frame()
             point_click = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+gmail_frame["h"]-15.0}
+        end
+
+        -- go to tab with Jira or open a new one
+        if (index == "j")
+        then
+            hs.execute('/usr/local/bin/chrome-cli activate -t $(/usr/local/bin/chrome-cli list links | grep "filter=50263" | grep -o "[0-9][0-9]*" | head -1) || /usr/local/bin/chrome-cli open "https://bugs.indeed.com/issues/?filter=50263"')
         end
 
         k:exit()
@@ -216,22 +227,6 @@ end
 k:bind('', 'escape', function() k:exit(); hs.eventtap.keyStroke({}, "escape") end)
 -- k:bind({'ctrl'}, 'down', function() k:exit() end)
 
-k:bind('', 'j', function()
-    launchOrFocus("Google Chrome")
-    k:exit()
-    hs.timer.doAfter(1.0, function() hs.eventtap.keyStroke({'ctrl'}, "."); end)
-    t = hs.timer.waitUntil(
-        function()
-            return getCurrentWindowTitle()==""
-        end,
-        function()
-            hs.eventtap.keyStrokes("filter=50263")
-            hs.eventtap.keyStroke('', "return")
-        end,
-        0.5
-    )
-    hs.timer.doAfter(5.0, function() t:stop(); end)
-end)
 
 function k:entered()
     app = nil
