@@ -136,6 +136,8 @@ if has("multi_byte")
   set fileencodings=ucs-bom,utf-8,latin1
 endif
 
+exec 'source ' . expand('<sfile>:h') . '/' . 'get_selected_text.vim'
+
 " Plugin solarized
 if &runtimepath =~ 'solarized'
     try
@@ -164,16 +166,31 @@ if &runtimepath =~ 'vim-ipython'
     let g:ipy_completefunc = 'global'
     let g:ipy_monitor_subchannel = 1
 
+    function! IPythonRunLines()
+        " run the selected lines removing unnecesary indent
+        let lines = split(GetSelectedText(1), '\n')
+        let dedented_lines = []
+        for line in lines
+            if !exists('first_line_indent') || first_line_indent < 0
+                let first_line_indent = match(line, '\S')
+            endif
+            if first_line_indent >= 0
+                call add(dedented_lines, strpart(line, first_line_indent))
+            endif
+        endfor
+        silent Python2or3 run_command('\n'.join(vim.eval('dedented_lines')))
+    endfunction
+
     noremap  <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
     autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
     autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
 
     autocmd FileType python nmap <buffer> <C-CR> Vic<Plug>(IPython-RunLines)<C-o>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python vmap <buffer> <C-CR> <Plug>(IPython-RunLines):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python xmap <buffer> <C-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
     autocmd FileType python nmap <buffer> <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python vmap <buffer> <S-CR> <Plug>(IPython-RunLines)jj:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python xmap <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)jj
     autocmd FileType python nmap <buffer> <A-CR> <Plug>(IPython-RunLine):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python vmap <buffer> <A-CR> <Plug>(IPython-RunLines):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)gv
+    autocmd FileType python xmap <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)gv
 
     noremap <Leader>k :IPython<CR>
     autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
@@ -264,7 +281,7 @@ endif
 " Create cell text objects which are regions of text delimited by
 " lines starting with ##
 if &runtimepath =~ 'vim-textobj-user'
-    exec 'source ' . expand('<sfile>:h') . '/python_cell_userobj.vim'
+    exec 'source ' . expand('<sfile>:h') . '/' . 'python_cell_userobj.vim'
     nnoremap <expr> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
     nnoremap <expr> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 endif
@@ -316,21 +333,8 @@ if &runtimepath =~ 'vimux'
     map <Leader>vi :VimuxInspectRunner<CR>
     map <Leader>vz :VimuxZoomRunner<CR>
 
-    function! s:GetVisualSelection()
-        " Why is this not a built-in Vim script function?!
-        let [line_start, column_start] = getpos("'<")[1:2]
-        let [line_end, column_end] = getpos("'>")[1:2]
-        let lines = getline(line_start, line_end)
-        if len(lines) == 0
-            return ''
-        endif
-        let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
-        let lines[0] = lines[0][column_start - 1:]
-        return join(lines, "\n")
-    endfunction
-
     function! VimuxSlime() range
-        let s:selected_text = s:GetVisualSelection()
+        let s:selected_text = GetSelectedText()
         call VimuxSendText(s:selected_text)
         if s:selected_text !~ '\n$'
             call VimuxSendKeys("Enter")
