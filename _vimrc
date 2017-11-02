@@ -1,3 +1,4 @@
+" Loaded plugins {{{
 call plug#begin()
 Plug 'altercation/vim-colors-solarized'
 Plug 'junegunn/vim-easy-align'
@@ -30,7 +31,37 @@ if executable('ctags')
 endif
 Plug 'tomtom/tcomment_vim'
 call plug#end()
+" }}}
 
+" Appearance {{{
+"hi CursorLine guibg=#303030
+syntax on
+set cursorline
+set fdm=syntax
+set modelines=1
+set linespace=0
+set ruler
+set showcmd
+
+" Plugin solarized
+if &runtimepath =~ 'solarized'
+    try
+        set background=light
+        let g:solarized_visibility = "high"
+        let g:solarized_contrast = "high"
+        let g:solarized_termcolors=16
+        colorscheme solarized
+    catch
+    endtry
+endif
+
+if exists('$TMUX') " set transparent background for tmux
+    hi! Normal ctermbg=NONE
+    " hi! NonText ctermbg=NONE
+endif
+" }}}
+
+" Platform specific configuration {{{
 if has('mac')
     " Directory for swap files
     set directory=~/tmp,.
@@ -79,24 +110,22 @@ elseif has('win32')  || has('win64')
     set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:
 endif
 
-" The Silver Searcher
-if executable('ag')
-  " Use ag over grep
-  " set grepprg=ag\ --nogroup\ --nocolor
+" Making vim work properly in a terminal
+if has('mouse')
+  set mouse=a
+  if &term =~ "xterm" || &term =~ "screen"
+    " as of March 2013, this works:
+    set ttymouse=xterm2
+
+    " previously, I found that ttymouse was getting reset, so had
+    " to reapply it via an autocmd like this:
+    autocmd VimEnter,FocusGained,BufEnter * set ttymouse=xterm2
+  endif
 endif
 
-" Ignore these files. It also affects ctrlp
-set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe,*.pyc
+" }}}
 
-" Appearence
-"hi CursorLine guibg=#303030
-syntax on
-set cursorline
-set fdm=syntax
-set linespace=0
-set ruler
-set showcmd
-
+" General options {{{
 " Set basic options
 let mapleader=" "
 set noautoread
@@ -116,11 +145,6 @@ set shiftwidth=4
 set expandtab
 set autoindent
 
-
-" Completion options
-set completeopt=longest,menuone
-set omnifunc=syntaxcomplete#Complete
-
 " Show the wild mode menu
 set wildmenu
 set wildmode=full
@@ -135,27 +159,130 @@ if has("multi_byte")
   "setglobal bomb
   set fileencodings=ucs-bom,utf-8,latin1
 endif
+" }}}
 
+" Custom Functions {{{
 exec 'source ' . expand('<sfile>:h') . '/' . 'get_selected_text.vim'
 
-" Plugin solarized
-if &runtimepath =~ 'solarized'
-    try
-        set background=light
-        let g:solarized_visibility = "high"
-        let g:solarized_contrast = "high"
-        let g:solarized_termcolors=16
-        colorscheme solarized
-    catch
-    endtry
+" Add command for counting word frequency
+function! WordFrequency() range
+  let all = split(join(getline(a:firstline, a:lastline)), '\A\+')
+  let frequencies = {}
+  for word in all
+    let frequencies[word] = get(frequencies, word, 0) + 1
+  endfor
+  new
+  setlocal buftype=nofile bufhidden=hide noswapfile tabstop=20
+  for [key,value] in items(frequencies)
+    call append('$', value."\t".key)
+  endfor
+  sort i
+endfunction
+
+command! -range=% WordFrequency <line1>,<line2>call WordFrequency()
+
+" Add DiffSaved command to compare buffer with Saved version
+function! s:DiffWithSaved()
+    let filetype=&ft
+    diffthis
+    vnew | r # | normal! 1Gdd
+    diffthis
+    exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+endfunction
+com! DiffSaved call s:DiffWithSaved()
+
+" Toggle line numbers and relative line numbers
+function! NumberToggle()
+  if(&number == 1 || &relativenumber == 1)
+    if(&number == 1 )
+      set nonumber
+    endif
+    if(&relativenumber == 1 )
+      set norelativenumber
+    endif
+  else
+    set number
+  endif
+endfunc
+
+function! RelNumberToggle()
+  if(&relativenumber == 1)
+    set number
+    set norelativenumber
+  else
+    set number
+    set relativenumber
+  endif
+endfunc
+" }}}
+
+" File search settings {{{
+" The Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  " set grepprg=ag\ --nogroup\ --nocolor
 endif
 
-" Plugin vim-easy-align
+" Ignore these files. It also affects ctrlp
+set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe,*.pyc
+
+" Plugin ctrlp.vim
+if &runtimepath =~ 'ctrlp.vim'
+    let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+      \ 'file': '\v\.(exe|so|dll)$',
+      \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
+    \ }
+    let g:ctrlp_switch_buffer = 'eE'
+    let g:ctrlp_use_caching = 1
+    let g:ctrlp_working_path_mode = 'ra' " search project of current file
+    let g:ctrlp_by_filename = 1
+    " Let's use ag (or grep) instead of vim to search for files. Much faster
+    if executable('ag')
+        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+    endif
+
+    " Remove the possible extensions shown in CtrlP
+    func! CallCtrlP(...)
+        let g:ctrlp_ext_vars=[]
+        if a:0 > 0
+            CtrlP a:1
+        else
+            CtrlP
+        endif
+    endfunc
+
+    let g:ctrlp_cmd = 'call CallCtrlP()'
+    let g:ctrlp_map = '<Leader><C-p>'
+    nnoremap <Leader><C-]> :CtrlPTag<CR>
+    nnoremap <C-\> :CtrlPBuffer<CR>
+    nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
+
+    if executable('ag')
+        " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+        " ag is fast enough that CtrlP doesn't need to cache
+        let g:ctrlp_use_caching = 0
+    endif
+endif
+" }}}
+
+" Plugin vim-easy-align {{{
 " Start interactive EasyAlign in visual mode (e.g. vipga) and for a motion/text object (e.g. gaip)
 if &runtimepath =~ 'vim-easy-align'
     xmap ga <Plug>(EasyAlign)
     nmap ga <Plug>(EasyAlign)
 endif
+" }}}
+
+" Python configuration and plugins {{{
+"Python files
+au BufNewFile,BufRead *.py
+    \ set tabstop=4 |
+    \ set softtabstop=4 |
+    \ set shiftwidth=4 |
+    \ set expandtab |
+    \ set autoindent
 
 " Plugin vim-ipython
 " <Leader>k to connect to IPython
@@ -216,6 +343,12 @@ endif
 if &runtimepath =~ 'vim-flake8'
     let g:flake8_cmd="flake8"
 endif
+" }}}
+
+" Completion and neocomplete Plugin {{{
+" Completion options
+set completeopt=longest,menuone
+set omnifunc=syntaxcomplete#Complete
 
 " Plugin neocomplete
 if &runtimepath =~ 'neocomplete'
@@ -223,48 +356,9 @@ if &runtimepath =~ 'neocomplete'
     let g:neocomplete#min_keyword_length = 1
     let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>"]
 endif
+" }}}
 
-" Plugin ctrlp.vim
-if &runtimepath =~ 'ctrlp.vim'
-    let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-      \ 'file': '\v\.(exe|so|dll)$',
-      \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
-    \ }
-    let g:ctrlp_switch_buffer = 'eE'
-    let g:ctrlp_use_caching = 1
-    let g:ctrlp_working_path_mode = 'ra' " search project of current file
-    let g:ctrlp_by_filename = 1
-    " Let's use ag (or grep) instead of vim to search for files. Much faster
-    if executable('ag')
-        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-    endif
-
-    " Remove the possible extensions shown in CtrlP
-    func! CallCtrlP(...)
-        let g:ctrlp_ext_vars=[]
-        if a:0 > 0
-            CtrlP a:1
-        else
-            CtrlP
-        endif
-    endfunc
-
-    let g:ctrlp_cmd = 'call CallCtrlP()'
-    let g:ctrlp_map = '<Leader><C-p>'
-    nnoremap <Leader><C-]> :CtrlPTag<CR>
-    nnoremap <C-\> :CtrlPBuffer<CR>
-    nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
-
-    if executable('ag')
-        " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-        " ag is fast enough that CtrlP doesn't need to cache
-        let g:ctrlp_use_caching = 0
-    endif
-endif
-
-" Plugin UltiSnips
+" Plugin UltiSnips {{{
 if &runtimepath =~ 'ultisnips'
     if has('win32')  || has('win64')
         let g:UltiSnipsSnippetDir=$HOME.'/vimfiles/UltiSnips'
@@ -275,9 +369,9 @@ if &runtimepath =~ 'ultisnips'
     let g:UltiSnipsJumpForwardTrigger="<tab>"
     let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 endif
+" }}}
 
-
-" Plugin vim-textobj-user
+" Plugin vim-textobj-user custom objects {{{
 " Create cell text objects which are regions of text delimited by
 " lines starting with ##
 if &runtimepath =~ 'vim-textobj-user'
@@ -285,8 +379,9 @@ if &runtimepath =~ 'vim-textobj-user'
     nnoremap <expr> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
     nnoremap <expr> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 endif
+" }}}
 
-" Plugin vim-airline
+" Plugin vim-airline {{{
 if &runtimepath =~ 'vim-airline'
     set laststatus=2
     let g:airline_powerline_fonts = 1
@@ -318,15 +413,18 @@ if &runtimepath =~ 'vim-airline'
 
     let g:airline_section_z = airline#section#create(['%4l', '%{g:airline_symbols.linenr}', '%3v'])
 endif
+" }}}
 
+" Plugin git fugitive {{{
 if &runtimepath =~ 'vim-fugitive'
     nnoremap <Leader>gd :Gdiff<CR>
     nnoremap <Leader>gs :Gstatus<CR>
     nnoremap <Leader>gb :Gblame<CR>
     nnoremap <Leader>gl :Glog<CR>
 endif
+" }}}
 
-" Plugin benmills/vimux
+" Plugin benmills/vimux {{{
 if &runtimepath =~ 'vimux'
     map <Leader>vp :VimuxPromptCommand<CR>
     map <Leader>vl :VimuxRunLastCommand<CR>
@@ -348,50 +446,21 @@ if &runtimepath =~ 'vimux'
     nmap <A-CR> V:call VimuxSlime()<CR>
     vmap <A-CR> :call VimuxSlime()<CR>gv
 endif
+" }}}
 
-" Plugin ludovicchabant/vim-gutentags
+" Plugin ludovicchabant/vim-gutentags {{{
 if &runtimepath =~ 'vim-gutentags'
     let g:gutentags_cache_dir = "~/temp"
 endif
+" }}}
 
-" Plugin tomtom/tcomment_vim
+" Plugin tomtom/tcomment_vim {{{
 if &runtimepath =~ 'tcomment_vim'
     let g:tcommentTextObjectInlineComment = 'iC'
 endif
+" }}}
 
-"Python files
-au BufNewFile,BufRead *.py
-    \ set tabstop=4 |
-    \ set softtabstop=4 |
-    \ set shiftwidth=4 |
-    \ set expandtab |
-    \ set autoindent
-
-" Toggle line numbers and relative line numbers
-function! NumberToggle()
-  if(&number == 1 || &relativenumber == 1)
-    if(&number == 1 )
-      set nonumber
-    endif
-    if(&relativenumber == 1 )
-      set norelativenumber
-    endif
-  else
-    set number
-  endif
-endfunc
-
-function! RelNumberToggle()
-  if(&relativenumber == 1)
-    set number
-    set norelativenumber
-  else
-    set number
-    set relativenumber
-  endif
-endfunc
-
-" Several mappings
+" Several mappings {{{
 nnoremap <Leader>l :call NumberToggle()<CR>
 nnoremap <Leader>L :call RelNumberToggle()<CR>
 nnoremap <Leader>p :set list!<CR>
@@ -432,8 +501,9 @@ nnoremap <Leader>] <C-w><C-]><C-w>L
 
     vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>
     vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
+" }}}
 
-" GUI options
+" GUI options {{{
 if has('gui_running')
     " Change GUI to fullscreen and back with F11
     function! ToggleGUICruft()
@@ -449,51 +519,6 @@ if has('gui_running')
     set noballooneval
     set guifont=Ubuntu\ Mono\ derivative\ Powerline:h11,Ubuntu_Mono_derivative_Powerlin:h12
 endif
+" }}}
 
-" Making vim work properly in a terminal
-if has('mouse')
-  set mouse=a
-  if &term =~ "xterm" || &term =~ "screen"
-    " as of March 2013, this works:
-    set ttymouse=xterm2
-
-    " previously, I found that ttymouse was getting reset, so had
-    " to reapply it via an autocmd like this:
-    autocmd VimEnter,FocusGained,BufEnter * set ttymouse=xterm2
-  endif
-endif
-
-
-" Other functionality
-
-" Add command for counting word frequency
-function! WordFrequency() range
-  let all = split(join(getline(a:firstline, a:lastline)), '\A\+')
-  let frequencies = {}
-  for word in all
-    let frequencies[word] = get(frequencies, word, 0) + 1
-  endfor
-  new
-  setlocal buftype=nofile bufhidden=hide noswapfile tabstop=20
-  for [key,value] in items(frequencies)
-    call append('$', value."\t".key)
-  endfor
-  sort i
-endfunction
-
-command! -range=% WordFrequency <line1>,<line2>call WordFrequency()
-
-" Add DiffSaved command to compare buffer with Saved version
-function! s:DiffWithSaved()
-    let filetype=&ft
-    diffthis
-    vnew | r # | normal! 1Gdd
-    diffthis
-    exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
-endfunction
-com! DiffSaved call s:DiffWithSaved()
-
-if exists('$TMUX') " set transparent background for tmux
-    hi! Normal ctermbg=NONE
-    " hi! NonText ctermbg=NONE
-endif
+" vim:foldmethod=marker:foldlevel=0
