@@ -275,6 +275,12 @@ if &runtimepath =~ 'vim-easy-align'
 endif
 " }}}
 
+" Plugin tomtom/tcomment_vim {{{
+if &runtimepath =~ 'tcomment_vim'
+    let g:tcommentTextObjectInlineComment = 'iC'
+endif
+" }}}
+
 " Python configuration and plugins {{{
 "Python files
 au BufNewFile,BufRead *.py
@@ -313,11 +319,11 @@ if &runtimepath =~ 'vim-ipython'
     autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
 
     autocmd FileType python nmap <buffer> <C-CR> Vic<Plug>(IPython-RunLines)<C-o>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python xmap <buffer> <C-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python xmap <expr> <buffer> <C-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
     autocmd FileType python nmap <buffer> <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python xmap <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)jj
+    autocmd FileType python xmap <expr> <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)jj
     autocmd FileType python nmap <buffer> <A-CR> <Plug>(IPython-RunLine):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python xmap <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)gv
+    autocmd FileType python xmap <expr> <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)gv
 
     noremap <Leader>k :IPython<CR>
     autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
@@ -345,6 +351,16 @@ if &runtimepath =~ 'vim-flake8'
 endif
 " }}}
 
+" Plugin vim-textobj-user custom objects {{{
+" Create cell text objects which are regions of text delimited by
+" lines starting with ##
+if &runtimepath =~ 'vim-textobj-user'
+    exec 'source ' . expand('<sfile>:h') . '/' . 'python_cell_userobj.vim'
+    nnoremap <expr> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
+    nnoremap <expr> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
+endif
+" }}}
+
 " Completion and neocomplete Plugin {{{
 " Completion options
 set completeopt=longest,menuone
@@ -368,16 +384,6 @@ if &runtimepath =~ 'ultisnips'
     let g:UltiSnipsExpandTrigger="<tab>"
     let g:UltiSnipsJumpForwardTrigger="<tab>"
     let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
-endif
-" }}}
-
-" Plugin vim-textobj-user custom objects {{{
-" Create cell text objects which are regions of text delimited by
-" lines starting with ##
-if &runtimepath =~ 'vim-textobj-user'
-    exec 'source ' . expand('<sfile>:h') . '/' . 'python_cell_userobj.vim'
-    nnoremap <expr> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
-    nnoremap <expr> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 endif
 " }}}
 
@@ -451,12 +457,6 @@ endif
 " Plugin ludovicchabant/vim-gutentags {{{
 if &runtimepath =~ 'vim-gutentags'
     let g:gutentags_cache_dir = "~/temp"
-endif
-" }}}
-
-" Plugin tomtom/tcomment_vim {{{
-if &runtimepath =~ 'tcomment_vim'
-    let g:tcommentTextObjectInlineComment = 'iC'
 endif
 " }}}
 

@@ -62,10 +62,8 @@ endfunction
 " Assume the current mode is middle of visual mode.
 " @return selected text
 function! GetSelectedText(...) abort
-    if a:0 > 0 ? a:1 : '0' == '1'
-        normal! gv
-    endif
     let mode = get(a:, 1, mode(1))
+    let g:modetmp = mode
     let end_col = s:curswant() is s:INT.MAX ? s:INT.MAX : s:get_col_in_visual('.')
     let current_pos = [line('.'), end_col]
     let other_end_pos = [line('v'), s:get_col_in_visual('v')]
