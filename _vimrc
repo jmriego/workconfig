@@ -437,20 +437,31 @@ if &runtimepath =~ 'vimux'
     map <Leader>vi :VimuxInspectRunner<CR>
     map <Leader>vz :VimuxZoomRunner<CR>
 
-    function! VimuxSlime() range
-        let s:selected_text = GetSelectedText()
+    function! VimuxSlime(...) range
+        let select_command = a:0 < 1 ? '' : substitute(a:1, '\(<[A-Za-z-()]*>\)', '\\\1', 'g')
+        let l:winview = winsaveview()
+        if select_command != ""
+            execute "normal " . select_command
+        endif
+        let s:selected_text = GetSelectedText('gv')
+        execute "normal <Esc>"
         call VimuxSendText(s:selected_text)
         if s:selected_text !~ '\n$'
             call VimuxSendKeys("Enter")
         endif
+
+        call winrestview(l:winview)
+        if post_command != ""
+            execute "normal! " . post_command
+        endif
     endfunction
 
-    nmap <C-CR> Vip:call VimuxSlime()<CR><C-o>
+    nmap <C-CR> :call VimuxSlime("Vip")<CR>
     vmap <C-CR> :call VimuxSlime()<CR>
-    nmap <S-CR> Vip:call VimuxSlime()<CR>})
-    vmap <S-CR> :call VimuxSlime()<CR>gv<Esc>j
-    nmap <A-CR> V:call VimuxSlime()<CR>
-    vmap <A-CR> :call VimuxSlime()<CR>gv
+    nmap <S-CR> :call VimuxSlime("Vip")<CR>})
+    vmap <S-CR> :call VimuxSlime("")<CR>j
+    nmap <A-CR> :call VimuxSlime("V")<CR>
+    vmap <A-CR> :call VimuxSlime("")<CR>gv
 endif
 " }}}
 

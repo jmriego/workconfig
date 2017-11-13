@@ -63,6 +63,10 @@ endfunction
 " @return selected text
 function! GetSelectedText(...) abort
     let mode = get(a:, 1, mode(1))
+    if mode == 'gv'
+        normal! gv
+        let mode = mode(1)
+    endif
     let g:modetmp = mode
     let end_col = s:curswant() is s:INT.MAX ? s:INT.MAX : s:get_col_in_visual('.')
     let current_pos = [line('.'), end_col]
