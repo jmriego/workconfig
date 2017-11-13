@@ -214,6 +214,18 @@ function! RelNumberToggle()
     set relativenumber
   endif
 endfunc
+
+function! GetScriptNumber(script_name)
+    redir => s:scriptnames
+    silent! scriptnames
+    redir END
+
+    for script in split(s:scriptnames, "\n")
+        if script =~ a:script_name
+            return str2nr(split(script, ":")[0])
+        endif
+    endfor
+endfunction
 " }}}
 
 " File search settings {{{
@@ -299,31 +311,70 @@ if &runtimepath =~ 'vim-ipython'
     let g:ipy_completefunc = 'global'
     let g:ipy_monitor_subchannel = 1
 
-    function! IPythonRunLines()
-        " run the selected lines removing unnecesary indent
-        let lines = split(GetSelectedText(1), '\n')
-        let dedented_lines = []
-        for line in lines
-            if !exists('first_line_indent') || first_line_indent < 0
-                let first_line_indent = match(line, '\S')
-            endif
-            if first_line_indent >= 0
-                call add(dedented_lines, strpart(line, first_line_indent))
-            endif
-        endfor
-        silent Python2or3 run_command('\n'.join(vim.eval('dedented_lines')))
+    " Run selected text or select python cell and run it
+    " it accepts two parameters
+    "   change_selection = line|cell to make a selection of a line or a cell
+    "   selection_post = after running selected code: deselect|next_cell|next_line
+    function! IPythonRunLines(...) range
+        let change_selection = a:0 >= 1 ? a:1 : ''
+        let selection_post = a:0 >= 2 ? a:2 : ''
+        let is_visual = mode(1) =~# "[vV\<C-v>]"
+        let press_keys = ""
+        
+        " if we are in normal mode run line or cell
+        if change_selection == 'line'
+            Python2or3 run_this_line()
+        elseif change_selection == 'cell'
+            let python_cell_userobj_snr = GetScriptNumber('python_cell_userobj.vim')
+            let press_keys = "Vic\<Plug>(IPython-RunLines)"
+            let press_keys .= ":call cursor(" . line('.') . "," . col('.') . ")\<CR>"
+        " if there is something selected, run the selection
+        elseif is_visual
+            " run the selected lines removing unnecesary indent
+            let lines = split(GetSelectedText(), '\n')
+            let dedented_lines = []
+            for line in lines
+                if !exists('first_line_indent') || first_line_indent < 0
+                    let first_line_indent = match(line, '\S')
+                endif
+                if first_line_indent >= 0
+                    call add(dedented_lines, strpart(line, first_line_indent))
+                endif
+            endfor
+            silent Python2or3 run_command('\n'.join(vim.eval('dedented_lines')))
+        else
+            return
+        endif
+
+        let refresh_command = ":sleep 500m\<CR>\<Plug>(IPython-UpdateShell-Silent)"
+        if selection_post == 'deselect'
+            return press_keys . "\<Esc>" . refresh_command
+        elseif selection_post == 'next_cell'
+            return press_keys . "]c" . refresh_command
+        elseif selection_post == 'next_line'
+            return "\<Esc>+" . refresh_command
+        elseif is_visual
+            return "\<Esc>" . refresh_command . "gv"
+        else
+            return press_keys . refresh_command
+        endif
     endfunction
 
-    noremap  <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
-    autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
+    function! IPythonInputLoop()
+        IPythonInput
+        Python2or3 vim.command('let current_stdin_prompt = {}'.format(current_stdin_prompt))
+    endfunction
 
-    autocmd FileType python nmap <buffer> <C-CR> Vic<Plug>(IPython-RunLines)<C-o>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python xmap <expr> <buffer> <C-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python nmap <buffer> <S-CR> Vic<Plug>(IPython-RunLines)jjvico<Esc>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python xmap <expr> <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)jj
-    autocmd FileType python nmap <buffer> <A-CR> <Plug>(IPython-RunLine):sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python xmap <expr> <buffer> <S-CR> :<C-u>call IPythonRunLines()<CR>:sleep 500m<CR><Plug>(IPython-UpdateShell-Silent)gv
+    noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
+    autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
+    autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
+
+    autocmd FileType python nmap <buffer> <expr> <C-CR> IPythonRunLines('cell')
+    autocmd FileType python xmap <buffer> <expr> <C-CR> IPythonRunLines('', 'deselect')
+    autocmd FileType python nmap <buffer> <expr> <S-CR> IPythonRunLines('cell', 'next_cell')
+    autocmd FileType python xmap <buffer> <expr> <S-CR> IPythonRunLines('', 'next_line')
+    autocmd FileType python nmap <buffer> <expr> <A-CR> IPythonRunLines('line')
+    autocmd FileType python xmap <buffer> <expr> <A-CR> IPythonRunLines()
 
     noremap <Leader>k :IPython<CR>
     autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
