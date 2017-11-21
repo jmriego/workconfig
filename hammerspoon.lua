@@ -26,6 +26,7 @@ key_params = {
     ["x"] = "Microsoft Excel";
     ["w"] = "Microsoft Word";
     ["o"] = "Oracle Data Modeler";
+    ["b"] = "DBeaver";
     ["k"] = "Slack";
     ["s"] = "Spotify"
 }
