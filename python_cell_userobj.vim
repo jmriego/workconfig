@@ -125,20 +125,62 @@ function! g:PythonCellObject(object_type)
     call s:python_cell_object(a:object_type)
 endfunction
 
+function! s:scroll_show(numline)
+    if line("w0") > a:numline
+        let zt_line = a:numline
+        let i = 1
+        while i <= &scrolloff
+            let zt_line = zt_line + 1
+            if foldclosedend(zt_line) > 0
+                let zt_line = foldclosedend(zt_line)
+            endif
+            let i = i + 1
+        endwhile
+        if zt_line > 0
+            execute "normal! " . zt_line . "zt"
+        endif
+    elseif line("w$") < a:numline
+        let zb_line = a:numline
+        let i = 1
+        while i <= &scrolloff
+            let zb_line = zb_line - 1
+            if foldclosed(zb_line) > 0
+                let zb_line = foldclosed(zb_line)
+            endif
+            let i = i + 1
+        endwhile
+        if zb_line > 0
+            execute "normal! " . zb_line . "zb"
+        endif
+    endif
+endfunction
+
 function! GotoPreviousCell()
     let start_current_cell = s:python_cell_object('a')[1]
-    call setpos('.', [0, start_current_cell[1]-1, 1, 0])
+    let end_previous_cell = [0, s:line_of_pos(start_current_cell)-1, 1, 0]
+    call s:scroll_show(s:line_of_pos(end_previous_cell))
+    call setpos('.', end_previous_cell)
+
+    let header_previous_cell = s:python_cell_object('a')[1]
+    call s:scroll_show(s:line_of_pos(header_previous_cell))
+
     let start_previous_cell = s:python_cell_object('i')[1]
-    call setpos('.', [0, start_previous_cell[1], 1, 0])
+    call setpos('.', start_previous_cell)
+    execute "normal! ". s:line_of_pos(start_previous_cell) ."G"
 endfunction
 
 function! GotoNextCell()
     let end_current_cell = s:python_cell_object('a')[2]
-    call setpos('.', [0, end_current_cell[1]+1, 1, 0])
-    if line('.') < line('$')
-        let start_next_cell = s:python_cell_object('i')[1]
-        call setpos('.', [0, start_next_cell[1], 1, 0])
-    endif
+    let start_next_cell = [0, s:line_of_pos(end_current_cell)+1, 1, 0]
+    call s:scroll_show(s:line_of_pos(start_next_cell))
+    call setpos('.', start_next_cell)
+
+    let end_next_cell = s:python_cell_object('a')[2]
+    call s:scroll_show(s:line_of_pos(end_next_cell))
+
+    let start_next_cell = s:python_cell_object('i')[1]
+    call setpos('.', start_next_cell)
+    execute "normal! ". s:line_of_pos(start_next_cell) ."G"
 endfunction
 
 function! s:move_cursor_to_starting_line()
