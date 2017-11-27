@@ -137,6 +137,7 @@ set wrap
 set nowrapscan
 set backspace=indent
 set tagcase=match
+set diffopt=filler,vertical
 
 " Set whitespace options
 set tabstop=4
@@ -312,26 +313,14 @@ if &runtimepath =~ 'vim-ipython'
     let g:ipy_monitor_subchannel = 1
 
     " Run selected text or select python cell and run it
-    " it accepts two parameters
-    "   change_selection = line|cell to make a selection of a line or a cell
-    "   selection_post = after running selected code: deselect|next_cell|next_line
+    "  It accepts a parameter with the keys to press to make a selection
     function! IPythonRunLines(...) range
-        let change_selection = a:0 >= 1 ? a:1 : ''
-        let selection_post = a:0 >= 2 ? a:2 : ''
-        let is_visual = mode(1) =~# "[vV\<C-v>]"
-        let press_keys = ""
-        
-        " if we are in normal mode run line or cell
-        if change_selection == 'line'
-            Python2or3 run_this_line()
-        elseif change_selection == 'cell'
-            let python_cell_userobj_snr = GetScriptNumber('python_cell_userobj.vim')
-            let press_keys = "Vic\<Plug>(IPython-RunLines)"
-            let press_keys .= ":call cursor(" . line('.') . "," . col('.') . ")\<CR>"
-        " if there is something selected, run the selection
-        elseif is_visual
+        let select_command = a:0 < 1 ? '' : substitute(a:1, '\(<[A-Za-z-()]*>\)', '\\\1', 'g')
+        let winview = winsaveview()
+        if select_command == ""
+            " this would mean there was already selected text
             " run the selected lines removing unnecesary indent
-            let lines = split(GetSelectedText(), '\n')
+            let lines = split(GetSelectedText("gv"), '\n')
             let dedented_lines = []
             for line in lines
                 if !exists('first_line_indent') || first_line_indent < 0
@@ -343,21 +332,30 @@ if &runtimepath =~ 'vim-ipython'
             endfor
             silent Python2or3 run_command('\n'.join(vim.eval('dedented_lines')))
         else
-            return
+            " save the current selection and go back to where we were
+            normal! gv
+            let prev_visual_mode = visualmode()
+            let prev_left_visual = getpos("'<")
+            let prev_right_visual = getpos("'>")
+            execute "normal! \<Esc>"
+            call winrestview(winview)
+            " make a selection with the specified keys
+            execute "normal " . select_command
+            execute "normal \<Plug>(IPython-RunLines)"
+            " restore previous visual selection
+            if prev_visual_mode != ""
+                execute "normal! \<Esc>"
+                execute "normal " . prev_visual_mode
+                execute "normal! \<Esc>"
+                call setpos("'<", prev_left_visual)
+                call setpos("'>", prev_right_visual)
+                execute "normal! gv"
+            endif
         endif
-
-        let refresh_command = ":sleep 500m\<CR>\<Plug>(IPython-UpdateShell-Silent)"
-        if selection_post == 'deselect'
-            return press_keys . "\<Esc>" . refresh_command
-        elseif selection_post == 'next_cell'
-            return press_keys . "]c" . refresh_command
-        elseif selection_post == 'next_line'
-            return "\<Esc>+" . refresh_command
-        elseif is_visual
-            return "\<Esc>" . refresh_command . "gv"
-        else
-            return press_keys . refresh_command
-        endif
+        execute "normal! \<Esc>"
+        call winrestview(winview)
+        sleep 500m
+        execute "normal \<Plug>(IPython-UpdateShell-Silent)"
     endfunction
 
     function! IPythonInputLoop()
@@ -369,12 +367,12 @@ if &runtimepath =~ 'vim-ipython'
     autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
     autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 
-    autocmd FileType python nmap <buffer> <expr> <C-CR> IPythonRunLines('cell')
-    autocmd FileType python xmap <buffer> <expr> <C-CR> IPythonRunLines('', 'deselect')
-    autocmd FileType python nmap <buffer> <expr> <S-CR> IPythonRunLines('cell', 'next_cell')
-    autocmd FileType python xmap <buffer> <expr> <S-CR> IPythonRunLines('', 'next_line')
-    autocmd FileType python nmap <buffer> <expr> <A-CR> IPythonRunLines('line')
-    autocmd FileType python xmap <buffer> <expr> <A-CR> IPythonRunLines()
+    autocmd FileType python nmap <buffer> <C-CR> :call IPythonRunLines("Vic")<CR>
+    autocmd FileType python xmap <buffer> <C-CR> :call IPythonRunLines()<CR>
+    autocmd FileType python nmap <buffer> <S-CR> :call IPythonRunLines("Vic")<CR>]c
+    autocmd FileType python xmap <buffer> <S-CR> :call IPythonRunLines()<CR>+
+    autocmd FileType python nmap <buffer> <A-CR> :call IPythonRunLines("V")<CR>
+    autocmd FileType python xmap <buffer> <A-CR> :call IPythonRunLines()<CR>gv
 
     noremap <Leader>k :IPython<CR>
     autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
@@ -488,31 +486,49 @@ if &runtimepath =~ 'vimux'
     map <Leader>vi :VimuxInspectRunner<CR>
     map <Leader>vz :VimuxZoomRunner<CR>
 
+    " Run selected range through vimux
+    "  It accepts a parameter with the keys to press to make a selection
     function! VimuxSlime(...) range
         let select_command = a:0 < 1 ? '' : substitute(a:1, '\(<[A-Za-z-()]*>\)', '\\\1', 'g')
-        let l:winview = winsaveview()
-        if select_command != ""
+        let winview = winsaveview()
+        if select_command == ""
+            " this would mean there was already selected text
+            let s:selected_text = GetSelectedText("gv")
+        else
+            " save the current selection and go back to where we were
+            normal! gv
+            let prev_visual_mode = visualmode()
+            let prev_left_visual = getpos("'<")
+            let prev_right_visual = getpos("'>")
+            execute "normal! \<Esc>"
+            call winrestview(winview)
+            " make a selection with the specified keys
             execute "normal " . select_command
+            let s:selected_text = GetSelectedText()
+            " restore previous visual selection
+            if prev_visual_mode != ""
+                execute "normal " . prev_visual_mode
+                execute "normal! \<Esc>"
+                call setpos("'<", prev_left_visual)
+                call setpos("'>", prev_right_visual)
+                execute "normal! gv"
+            endif
         endif
-        let s:selected_text = GetSelectedText('gv')
-        execute "normal <Esc>"
+        execute "normal! \<Esc>"
         call VimuxSendText(s:selected_text)
         if s:selected_text !~ '\n$'
             call VimuxSendKeys("Enter")
         endif
 
-        call winrestview(l:winview)
-        if post_command != ""
-            execute "normal! " . post_command
-        endif
+        call winrestview(winview)
     endfunction
 
     nmap <C-CR> :call VimuxSlime("Vip")<CR>
-    vmap <C-CR> :call VimuxSlime()<CR>
+    xmap <C-CR> :call VimuxSlime()<CR>
     nmap <S-CR> :call VimuxSlime("Vip")<CR>})
-    vmap <S-CR> :call VimuxSlime("")<CR>j
+    xmap <S-CR> :call VimuxSlime()<CR>j
     nmap <A-CR> :call VimuxSlime("V")<CR>
-    vmap <A-CR> :call VimuxSlime("")<CR>gv
+    xmap <A-CR> :call VimuxSlime()<CR>gv
 endif
 " }}}
 
