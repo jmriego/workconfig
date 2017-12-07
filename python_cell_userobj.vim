@@ -88,14 +88,20 @@ function! s:python_cell_object(object_type)
     " if we find it, the next line would be the start
     if len(prev_marker) > 0
         if a:object_type ==? 'a'
+            " select a cell
+            " mark start of current cell
             call cursor(prev_marker[0], 1)
             let start_selection = getcurpos()
+            " go to the next line after the current header/marker
+            " that will make easier to search for the end of this cell
             call cursor(prev_marker[1] + 1, 1)
+            " if we are already in the last line. select only it
             if line('$') <= prev_marker[1]
                 let end_selection = getcurpos()
                 return ['V', start_selection, end_selection]
             endif
         else
+            " select i cell
             if line('$') > prev_marker[1]
                 call cursor(prev_marker[1] + 1, 1)
                 let start_selection = getcurpos()
@@ -103,17 +109,20 @@ function! s:python_cell_object(object_type)
                 return 0
             endif
         endif
-        call cursor(prev_marker[1] + 1, 1)
     else
+        " no previous marker found. select to start of file
         call cursor(1, 1)
         let start_selection = getcurpos()
     endif
 
+    " end of the current cell
     let next_marker = s:search_cell_marker('')
     if len(next_marker) > 0
-        call cursor(next_marker[1]-1, 1)
+        " line before start of next cell marker
+        call cursor(next_marker[0]-1, 1)
         let end_selection = getcurpos()
     else
+        " no next cell found. end at end of file
         call cursor(line('$'), 1)
         let end_selection = getcurpos()
     endif
