@@ -19,10 +19,8 @@ key_params = {
     ["n"] = "Notes";
     ["e"] = "TextEdit";
     ["f"] = "Finder";
-    ["d"] = "Cyberduck";
     ["t"] = "iTerm";
-    ["p"] = "PSequel";
-    ["m"] = "Sequel Pro";
+    ["p"] = "Preview";
     ["x"] = "Microsoft Excel";
     ["w"] = "Microsoft Word";
     ["o"] = "Oracle Data Modeler";
@@ -32,11 +30,13 @@ key_params = {
 }
 
 
-function leftClick(point)
-    print(point.x .. ' , ' .. point.y)
+function mouseClick(button, point)
+    local button = button or "left"
+    local point = point or hs.mouse.getAbsolutePosition()
+    print(button .. '@' .. point.x .. ' , ' .. point.y)
     local clickState = hs.eventtap.event.properties.mouseEventClickState
-    hs.eventtap.event.newMouseEvent(hs.eventtap.event.types["leftMouseDown"], point):setProperty(clickState, 1):post()
-    hs.eventtap.event.newMouseEvent(hs.eventtap.event.types["leftMouseUp"], point):setProperty(clickState, 1):post()
+    hs.eventtap.event.newMouseEvent(hs.eventtap.event.types[(button .. "MouseDown")], point):setProperty(clickState, 1):post()
+    hs.timer.doAfter(0.1, function() hs.eventtap.event.newMouseEvent(hs.eventtap.event.types[(button .. "MouseUp")], point):setProperty(clickState, 1):post(); end)
 end
 
 function launchOrFocus(app_win_inc)
@@ -48,7 +48,7 @@ function launchOrFocus(app_win_inc)
         win = ''
         inclusive = true
     else
-    print(app_win_inc)
+        print(app_win_inc)
         app = app_win_inc[1]
         win = app_win_inc[2]
         inclusive = app_win_inc[3]
@@ -187,8 +187,17 @@ e:stop()
 -- Music control
 hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
 hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
-hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
-hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
+
+event_mm = hs.eventtap.new({hs.eventtap.event.types.otherMouseDown}, function(event)
+    mouse_button_pressed = event:getProperty(hs.eventtap.event.properties.mouseEventButtonNumber)
+    if mouse_button_pressed == 2 then
+        local ptMouse = hs.mouse.getAbsolutePosition()
+        event_mm:stop()
+        hs.timer.doAfter(0.0, function() mouseClick("middle", ptMouse); event_mm:start(); end)
+    end
+    return true
+end)
+event_mm:start()
 
 -- Switch to Google Chrome and press ctrl+. for Tabli
 hs.hotkey.bind({'cmd'}, '.', function()
@@ -202,7 +211,6 @@ k = hs.hotkey.modal.new('', 'F20')
 
 for index, value in pairs(key_params) do
     k:bind('', index, function()
-
         launchOrFocus(value)
 
         -- special tasks needed after switching to certain apps
@@ -246,6 +254,6 @@ function k:exited()
     if point_click ~= nil
     then
         print(point_click)
-        hs.timer.doAfter(0.1, function() leftClick(point_click); point_click=nil; end)
+        hs.timer.doAfter(0.1, function() mouseClick("left", point_click); point_click=nil; end)
     end
 end
