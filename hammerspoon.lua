@@ -19,7 +19,7 @@ key_params = {
     ["n"] = "Notes";
     ["e"] = "TextEdit";
     ["f"] = "Finder";
-    ["t"] = "iTerm";
+    ["t"] = "iTerm2";
     ["p"] = "Preview";
     ["x"] = "Microsoft Excel";
     ["w"] = "Microsoft Word";
@@ -54,27 +54,19 @@ function launchOrFocus(app_win_inc)
         inclusive = app_win_inc[3]
     end
 
-    local app_windows = hs.window.filter.new(app)
-    -- local app_main_window = hs.application.get(app):mainWindow()
+    local all_windows = hs.window.filter.new(true)
 
-    for k, window in pairs(app_windows:getWindows()) do
-        local title = window:title()
-        print(title)
-        if title:len() > 0 and (title:find(win)==nil) ~= inclusive and found_window==nil
+    for k, window in pairs(all_windows:getWindows()) do
+        print(window:application():name())
+        if window:application():name() == app
         then
-            found_window = window
-        -- found_window:becomeMain()
-        found_window:application():activate(false)
-        -- app_main_window:becomeMain()
-
-        --
-            -- found_window:raise()
-            -- print('focus')
-            -- for some reason hangouts tends to lose focus just after gaining it first
-            -- hs.timer.doAfter(0.5, function() found_window:focus(); end)
-        -- else
-        --     window:sendToBack()
-        --     print('focus')
+            local title = window:title()
+            print(title)
+            if title:len() > 0 and (title:find(win)==nil) ~= inclusive and found_window==nil
+            then
+                found_window = window
+                found_window:application():activate(false)
+            end
         end
     end
 
