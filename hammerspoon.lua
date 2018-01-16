@@ -71,7 +71,7 @@ function launchOrFocus(app_win_inc)
         end
     end
 
-    hs.application.launchOrFocus(app)
+    hs.execute('open ' .. hs.application.find(app):path())
 end
 
 
