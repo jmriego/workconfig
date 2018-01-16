@@ -270,6 +270,7 @@ if &runtimepath =~ 'ctrlp.vim'
     nnoremap <Leader><C-]> :CtrlPTag<CR>
     nnoremap <C-\> :CtrlPBuffer<CR>
     nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
+    nnoremap <C-u> :CtrlPMRUFiles<CR>
 
     if executable('ag')
         " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
@@ -383,7 +384,7 @@ if &runtimepath =~ 'jedi-vim'
     let g:jedi#auto_vim_configuration = 0
     "let g:jedi#force_py_version = "3"
     let g:jedi#popup_select_first = 0
-    let g:jedi#completions_enabled = 1
+    let g:jedi#completions_enabled = 0
     let g:jedi#smart_auto_mappings = 0
     let g:jedi#auto_close_doc = 0
     let g:jedi#documentation_command = "<leader>D"
@@ -392,6 +393,8 @@ if &runtimepath =~ 'jedi-vim'
     let g:jedi#goto_command = "<leader>g"
     let g:jedi#popup_on_dot = 0
     let g:jedi#show_call_signatures = 0
+
+    autocmd FileType python setlocal omnifunc=jedi#completions
 endif
 
 " Plugin vim-flake
@@ -405,8 +408,8 @@ endif
 " lines starting with ##
 if &runtimepath =~ 'vim-textobj-user'
     exec 'source ' . expand('<sfile>:h') . '/' . 'python_cell_userobj.vim'
-    nnoremap <expr> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
-    nnoremap <expr> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
+    nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
+    nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 endif
 " }}}
 
@@ -419,6 +422,10 @@ set omnifunc=syntaxcomplete#Complete
 if &runtimepath =~ 'neocomplete'
     let g:neocomplete#enable_at_startup = 1
     let g:neocomplete#min_keyword_length = 1
+    let g:neocomplete#force_omni_input_patterns = {}
+    let g:neocomplete#force_omni_input_patterns.python =
+    \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
+    " alternative pattern: '\h\w*\|[^. \t]\.\w*'
     let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>"]
 endif
 " }}}
@@ -481,6 +488,7 @@ endif
 
 " Plugin benmills/vimux {{{
 if &runtimepath =~ 'vimux'
+    let g:VimuxUseNearest = 0
     map <Leader>vp :VimuxPromptCommand<CR>
     map <Leader>vl :VimuxRunLastCommand<CR>
     map <Leader>vi :VimuxInspectRunner<CR>
