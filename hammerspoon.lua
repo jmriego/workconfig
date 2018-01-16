@@ -23,9 +23,10 @@ key_params = {
     ["p"] = "Preview";
     ["x"] = "Microsoft Excel";
     ["w"] = "Microsoft Word";
-    ["o"] = "Oracle Data Modeler";
+    ["m"] = "Oracle Data Modeler";
     ["b"] = "DBeaver";
     ["k"] = "Slack";
+    ["r"] = "iBooks";
     ["s"] = "Spotify"
 }
 
@@ -57,22 +58,20 @@ function launchOrFocus(app_win_inc)
     local all_windows = hs.window.filter.new(true)
 
     for k, window in pairs(all_windows:getWindows()) do
-        print(window:application():name())
         if window:application():name() == app
         then
             local title = window:title()
-            print(title)
-            if title:len() > 0 and (title:find(win)==nil) ~= inclusive and found_window==nil
+            if title:len() > 0 and (title:find(win)==nil) ~= inclusive
             then
                 found_window = window
                 found_window:application():activate(false)
+                hs.timer.doAfter(0, function() hs.execute('open ' .. found_window:application():path()); end)
+                return
             end
         end
     end
 
-    if not found_window then
-        hs.application.launchOrFocus(app)
-    end
+    hs.application.launchOrFocus(app)
 end
 
 
@@ -86,15 +85,24 @@ function getCurrentWindowTitle()
 end
 
 -- is the value in the table?
-function has_value (tab, val)
---     for index, value in ipairs(tab) do
---         if value == val then
---             return true
---         end
---     end
---
---     return false
-    return tab[val] ~= nil
+function has_value(tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
+function index_of(tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return index
+        end
+    end
+
+    return false
 end
 
 
@@ -218,7 +226,7 @@ for index, value in pairs(key_params) do
         -- go to tab with Jira or open a new one
         if (index == "j")
         then
-            hs.execute('/usr/local/bin/chrome-cli activate -t $(/usr/local/bin/chrome-cli list links | grep "filter=50263" | grep -o "[0-9][0-9]*" | head -1) || /usr/local/bin/chrome-cli open "https://bugs.indeed.com/issues/?filter=50263"')
+            hs.execute('/usr/local/bin/chrome-cli activate -t $(/usr/local/bin/chrome-cli list links | grep "filter=50263" | grep -o "[0-9][0-9]*\\]" | head -1) || /usr/local/bin/chrome-cli open "https://bugs.indeed.com/issues/?filter=50263"')
         end
 
         k:exit()
@@ -245,7 +253,6 @@ function k:exited()
     hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
     if point_click ~= nil
     then
-        print(point_click)
         hs.timer.doAfter(0.1, function() mouseClick("left", point_click); point_click=nil; end)
     end
 end
