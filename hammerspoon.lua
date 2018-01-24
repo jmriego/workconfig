@@ -3,6 +3,10 @@ spaces = require("hs._asm.undocumented.spaces")
 --detect when mission control is opening with just a short countdown
 point_click = nil -- point in current screen to click on
 
+-- mission control timer. for opening it if there was no choice made after 1 second
+mission_control_soon = hs.timer.doAfter(0.1, function() hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil):start(); end)
+mission_control_soon:stop()
+
 -- timer that tells whether screen is animating and I can't do anything else
 animating = nil
 animating = hs.timer.new(0.4, function() animating:stop(); end)
@@ -17,6 +21,7 @@ visible_spaces = nil
 function after_gmail()
     gmail_frame = hs.window.focusedWindow():frame()
     point_click = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+gmail_frame["h"]-15.0}
+    mouseClick("left", point_click)
 end
 
 -- go to tab with Jira or open a new one
@@ -265,6 +270,9 @@ event_lmb:stop()
 for index, value in pairs(key_params) do
     modal_f20:bind('', index, function()
 
+        mission_control_opened = not mission_control_soon:running()
+        mission_control_soon:stop()
+
         if type(value) == 'string' then
             launchOrFocus(value)
             hs.alert(value)
@@ -274,36 +282,34 @@ for index, value in pairs(key_params) do
             hs.alert(value['app'])
         end
 
-        if value['after'] then
-            value['after']()
-        end
+        post_function = value['after'] or function(); end
 
+        if mission_control_opened then
+            hs.timer.waitUntil(
+                function() return not animating:running(); end,
+                function()
+                    animating:start()
+                    hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
+                    hs.timer.waitUntil(function() return not animating:running(); end, post_function, 0.1)
+                end,
+                0.1)
+        else
+            hs.timer.waitUntil(function() return not animating:running(); end, post_function, 0.1)
+        end
 
         modal_f20:exit()
     end)
 end
 
 
-function exit_mission_control()
-    -- hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
-    if point_click ~= nil
-    then
-        hs.timer.doAfter(0.1, function() mouseClick("left", point_click); point_click=nil; end)
-    end
-end
-
-
 function modal_f20:entered()
     all_spaces = spaces.layout()
     visible_spaces = active_spaces()
-    mission_control = hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil)
-    -- mission_control:start() -- no key will be proccessed until this timer finishes
+    mission_control_soon:start()
     event_lmb:start()
 end
 
 
 function modal_f20:exited()
     event_lmb:stop()
-
-    hs.timer.waitUntil(function() return not animating:running(); end, function() exit_mission_control(); end, 0.1)
 end
