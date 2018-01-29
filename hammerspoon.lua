@@ -3,13 +3,24 @@ spaces = require("hs._asm.undocumented.spaces")
 --detect when mission control is opening with just a short countdown
 point_click = nil -- point in current screen to click on
 
--- mission control timer. for opening it if there was no choice made after 1 second
-mission_control_soon = hs.timer.doAfter(0.1, function() hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil):start(); end)
-mission_control_soon:stop()
-
 -- timer that tells whether screen is animating and I can't do anything else
 animating = nil
-animating = hs.timer.new(0.4, function() animating:stop(); end)
+function animating_timer()
+    local seconds = 0.5
+    if animating == nil then
+        animating = hs.timer.new(seconds, function() animating:stop(); end)
+    elseif animating:running() then
+        animating:setNextTrigger(seconds)
+    else
+        animating:start()
+    end
+end
+animating_timer()
+
+
+-- mission control timer. for opening it if there was no choice made after 1 second
+mission_control_soon = hs.timer.doAfter(0.2, function() hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil):start(); animating_timer(); end)
+mission_control_soon:stop()
 
 found_window = nil
 all_spaces = nil
@@ -47,7 +58,7 @@ key_params = {
     ["x"] = "Microsoft Excel";
     ["w"] = "Microsoft Word";
     ["m"] = "Oracle Data Modeler";
-    ["b"] = "DBeaver";
+    ["d"] = "DBeaver";
     ["k"] = "Slack";
     ["r"] = "iBooks";
     ["s"] = "Spotify"
@@ -118,12 +129,14 @@ function launchOrFocus(app, win, inclusive)
                     if found_window_space_pos > visible_space_pos then
                         for i = visible_space_pos,found_window_space_pos,1 do
                             hs.eventtap.keyStroke({'ctrl'}, "right")
-                            animating:start()
+                            animating_timer()
                         end
                     elseif found_window_space_pos < visible_space_pos then
                         for i = visible_space_pos,found_window_space_pos,-1 do
                             hs.eventtap.keyStroke({'ctrl'}, "left")
-                            animating:start()
+                            if found_window_space_pos > 1 then
+                                animating_timer()
+                            end
                         end
                     end
 
@@ -256,8 +269,22 @@ end)
 modal_f20 = hs.hotkey.modal.new('', 'F20')
 
 -- if pressing escape key exit from modal mode
-modal_f20:bind('', 'escape', function() modal_f20:exit(); end)
--- if clicking with LMB exit from modal mode
+-- and also press escape if mission control is opened (or opening)
+modal_f20:bind('', 'escape', function()
+        modal_f20:exit()
+        if mission_control_soon:running() then
+            mission_control_soon:stop()
+        else
+            hs.timer.waitUntil(
+                function() return not animating:running(); end,
+                function()
+                    hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
+                end,
+                0.1)
+        end
+    end)
+
+-- if clicking with LMB exit from modal mode and just let the user manage mission control
 event_lmb = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
     event_lmb:stop()
     hs.timer.doAfter(0.1, function() modal_f20:exit(); end)
@@ -288,8 +315,8 @@ for index, value in pairs(key_params) do
             hs.timer.waitUntil(
                 function() return not animating:running(); end,
                 function()
-                    animating:start()
                     hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
+                    animating_timer()
                     hs.timer.waitUntil(function() return not animating:running(); end, post_function, 0.1)
                 end,
                 0.1)
