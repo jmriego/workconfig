@@ -233,7 +233,7 @@ endfunction
 " The Silver Searcher
 if executable('ag')
   " Use ag over grep
-  " set grepprg=ag\ --nogroup\ --nocolor
+  set grepprg=ag\ --nogroup\ --nocolor
 endif
 
 " Ignore these files. It also affects ctrlp
@@ -270,7 +270,6 @@ if &runtimepath =~ 'ctrlp.vim'
     nnoremap <Leader><C-]> :CtrlPTag<CR>
     nnoremap <C-\> :CtrlPBuffer<CR>
     nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
-    nnoremap <C-u> :CtrlPMRUFiles<CR>
 
     if executable('ag')
         " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
@@ -375,6 +374,7 @@ if &runtimepath =~ 'vim-ipython'
     autocmd FileType python nmap <buffer> <A-CR> :call IPythonRunLines("V")<CR>
     autocmd FileType python xmap <buffer> <A-CR> :call IPythonRunLines()<CR>gv
 
+    noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
     noremap <Leader>k :IPython<CR>
     autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
 endif
