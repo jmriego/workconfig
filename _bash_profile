@@ -48,4 +48,5 @@ fi
 
 # activate python virtualenv if it matches current tmux session name
 TMUX_SESSION_NAME="$(tmux_session_name)"
-[[ -n $TMUX_SESSION_NAME ]] && lsvirtualenv -b 2>/dev/null | grep -q "^$TMUX_SESSION_NAME$" && workon $TMUX_SESSION_NAME
+TMUX_VENV="$(tmux show-environment -g TMUX_VENV 2>/dev/null)"
+[[ -n $TMUX_SESSION_NAME && -n $TMUX_VENV ]] && lsvirtualenv -b 2>/dev/null | grep -q "^$TMUX_SESSION_NAME$" && workon $TMUX_SESSION_NAME
