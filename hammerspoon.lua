@@ -238,6 +238,12 @@ hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Up", function()
   win:setFrame(f)
 end)
 
+-- make window take the entire screen
+hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Return", function()
+  local win = hs.window.focusedWindow()
+  win:setFullScreen(not win:isFullScreen())
+end)
+
 
 -- ---------------
 -- bind shortcuts
