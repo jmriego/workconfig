@@ -1,30 +1,9 @@
-spaces = require("hs._asm.undocumented.spaces")
-
---detect when mission control is opening with just a short countdown
-point_click = nil -- point in current screen to click on
-
--- timer that tells whether screen is animating and I can't do anything else
-animating = nil
-function animating_timer()
-    local seconds = 0.5
-    if animating == nil then
-        animating = hs.timer.new(seconds, function() animating:stop(); end)
-    elseif animating:running() then
-        animating:setNextTrigger(seconds)
-    else
-        animating:start()
-    end
-end
-animating_timer()
-
-
--- mission control timer. for opening it if there was no choice made after 1 second
-mission_control_soon = hs.timer.doAfter(0.2, function() hs.task.new("/Applications/Mission Control.app/Contents/MacOS/Mission Control", nil):start(); animating_timer(); end)
-mission_control_soon:stop()
-
-found_window = nil
-all_spaces = nil
-visible_spaces = nil
+require('hammerspoon.utils')
+require('hammerspoon.spaces')
+require('hammerspoon.events')
+require('hammerspoon.interact')
+require('hammerspoon.windows')
+require('hammerspoon.notifications')
 
 -- special tasks needed after switching to certain apps
 
@@ -43,8 +22,6 @@ end
 -- keyboard keys to be used in mission control and the program/window to open
 -- the name of the app should be the names found in Applications folder
 key_params = {
-    -- ["g"] = {["app"]="Google Chrome", ["win"]="Google Hangouts", ["inclusive"]=false};
-    -- ["h"] = {["app"]="Google Chrome", ["win"]="Google Hangouts", ["inclusive"]=true};
     ["i"] = "Google Chrome";
     ["j"] = {["app"] = "Google Chrome", ["after"]=after_jira};
     ["h"] = "YakYak";
@@ -63,185 +40,27 @@ key_params = {
     ["r"] = "iBooks";
     ["s"] = "Spotify"
 }
-
-
-function mouseClick(button, point, modifiers)
-    local button = button or "left"
-    local point = point or hs.mouse.getAbsolutePosition()
-    local modifiers = modifiers
-    print(button .. '@' .. point.x .. ' , ' .. point.y)
-    local clickState = hs.eventtap.event.properties.mouseEventClickState
-    hs.eventtap.event.newMouseEvent(hs.eventtap.event.types[(button .. "MouseDown")], point, modifiers):setProperty(clickState, 1):post()
-    hs.timer.doAfter(0.1, function() hs.eventtap.event.newMouseEvent(hs.eventtap.event.types[(button .. "MouseUp")], point):setProperty(clickState, 1):post(); end)
-end
-
-function moveCenterScreen(screen)
-    local rect = screen:fullFrame()
-    local center = hs.geometry.rectMidPoint(rect)
-    hs.mouse.setAbsolutePosition(center)
-end
-
-function index_of_space(sp)
-    local layout = spaces.layout()
-    for screen, spaces in pairs(layout) do
-        position = index_of(spaces, sp)
-        if position then
-            return position
-        end
-    end
-    return false
-end
-
-function active_spaces()
-    local active_list = spaces.query(spaces.masks.currentSpaces)
-    local spaces_layout = spaces.layout()
-    local result = {}
-    for i, active_space in ipairs(active_list) do
-        for uuid, spaces in pairs(spaces_layout) do
-            if has_value(spaces, active_space) then
-                result[uuid] = active_space
-            end
-        end
-    end
-    return result
-end
-
-function launchOrFocus(app, win, inclusive)
-    local win = win or ''
-    local inclusive = inclusive==nil and true or inclusive
-
-    local all_windows = hs.window.filter.new(true)
-
-    for dummy, window in pairs(all_windows:getWindows()) do
-        if window:application():name() == app
-        then
-            local title = window:title()
-            if title:len() > 0 and (title:find(win)==nil) ~= inclusive
-            then
-                found_window = window
-                local found_window_space = found_window:spaces()[1] -- can it be in several spaces?
-                if not has_value(visible_spaces, found_window_space) then
-                    local found_window_space_pos = index_of_space(found_window_space)
-                    local visible_space_pos = index_of_space(visible_spaces[found_window:screen():spacesUUID()])
-                    local pt = hs.mouse.getAbsolutePosition()
-                    moveCenterScreen(window:screen())
-
-                    if found_window_space_pos > visible_space_pos then
-                        for i = visible_space_pos,found_window_space_pos,1 do
-                            hs.eventtap.keyStroke({'ctrl'}, "right")
-                            animating_timer()
-                        end
-                    elseif found_window_space_pos < visible_space_pos then
-                        for i = visible_space_pos,found_window_space_pos,-1 do
-                            hs.eventtap.keyStroke({'ctrl'}, "left")
-                            if found_window_space_pos > 1 then
-                                animating_timer()
-                            end
-                        end
-                    end
-
-                    hs.mouse.setAbsolutePosition(pt)
-                end
-                found_window:application():activate(false)
-                return
-            end
-        end
-    end
-
-    hs.application.launchOrFocus(app)
-end
-
-
--- is the value in the table?
-function has_value(tab, val)
-    for index, value in ipairs(tab) do
-        if value == val then
-            return true
-        end
-    end
-
-    return false
-end
-
-function index_of(tab, val)
-    for index, value in ipairs(tab) do
-        if value == val then
-            return index
-        end
-    end
-
-    return false
-end
-
-
--- Notifications
--- open -g "hammerspoon://show_notification?title=Pay Attenttion&text=I just finished this long proccess"
--- the title and text and optional parameters
-hs.urlevent.bind("show_notification", function(eventName, params)
-
-  if params["title"] then
-    notification_title=params["title"]
-  else
-    notification_title="Alert"
-  end
-
-  if params["text"] then
-    notification_text=params["text"]
-  else
-    notification_text="Alert"
-  end
-
-    hs.notify.new({title=notification_title, informativeText=notification_text}):send()
-end)
-
+assign_modal_hotkeys(key_params)
 
 -- Window Management
 -- move window to left half of current screen
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Left", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-  local screen = win:screen()
-  local max = screen:frame()
-
-  f.x = max.x
-  f.y = max.y
-  f.w = max.w / 2
-  f.h = max.h
-  win:setFrame(f)
+    split_window_left()
 end)
 
 -- move window to right half of current screen
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Right", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-  local screen = win:screen()
-  local max = screen:frame()
-
-  f.x = max.x + (max.w / 2)
-  f.y = max.y
-  f.w = max.w / 2
-  f.h = max.h
-  win:setFrame(f)
+    split_window_right()
 end)
 
 -- make window take the entire screen
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Up", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-  local screen = win:screen()
-  local max = screen:frame()
-
-  f.x = max.x
-  f.y = max.y
-  f.w = max.w
-  f.h = max.h
-  win:setFrame(f)
+    maximize_window()
 end)
 
 -- make window take the entire screen
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Return", function()
-  local win = hs.window.focusedWindow()
-  win:setFullScreen(not win:isFullScreen())
+    fullscreen_window()
 end)
 
 
@@ -253,96 +72,8 @@ end)
 hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
 hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
 
-event_mmb = hs.eventtap.new({hs.eventtap.event.types.otherMouseDown}, function(event)
-    mouse_button_pressed = event:getProperty(hs.eventtap.event.properties.mouseEventButtonNumber)
-    if mouse_button_pressed == 2 then
-        local ptMouse = hs.mouse.getAbsolutePosition()
-        event_mmb:stop()
-        hs.timer.doAfter(0.0, function() mouseClick("left", ptMouse, "cmd"); event_mmb:start(); end)
-    end
-    return true
-end)
-event_mmb:start()
-
 -- Switch to Google Chrome and press ctrl+. for Tabli
 hs.hotkey.bind({'cmd'}, '.', function()
     launchOrFocus("Google Chrome")
     hs.eventtap.keyStroke({'ctrl'}, ".")
 end)
-
-
--- app switching
-modal_f20 = hs.hotkey.modal.new('', 'F20')
-
--- if pressing escape key exit from modal mode
--- and also press escape if mission control is opened (or opening)
-modal_f20:bind('', 'escape', function()
-        modal_f20:exit()
-        if mission_control_soon:running() then
-            mission_control_soon:stop()
-        else
-            hs.timer.waitUntil(
-                function() return not animating:running(); end,
-                function()
-                    hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
-                end,
-                0.1)
-        end
-    end)
-
--- if clicking with LMB exit from modal mode and just let the user manage mission control
-event_lmb = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
-    event_lmb:stop()
-    hs.timer.doAfter(0.1, function() modal_f20:exit(); end)
-    return false
-end)
-event_lmb:stop()
-
-
--- Assign keypresses to apps while in modal mode
-for index, value in pairs(key_params) do
-    modal_f20:bind('', index, function()
-
-        mission_control_opened = not mission_control_soon:running()
-        mission_control_soon:stop()
-
-        if type(value) == 'string' then
-            launchOrFocus(value)
-            hs.alert(value)
-        else
-            local app = value['app']
-            launchOrFocus(value['app'], value['win'], value['inclusive'])
-            hs.alert(value['app'])
-        end
-
-        post_function = value['after'] or function(); end
-
-        if mission_control_opened then
-            hs.timer.waitUntil(
-                function() return not animating:running(); end,
-                function()
-                    hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
-                    animating_timer()
-                    hs.timer.waitUntil(function() return not animating:running(); end, post_function, 0.1)
-                end,
-                0.1)
-        else
-            hs.timer.waitUntil(function() return not animating:running(); end, post_function, 0.1)
-        end
-
-        modal_f20:exit()
-    end)
-end
-
-
-function modal_f20:entered()
-    all_spaces = spaces.layout()
-    visible_spaces = active_spaces()
-    mission_control_soon:start()
-    event_lmb:start()
-end
-
-
-function modal_f20:exited()
-    event_lmb:stop()
-end
