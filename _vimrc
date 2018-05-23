@@ -290,7 +290,7 @@ endif
 
 " Plugin tomtom/tcomment_vim {{{
 if &runtimepath =~ 'tcomment_vim'
-    let g:tcommentTextObjectInlineComment = 'iC'
+    let g:tcomment_textoject_inlinecomment = 'iC'
 endif
 " }}}
 
