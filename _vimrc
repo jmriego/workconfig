@@ -6,17 +6,15 @@ if has('python') || has ('python3')
     Plug 'SirVer/ultisnips'
     Plug 'davidhalter/jedi-vim'
     Plug 'wilywampa/vim-ipython'
+    Plug 'maralla/completor.vim'
+    Plug 'jmcantrell/vim-virtualenv'
+    Plug 'nvie/vim-flake8'
+    Plug 'tell-k/vim-autopep8'
 endif
-Plug 'jmcantrell/vim-virtualenv'
 Plug 'tmhedberg/SimpylFold'
 Plug 'Konfekt/FastFold'
-Plug 'nvie/vim-flake8'
-Plug 'tell-k/vim-autopep8'
 Plug 'kien/ctrlp.vim'
 Plug 'kana/vim-textobj-user'
-if has('lua')
-    Plug 'Shougo/neocomplete.vim'
-endif
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'christoomey/vim-tmux-navigator'
@@ -363,16 +361,21 @@ if &runtimepath =~ 'vim-ipython'
         Python2or3 vim.command('let current_stdin_prompt = {}'.format(current_stdin_prompt))
     endfunction
 
+    function! IPythonConnected()
+        Python2or3 vim.command('let g:ipy_connected = {}'.format(1 if kc else 0))
+        return g:ipy_connected
+    endfunction
+
     noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
     autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
     autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 
-    autocmd FileType python nmap <buffer> <C-CR> :call IPythonRunLines("Vic")<CR>
-    autocmd FileType python xmap <buffer> <C-CR> :call IPythonRunLines()<CR>
-    autocmd FileType python nmap <buffer> <S-CR> :call IPythonRunLines("Vic")<CR>]c
-    autocmd FileType python xmap <buffer> <S-CR> :call IPythonRunLines()<CR>+
-    autocmd FileType python nmap <buffer> <A-CR> :call IPythonRunLines("V")<CR>
-    autocmd FileType python xmap <buffer> <A-CR> :call IPythonRunLines()<CR>gv
+    autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>' : ':call VimuxSlime("Vip")<CR>'
+    autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
+    autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>]c' : ':call VimuxSlime("Vip")<CR>})'
+    autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>+' : ':call VimuxSlime()<CR>j'
+    autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines("V")<CR>' : ':call VimuxSlime("V")<CR>'
+    autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
 
     noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
     noremap <Leader>k :IPython<CR>
@@ -395,6 +398,15 @@ if &runtimepath =~ 'jedi-vim'
     let g:jedi#show_call_signatures = 0
 
     autocmd FileType python setlocal omnifunc=jedi#completions
+endif
+
+if &runtimepath =~ 'completor.nvim'
+    if has('win32')  || has('win64')
+        let s:path_python = systemlist('where python')
+    else
+        let s:path_python = systemlist('which python')
+    endif
+    let g:python_host_prog = s:path_python[0]
 endif
 
 " Plugin vim-flake
@@ -488,12 +500,20 @@ endif
 
 " Plugin benmills/vimux {{{
 if &runtimepath =~ 'vimux'
-    let g:VimuxUseNearest = 0
     map <Leader>vp :VimuxPromptCommand<CR>
     map <Leader>vl :VimuxRunLastCommand<CR>
     map <Leader>vi :VimuxInspectRunner<CR>
     map <Leader>vz :VimuxZoomRunner<CR>
+    map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
 
+    nmap <C-CR> :call VimuxSlime("Vip")<CR>
+    xmap <C-CR> :call VimuxSlime()<CR>
+    nmap <S-CR> :call VimuxSlime("Vip")<CR>})
+    xmap <S-CR> :call VimuxSlime()<CR>j
+    nmap <A-CR> :call VimuxSlime("V")<CR>
+    xmap <A-CR> :call VimuxSlime()<CR>gv
+
+    let g:VimuxUseNearest = 0
     " Run selected range through vimux
     "  It accepts a parameter with the keys to press to make a selection
     function! VimuxSlime(...) range
@@ -531,12 +551,11 @@ if &runtimepath =~ 'vimux'
         call winrestview(winview)
     endfunction
 
-    nmap <C-CR> :call VimuxSlime("Vip")<CR>
-    xmap <C-CR> :call VimuxSlime()<CR>
-    nmap <S-CR> :call VimuxSlime("Vip")<CR>})
-    xmap <S-CR> :call VimuxSlime()<CR>j
-    nmap <A-CR> :call VimuxSlime("V")<CR>
-    xmap <A-CR> :call VimuxSlime()<CR>gv
+    function! VimuxReusePrevious()
+        call _VimuxTmux("last-"._VimuxRunnerType())
+        let g:VimuxRunnerIndex = _VimuxTmuxIndex()
+        call _VimuxTmux("last-"._VimuxRunnerType())
+    endfunction
 endif
 " }}}
 
