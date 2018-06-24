@@ -400,7 +400,7 @@ if &runtimepath =~ 'jedi-vim'
     autocmd FileType python setlocal omnifunc=jedi#completions
 endif
 
-if &runtimepath =~ 'completor.nvim'
+if &runtimepath =~ 'completor.vim'
     if has('win32')  || has('win64')
         let s:path_python = systemlist('where python')
     else
@@ -424,11 +424,6 @@ if &runtimepath =~ 'vim-textobj-user'
     nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 endif
 " }}}
-
-" Completion and neocomplete Plugin {{{
-" Completion options
-set completeopt=longest,menuone
-set omnifunc=syntaxcomplete#Complete
 
 " Plugin neocomplete
 if &runtimepath =~ 'neocomplete'
