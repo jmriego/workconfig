@@ -31,6 +31,21 @@ Plug 'tomtom/tcomment_vim'
 call plug#end()
 " }}}
 
+" Load plugin configuration files loop {{{
+" for each plugin loaded above, load a file in vim/plugins with the name
+" <plugin name>.vim where plugin name is all after the slash in lowercase
+for plugin_name in g:plugs_order
+    let plugin_cfg_file = expand('<sfile>:h') . '/vim/plugins/' . plugin_name . '.vim' 
+    if plugin_cfg_file =~ '\.vim\.vim$'
+        let plugin_cfg_file = strpart(plugin_cfg_file, 0, strlen(plugin_cfg_file)-4)
+    endif
+
+    if filereadable(plugin_cfg_file)
+        exec 'source ' . plugin_cfg_file
+    endif
+endfor
+" }}}
+
 " Appearance {{{
 "hi CursorLine guibg=#303030
 syntax on
@@ -41,17 +56,6 @@ set linespace=0
 set ruler
 set showcmd
 
-" Plugin solarized
-if &runtimepath =~ 'solarized'
-    try
-        set background=light
-        let g:solarized_visibility = "high"
-        let g:solarized_contrast = "high"
-        let g:solarized_termcolors=16
-        colorscheme solarized
-    catch
-    endtry
-endif
 
 if exists('$TMUX') " set transparent background for tmux
     hi! Normal ctermbg=NONE
@@ -237,61 +241,6 @@ endif
 " Ignore these files. It also affects ctrlp
 set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe,*.pyc
 
-" Plugin ctrlp.vim
-if &runtimepath =~ 'ctrlp.vim'
-    let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-      \ 'file': '\v\.(exe|so|dll)$',
-      \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
-    \ }
-    let g:ctrlp_switch_buffer = 'eE'
-    let g:ctrlp_use_caching = 1
-    let g:ctrlp_working_path_mode = 'ra' " search project of current file
-    let g:ctrlp_by_filename = 1
-    " Let's use ag (or grep) instead of vim to search for files. Much faster
-    if executable('ag')
-        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-    endif
-
-    " Remove the possible extensions shown in CtrlP
-    func! CallCtrlP(...)
-        let g:ctrlp_ext_vars=[]
-        if a:0 > 0
-            CtrlP a:1
-        else
-            CtrlP
-        endif
-    endfunc
-
-    let g:ctrlp_cmd = 'call CallCtrlP()'
-    let g:ctrlp_map = '<Leader><C-p>'
-    nnoremap <Leader><C-]> :CtrlPTag<CR>
-    nnoremap <C-\> :CtrlPBuffer<CR>
-    nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
-
-    if executable('ag')
-        " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-        " ag is fast enough that CtrlP doesn't need to cache
-        let g:ctrlp_use_caching = 0
-    endif
-endif
-" }}}
-
-" Plugin vim-easy-align {{{
-" Start interactive EasyAlign in visual mode (e.g. vipga) and for a motion/text object (e.g. gaip)
-if &runtimepath =~ 'vim-easy-align'
-    xmap ga <Plug>(EasyAlign)
-    nmap ga <Plug>(EasyAlign)
-endif
-" }}}
-
-" Plugin tomtom/tcomment_vim {{{
-if &runtimepath =~ 'tcomment_vim'
-    let g:tcomment_textoject_inlinecomment = 'iC'
-endif
-" }}}
-
 " Python configuration and plugins {{{
 "Python files
 au BufNewFile,BufRead *.py
@@ -300,265 +249,6 @@ au BufNewFile,BufRead *.py
     \ set shiftwidth=4 |
     \ set expandtab |
     \ set autoindent
-
-" Plugin vim-ipython
-" <Leader>k to connect to IPython
-" <C-CR> to run current cell
-" <S-CR> to run current cell and move cursor to the next one
-if &runtimepath =~ 'vim-ipython'
-    let g:ipy_perform_mappings = 0
-    let g:ipy_completefunc = 'global'
-    let g:ipy_monitor_subchannel = 1
-
-    " Run selected text or select python cell and run it
-    "  It accepts a parameter with the keys to press to make a selection
-    function! IPythonRunLines(...) range
-        let select_command = a:0 < 1 ? '' : substitute(a:1, '\(<[A-Za-z-()]*>\)', '\\\1', 'g')
-        let winview = winsaveview()
-        if select_command == ""
-            " this would mean there was already selected text
-            " run the selected lines removing unnecesary indent
-            let lines = split(GetSelectedText("gv"), '\n')
-            let dedented_lines = []
-            for line in lines
-                if !exists('first_line_indent') || first_line_indent < 0
-                    let first_line_indent = match(line, '\S')
-                endif
-                if first_line_indent >= 0
-                    call add(dedented_lines, strpart(line, first_line_indent))
-                endif
-            endfor
-            silent Python2or3 run_command('\n'.join(vim.eval('dedented_lines')))
-        else
-            " save the current selection and go back to where we were
-            normal! gv
-            let prev_visual_mode = visualmode()
-            let prev_left_visual = getpos("'<")
-            let prev_right_visual = getpos("'>")
-            execute "normal! \<Esc>"
-            call winrestview(winview)
-            " make a selection with the specified keys
-            execute "normal " . select_command
-            execute "normal \<Plug>(IPython-RunLines)"
-            " restore previous visual selection
-            if prev_visual_mode != ""
-                execute "normal! \<Esc>"
-                execute "normal " . prev_visual_mode
-                execute "normal! \<Esc>"
-                call setpos("'<", prev_left_visual)
-                call setpos("'>", prev_right_visual)
-                execute "normal! gv"
-            endif
-        endif
-        execute "normal! \<Esc>"
-        call winrestview(winview)
-        sleep 500m
-        execute "normal \<Plug>(IPython-UpdateShell-Silent)"
-    endfunction
-
-    function! IPythonInputLoop()
-        IPythonInput
-        Python2or3 vim.command('let current_stdin_prompt = {}'.format(current_stdin_prompt))
-    endfunction
-
-    function! IPythonConnected()
-        Python2or3 vim.command('let g:ipy_connected = {}'.format(1 if kc else 0))
-        return g:ipy_connected
-    endfunction
-
-    noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
-    autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
-    autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
-
-    autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>' : ':call VimuxSlime("Vip")<CR>'
-    autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
-    autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>]c' : ':call VimuxSlime("Vip")<CR>})'
-    autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>+' : ':call VimuxSlime()<CR>j'
-    autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines("V")<CR>' : ':call VimuxSlime("V")<CR>'
-    autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
-
-    noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
-    noremap <Leader>k :IPython<CR>
-    autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
-endif
-
-" Plugin jedi-vim
-if &runtimepath =~ 'jedi-vim'
-    let g:jedi#auto_vim_configuration = 0
-    "let g:jedi#force_py_version = "3"
-    let g:jedi#popup_select_first = 0
-    let g:jedi#completions_enabled = 0
-    let g:jedi#smart_auto_mappings = 0
-    let g:jedi#auto_close_doc = 0
-    let g:jedi#documentation_command = "<leader>D"
-    let g:jedi#usages_command = "<leader>u"
-    let g:jedi#goto_assignments_command = ""
-    let g:jedi#goto_command = "<leader>g"
-    let g:jedi#popup_on_dot = 0
-    let g:jedi#show_call_signatures = 0
-
-    autocmd FileType python setlocal omnifunc=jedi#completions
-endif
-
-if &runtimepath =~ 'completor.vim'
-    if has('win32')  || has('win64')
-        let s:path_python = systemlist('where python')
-    else
-        let s:path_python = systemlist('which python')
-    endif
-    let g:python_host_prog = s:path_python[0]
-endif
-
-" Plugin vim-flake
-if &runtimepath =~ 'vim-flake8'
-    let g:flake8_cmd="flake8"
-endif
-" }}}
-
-" Plugin vim-textobj-user custom objects {{{
-" Create cell text objects which are regions of text delimited by
-" lines starting with ##
-if &runtimepath =~ 'vim-textobj-user'
-    exec 'source ' . expand('<sfile>:h') . '/' . 'python_cell_userobj.vim'
-    nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
-    nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
-endif
-" }}}
-
-" Plugin neocomplete
-if &runtimepath =~ 'neocomplete'
-    let g:neocomplete#enable_at_startup = 1
-    let g:neocomplete#min_keyword_length = 1
-    let g:neocomplete#force_omni_input_patterns = {}
-    let g:neocomplete#force_omni_input_patterns.python =
-    \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
-    " alternative pattern: '\h\w*\|[^. \t]\.\w*'
-    let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>"]
-endif
-" }}}
-
-" Plugin UltiSnips {{{
-if &runtimepath =~ 'ultisnips'
-    if has('win32')  || has('win64')
-        let g:UltiSnipsSnippetDir=$HOME.'/vimfiles/UltiSnips'
-    else
-        let g:UltiSnipsSnippetDir=$HOME.'/.vim/UltiSnips'
-    endif
-    let g:UltiSnipsExpandTrigger="<tab>"
-    let g:UltiSnipsJumpForwardTrigger="<tab>"
-    let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
-endif
-" }}}
-
-" Plugin vim-airline {{{
-if &runtimepath =~ 'vim-airline'
-    set laststatus=2
-    let g:airline_powerline_fonts = 1
-    let g:airline#extensions#tabline#enabled = 1
-
-    function! AirlineThemePatch(palette)
-    if g:airline_theme == 'solarized'
-        let a:palette.normal.airline_a = a:palette.insert.airline_a
-        "let a:palette.normal.airline_a = [ '#ffffff', '#268bd2', 255, 33 ]
-    endif
-    "for colors in values(a:palette.normal)
-    "  let colors[2] = 0
-    "endfor
-    endfunction
-    let g:airline_theme_patch_func = 'AirlineThemePatch'
-    let g:airline_mode_map = {
-        \ '__' : '-',
-        \ 'n'  : 'N',
-        \ 'i'  : 'I',
-        \ 'R'  : 'R',
-        \ 'c'  : 'C',
-        \ 'v'  : 'V',
-        \ 'V'  : 'V',
-        \ '' : 'V',
-        \ 's'  : 'S',
-        \ 'S'  : 'S',
-        \ '' : 'S',
-        \ }
-
-    let g:airline_section_z = airline#section#create(['%4l', '%{g:airline_symbols.linenr}', '%3v'])
-endif
-" }}}
-
-" Plugin git fugitive {{{
-if &runtimepath =~ 'vim-fugitive'
-    nnoremap <Leader>gd :Gdiff<CR>
-    nnoremap <Leader>gs :Gstatus<CR>
-    nnoremap <Leader>gb :Gblame<CR>
-    nnoremap <Leader>gl :Glog<CR>
-endif
-" }}}
-
-" Plugin benmills/vimux {{{
-if &runtimepath =~ 'vimux'
-    map <Leader>vp :VimuxPromptCommand<CR>
-    map <Leader>vl :VimuxRunLastCommand<CR>
-    map <Leader>vi :VimuxInspectRunner<CR>
-    map <Leader>vz :VimuxZoomRunner<CR>
-    map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
-
-    nmap <C-CR> :call VimuxSlime("Vip")<CR>
-    xmap <C-CR> :call VimuxSlime()<CR>
-    nmap <S-CR> :call VimuxSlime("Vip")<CR>})
-    xmap <S-CR> :call VimuxSlime()<CR>j
-    nmap <A-CR> :call VimuxSlime("V")<CR>
-    xmap <A-CR> :call VimuxSlime()<CR>gv
-
-    let g:VimuxUseNearest = 0
-    " Run selected range through vimux
-    "  It accepts a parameter with the keys to press to make a selection
-    function! VimuxSlime(...) range
-        let select_command = a:0 < 1 ? '' : substitute(a:1, '\(<[A-Za-z-()]*>\)', '\\\1', 'g')
-        let winview = winsaveview()
-        if select_command == ""
-            " this would mean there was already selected text
-            let s:selected_text = GetSelectedText("gv")
-        else
-            " save the current selection and go back to where we were
-            normal! gv
-            let prev_visual_mode = visualmode()
-            let prev_left_visual = getpos("'<")
-            let prev_right_visual = getpos("'>")
-            execute "normal! \<Esc>"
-            call winrestview(winview)
-            " make a selection with the specified keys
-            execute "normal " . select_command
-            let s:selected_text = GetSelectedText()
-            " restore previous visual selection
-            if prev_visual_mode != ""
-                execute "normal " . prev_visual_mode
-                execute "normal! \<Esc>"
-                call setpos("'<", prev_left_visual)
-                call setpos("'>", prev_right_visual)
-                execute "normal! gv"
-            endif
-        endif
-        execute "normal! \<Esc>"
-        call VimuxSendText(s:selected_text)
-        if s:selected_text !~ '\n$'
-            call VimuxSendKeys("Enter")
-        endif
-
-        call winrestview(winview)
-    endfunction
-
-    function! VimuxReusePrevious()
-        call _VimuxTmux("last-"._VimuxRunnerType())
-        let g:VimuxRunnerIndex = _VimuxTmuxIndex()
-        call _VimuxTmux("last-"._VimuxRunnerType())
-    endfunction
-endif
-" }}}
-
-" Plugin ludovicchabant/vim-gutentags {{{
-if &runtimepath =~ 'vim-gutentags'
-    let g:gutentags_cache_dir = "~/temp"
-endif
-" }}}
 
 " Several mappings {{{
 nnoremap <Leader>l :call NumberToggle()<CR>
