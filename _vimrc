@@ -13,7 +13,7 @@ if has('python') || has ('python3')
 endif
 Plug 'tmhedberg/SimpylFold'
 Plug 'Konfekt/FastFold'
-Plug 'kien/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'kana/vim-textobj-user'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -28,6 +28,7 @@ if executable('ctags')
     Plug 'ludovicchabant/vim-gutentags'
 endif
 Plug 'tomtom/tcomment_vim'
+Plug 'ryanoasis/vim-devicons'
 call plug#end()
 " }}}
 
@@ -130,6 +131,7 @@ endif
 " General options {{{
 " Set basic options
 let mapleader=" "
+let maplocalleader=" "
 set noautoread
 set sessionoptions=blank,buffers,tabpages,winsize
 autocmd VimEnter * filetype plugin on
@@ -228,7 +230,15 @@ function! GetScriptNumber(script_name)
         endif
     endfor
 endfunction
-" }}}
+
+function DeleteHiddenBuffers() " Vim with the 'hidden' option
+    let tpbl=[]
+    call map(range(1, tabpagenr('$')), 'extend(tpbl, tabpagebuflist(v:val))')
+    for buf in filter(range(1, bufnr('$')), 'bufexists(v:val) && index(tpbl, v:val)==-1')
+        silent execute 'bwipeout' buf
+    endfor
+	endfunction
+command! DeleteHiddenBuffers call DeleteHiddenBuffers()" }}}
 
 " File search settings {{{
 " The Silver Searcher
