@@ -1,16 +1,3 @@
-map <Leader>vp :VimuxPromptCommand<CR>
-map <Leader>vl :VimuxRunLastCommand<CR>
-map <Leader>vi :VimuxInspectRunner<CR>
-map <Leader>vz :VimuxZoomRunner<CR>
-map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
-
-nmap <C-CR> :call VimuxSlime("Vip")<CR>
-xmap <C-CR> :call VimuxSlime()<CR>
-nmap <S-CR> :call VimuxSlime("Vip")<CR>})
-xmap <S-CR> :call VimuxSlime()<CR>j
-nmap <A-CR> :call VimuxSlime("V")<CR>
-xmap <A-CR> :call VimuxSlime()<CR>gv
-
 let g:VimuxUseNearest = 0
 " Run selected range through vimux
 "  It accepts a parameter with the keys to press to make a selection

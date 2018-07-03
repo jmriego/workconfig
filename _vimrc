@@ -181,7 +181,6 @@ function! WordFrequency() range
   endfor
   sort i
 endfunction
-
 command! -range=% WordFrequency <line1>,<line2>call WordFrequency()
 
 " Add DiffSaved command to compare buffer with Saved version
@@ -240,6 +239,7 @@ endif
 
 " Ignore these files. It also affects ctrlp
 set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe,*.pyc
+" }}}
 
 " Python configuration and plugins {{{
 "Python files
@@ -249,19 +249,6 @@ au BufNewFile,BufRead *.py
     \ set shiftwidth=4 |
     \ set expandtab |
     \ set autoindent
-
-" Several mappings {{{
-nnoremap <Leader>l :call NumberToggle()<CR>
-nnoremap <Leader>L :call RelNumberToggle()<CR>
-nnoremap <Leader>p :set list!<CR>
-nnoremap <Leader>w :execute "set wrap! \| set wrap?"<CR>
-nnoremap <Leader>W :execute "set wrapscan! \| set wrapscan?"<CR>
-nnoremap <Leader>c :execute "set ignorecase! \| set ignorecase?"<CR>
-nnoremap <Leader>/ :noh<CR>
-nnoremap <Leader>? :%s///gn<CR>
-nnoremap <Leader>h :%! xxd<CR>
-nnoremap <Leader>H :%! xxd -r<CR>
-nnoremap <Leader>] <C-w><C-]><C-w>L
 
 " Windows options
     " Navigate to other windows with Ctrl+HJKL
@@ -309,6 +296,64 @@ if has('gui_running')
     set noballooneval
     set guifont=Ubuntu\ Mono\ derivative\ Powerline:h11,Ubuntu_Mono_derivative_Powerlin:h12
 endif
+" }}}
+
+" Key mappings {{{
+nnoremap <Leader>l :call NumberToggle()<CR>
+nnoremap <Leader>L :call RelNumberToggle()<CR>
+nnoremap <Leader>p :set list!<CR>
+nnoremap <Leader>w :execute "set wrap! \| set wrap?"<CR>
+nnoremap <Leader>W :execute "set wrapscan! \| set wrapscan?"<CR>
+nnoremap <Leader>c :execute "set ignorecase! \| set ignorecase?"<CR>
+nnoremap <Leader>/ :noh<CR>
+nnoremap <Leader>? :%s///gn<CR>
+nnoremap <Leader>h :%! xxd<CR>
+nnoremap <Leader>H :%! xxd -r<CR>
+nnoremap <Leader>] <C-w><C-]><C-w>L
+
+map <Leader>vp :VimuxPromptCommand<CR>
+map <Leader>vl :VimuxRunLastCommand<CR>
+map <Leader>vi :VimuxInspectRunner<CR>
+map <Leader>vz :VimuxZoomRunner<CR>
+map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
+
+nmap <C-CR> :call VimuxSlime("Vip")<CR>
+xmap <C-CR> :call VimuxSlime()<CR>
+nmap <S-CR> :call VimuxSlime("Vip")<CR>})
+xmap <S-CR> :call VimuxSlime()<CR>j
+nmap <A-CR> :call VimuxSlime("V")<CR>
+xmap <A-CR> :call VimuxSlime()<CR>gv
+
+nnoremap <Leader>gd :Gdiff<CR>
+nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>gb :Gblame<CR>
+nnoremap <Leader>gl :Glog<CR>
+
+noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
+autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
+autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
+
+autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>' : ':call VimuxSlime("Vip")<CR>'
+autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
+autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>]c' : ':call VimuxSlime("Vip")<CR>})'
+autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>+' : ':call VimuxSlime()<CR>j'
+autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines("V")<CR>' : ':call VimuxSlime("V")<CR>'
+autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
+
+noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
+noremap <Leader>k :IPython<CR>
+autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)
+
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+
+nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
+nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
+
+let g:ctrlp_map = '<Leader><C-p>'
+nnoremap <Leader><C-]> :CtrlPTag<CR>
+nnoremap <C-\> :CtrlPBuffer<CR>
+nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0

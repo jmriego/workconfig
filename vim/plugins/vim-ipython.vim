@@ -57,18 +57,3 @@ function! IPythonConnected()
     Python2or3 vim.command('let g:ipy_connected = {}'.format(1 if kc else 0))
     return g:ipy_connected
 endfunction
-
-noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
-autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
-autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
-
-autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>' : ':call VimuxSlime("Vip")<CR>'
-autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
-autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>]c' : ':call VimuxSlime("Vip")<CR>})'
-autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>+' : ':call VimuxSlime()<CR>j'
-autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines("V")<CR>' : ':call VimuxSlime("V")<CR>'
-autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
-
-noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
-noremap <Leader>k :IPython<CR>
-autocmd FileType python nmap <Leader>d <Plug>(IPython-OpenPyDoc)

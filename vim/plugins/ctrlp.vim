@@ -23,10 +23,6 @@ func! CallCtrlP(...)
 endfunc
 
 let g:ctrlp_cmd = 'call CallCtrlP()'
-let g:ctrlp_map = '<Leader><C-p>'
-nnoremap <Leader><C-]> :CtrlPTag<CR>
-nnoremap <C-\> :CtrlPBuffer<CR>
-nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
 
 if executable('ag')
     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
