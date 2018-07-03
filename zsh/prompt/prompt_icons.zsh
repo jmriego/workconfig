@@ -1,4 +1,4 @@
-DEFAULT_FG_COLOR_CHANGE="%{$fg[white]%}"
+DEFAULT_FG_COLOR_CHANGE="%{$fg[black]%}"
 
 export PROMPT_ICON_GIT_BRANCH=""
 export PROMPT_ICON_GIT_MERGING=""
