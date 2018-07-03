@@ -1,7 +1,10 @@
-# Dir: current working directory
+# export POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
 export POWERLEVEL9K_DIR_PATH_SEPARATOR="/"
 export POWERLEVEL9K_HOME_FOLDER_ABBREVIATION="~"
 export POWERLEVEL9K_DIR_SHOW_WRITABLE=false
+export POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+export SED_EXTENDED_REGEX_PARAMETER="-E"
+# export POWERLEVEL9K_DIR_OMIT_FIRST_CHARACTER=true
 
 dir_info() {
   local tmp="$IFS"
@@ -9,7 +12,7 @@ dir_info() {
   local current_path=$(pwd | sed -e "s,^$HOME,~,")
   local IFS="$tmp"
   if [[ -n "$POWERLEVEL9K_SHORTEN_DIR_LENGTH" || "$POWERLEVEL9K_SHORTEN_STRATEGY" == "truncate_with_folder_marker" ]]; then
-    set_default POWERLEVEL9K_SHORTEN_DELIMITER $'\U2026'
+    export POWERLEVEL9K_SHORTEN_DELIMITER=$'\U2026'
 
     case "$POWERLEVEL9K_SHORTEN_STRATEGY" in
       truncate_middle)
@@ -72,7 +75,7 @@ dir_info() {
       ;;
       truncate_with_folder_marker)
         local last_marked_folder marked_folder
-        set_default POWERLEVEL9K_SHORTEN_FOLDER_MARKER ".shorten_folder_marker"
+        export POWERLEVEL9K_SHORTEN_FOLDER_MARKER=".shorten_folder_marker"
 
         # Search for the folder marker in the parent directories and
         # buildup a pattern that is removed from the current path
@@ -139,10 +142,10 @@ dir_info() {
 
   typeset -AH dir_states
   dir_states=(
-    "DEFAULT"         "FOLDER_ICON"
-    "HOME"            "HOME_ICON"
-    "HOME_SUBFOLDER"  "HOME_SUB_ICON"
-    "NOT_WRITABLE"    "LOCK_ICON"
+    "DEFAULT"         "$PROMPT_ICON_FOLDER"
+    "HOME"            "$PROMPT_ICON_HOME"
+    "HOME_SUBFOLDER"  "$PROMPT_ICON_HOME_SUB"
+    "NOT_WRITABLE"    "$PROMPT_ICON_NOT_WRITABLE"
   )
   local current_state="DEFAULT"
   if [[ "${POWERLEVEL9K_DIR_SHOW_WRITABLE}" == true && ! -w "$PWD" ]]; then
@@ -152,5 +155,5 @@ dir_info() {
   elif [[ $(print -P "%~") == '~'* ]]; then
     current_state="HOME_SUBFOLDER"
   fi
-  echo "blue:$current_path"
+  echo "white:${dir_states[$current_state]}$current_path"
 }

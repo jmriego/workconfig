@@ -7,3 +7,8 @@ export PROMPT_ICON_GIT_STAGED=" "
 export PROMPT_ICON_GIT_AHEAD=" "
 export PROMPT_ICON_GIT_BEHIND=" "
 export PROMPT_ICON_PYTHON=" "
+
+export PROMPT_ICON_FOLDER=" "
+export PROMPT_ICON_HOME=" "
+export PROMPT_ICON_HOME_SUB=" "
+export PROMPT_ICON_NOT_WRITABLE=" "
