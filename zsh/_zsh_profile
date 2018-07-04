@@ -23,3 +23,4 @@ compinit
 bindkey -v
 bindkey '^p' up-line-or-search
 bindkey '^n' down-line-or-search
+bindkey "^R" history-incremental-search-backward
