@@ -1,7 +1,7 @@
 local prompt_dir="$(dirname "$0")"
 
-DEFAULT_BG="black"
-DEFAULT_FG="white"
+local DEFAULT_BG="black"
+local DEFAULT_FG="white"
 
 setopt prompt_subst
 autoload -U colors && colors
@@ -9,7 +9,7 @@ autoload -U colors && colors
 source "$prompt_dir/prompt_icons.zsh"
 
 local -a prompt_sections
-export prompt_sections=(git virtualenv)
+export prompt_sections=(git virtualenv exit_code)
 
 for section_name in $prompt_sections
 do
@@ -42,10 +42,13 @@ echo_prompt_section() {
 
 
 function get_prompt() {
+  export RETVAL=$?
+  export RETVALS=( "$pipestatus[@]" )
+
   local prev_bgcolor fgcolor bgcolor text
   local p
-  p=""
-  sep=''
+  local p=""
+  local sep=''
 
   for section_name in $prompt_sections
   do
