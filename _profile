@@ -13,6 +13,8 @@ tmux_session_name() {
     done | grep "$tty" | awk '{print $2}'
 }
 
+export EDITOR='vim'
+
 if [ -n "$ZSH_VERSION" ]
 then
   source "${my_dir}/zsh/_zsh_profile"
