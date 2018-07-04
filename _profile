@@ -1,0 +1,22 @@
+local my_dir="$(dirname "$0")"
+
+settitle() {
+  ESC=$(printf "\e")
+  printf "$ESC]2${1}$ESC\\"
+}
+
+
+tmux_session_name() {
+    tty=$(tty)
+    for s in $(tmux list-sessions -F '#{session_name}' 2>/dev/null); do
+        tmux list-panes -F '#{pane_tty} #{session_name}' -t "$s"
+    done | grep "$tty" | awk '{print $2}'
+}
+
+if [ -n "$ZSH_VERSION" ]
+then
+  source "${my_dir}/zsh/_zsh_profile"
+elif [ -n "$BASH_VERSION" ]
+then
+  source "${my_dir}/bash/_bash_profile"
+fi

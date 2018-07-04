@@ -155,5 +155,5 @@ dir_info() {
   elif [[ $(print -P "%~") == '~'* ]]; then
     current_state="HOME_SUBFOLDER"
   fi
-  echo "white:${dir_states[$current_state]}$current_path"
+  return_prompt_section "white" "black" "${dir_states[$current_state]}$current_path"
 }

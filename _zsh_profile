@@ -1,6 +1,0 @@
-my_dir="$(dirname "$0")"
-source "$my_dir/zsh/prompt/prompt.zsh"
-
-bindkey -v
-bindkey '^p' up-line-or-search
-bindkey '^n' down-line-or-search

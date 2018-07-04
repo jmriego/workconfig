@@ -1,44 +1,73 @@
-my_dir="$(dirname "$0")"
+local prompt_dir="$(dirname "$0")"
 
-DEFAULT_FG_COLOR_CHANGE="%{$fg[white]%}"
+DEFAULT_BG="black"
+DEFAULT_FG="white"
 
 setopt prompt_subst
 autoload -U colors && colors
 
-source "$my_dir/prompt_icons.zsh"
-source "$my_dir/git.zsh"
-source "$my_dir/virtualenv.zsh"
+source "$prompt_dir/prompt_icons.zsh"
+
+local -a prompt_sections
+export prompt_sections=(git virtualenv)
+
+for section_name in $prompt_sections
+do
+  source "${prompt_dir}/${section_name}.zsh"
+done
+
+
+return_prompt_section() {
+  echo "$1" #bgcolor
+  echo "$2" #fgcolor
+  echo "$3" #text
+}
+
+
+# expects a section name
+# build an array with the result of calling {section}_info
+# indexes 1: bg, 2: fg, 3: text
+export prompt_section
+build_prompt_section() {
+  prompt_section=("${(@f)$(${@}_info)}")
+  # return error if the prompt is empty
+  [[ -n "${prompt_section[3]}" ]] || return 1
+}
+
+
+echo_prompt_section() {
+  prompt_section=("${(@f)$(${@}_info)}")
+  echo "${prompt_section[3]}"
+}
+
 
 function get_prompt() {
-  local -a prompt_sections
-  
-  git_info="$(git_info)"
-  [[ -n "$git_info" ]] && prompt_sections+="$git_info"
-  
-  virtualenv_info="$(virtualenv_info)"
-  [[ -n "$virtualenv_info" ]] && prompt_sections+="$virtualenv_info"
-  
+  local prev_bgcolor fgcolor bgcolor text
   local p
-  local prev_col
-  local col
-  sep=''
   p=""
-  
-  for section in $prompt_sections
+  sep=''
+
+  for section_name in $prompt_sections
   do
-    prev_col="${col}"
-    col="${section%:*}"
-    text="${section#*:}"
+    prev_bgcolor="${bgcolor}"
+    # bgcolor="$DEFAULT_BG"
+    # fgcolor="$DEFAULT_FG"
+
+    build_prompt_section ${section_name} || continue
+    bgcolor="${prompt_section[1]:-${DEFAULT_BG}}"
+    fgcolor="${prompt_section[2]:-${DEFAULT_FG}}"
+    text="${prompt_section[3]}"
+
     if [[ -n "$p" ]]
     then
-      p="${p}%{$fg[$prev_col]%}%{$bg[$col]%}${sep}%{$reset_color%}"
+      p="${p}%{$fg[$prev_bgcolor]%}%{$bg[$bgcolor]%}${sep}"
     fi
-    p="${p}%{$bg[$col]%}${text}"
+    p="${p}%{$bg[$bgcolor]%}%{$fg[$fgcolor]%}${text}"
   done
 
   if [[ -n "$p" ]]
   then
-    echo "${p}%{$reset_color%}%{$fg[$col]%}${sep}%{$reset_color%} "
+    echo "${p}%{$reset_color%}%{$fg[$bgcolor]%}${sep}%{$reset_color%} "
   else
     echo "${sep} "
   fi

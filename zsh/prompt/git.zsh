@@ -1,11 +1,3 @@
-my_dir="$(dirname "$0")"
-
-DEFAULT_FG_COLOR_CHANGE="%{$fg[white]%}"
-
-setopt prompt_subst
-autoload -U colors && colors
-source "$my_dir/prompt_icons.zsh"
-
 # Echoes information about Git repository status when inside a Git repository
 git_info() {
 
@@ -41,13 +33,14 @@ git_info() {
     DIVERGENCES+=( "${PROMPT_ICON_GIT_BEHIND//NUM/$NUM_BEHIND}" )
   fi
 
-  local color="green"
+  local bgcolor="green"
   if ! git diff --quiet 2> /dev/null; then
-    local color="yellow"
+    bgcolor="yellow"
   fi
+
   local -a GIT_INFO
   GIT_INFO+=( "${PROMPT_ICON_GIT_BRANCH}${GIT_LOCATION} " )
   [[ ${#FLAGS[@]} -ne 0 ]] && GIT_INFO+=( "${(j::)FLAGS}" )
   [[ ${#DIVERGENCES[@]} -ne 0 ]] && GIT_INFO+=( "${(j::)DIVERGENCES}" )
-  echo "${color}:${DEFAULT_FG_COLOR_CHANGE}${(j::)GIT_INFO}"
+  return_prompt_section "$bgcolor" "" "${(j::)GIT_INFO}"
 }

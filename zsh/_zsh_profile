@@ -1,0 +1,17 @@
+local my_dir="$(dirname "$0")"
+source "${my_dir}/prompt/prompt.zsh"
+
+(( ${prompt_sections[(I)dir]} )) || source "${my_dir}/prompt/dir.zsh"
+
+precmd() {
+  settitle "$(hostname -s):$(echo_prompt_section dir)"
+}
+
+# enable partial folder completion
+autoload -U compinit
+compinit
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
+
+bindkey -v
+bindkey '^p' up-line-or-search
+bindkey '^n' down-line-or-search

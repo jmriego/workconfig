@@ -7,11 +7,6 @@ RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
 RESET="$(tput sgr0)"
 
-settitle() {
-ESC=$(printf "\e")
-printf "$ESC]2${1}$ESC\\"
-}
-
 beforeprompt() {
     export SHORTPWD=$(echo $PWD | sed "s|^$HOME|~|" | awk 'BEGIN{FS=OFS="/";} NF<=5{print;} NF>5 {print $1,$2,$3,"...",$(NF-1),$NF;}')
 }
@@ -22,13 +17,6 @@ show_error_code() {
   then
     echo "$exit_code "
   fi
-}
-
-tmux_session_name() {
-    tty=$(tty)
-    for s in $(tmux list-sessions -F '#{session_name}' 2>/dev/null); do
-        tmux list-panes -F '#{pane_tty} #{session_name}' -t "$s"
-    done | grep "$tty" | awk '{print $2}'
 }
 
 function cdg(){
