@@ -42,6 +42,14 @@ key_params = {
 }
 assign_modal_hotkeys(key_params)
 
+-- add hammerspoon://notification?title=...&subtitle=...&text=...
+-- mandatory to have either title or text
+hs.urlevent.bind("notification", function(eventName, params)
+  if params["title"] or params["text"] then
+    hs.notify.show(params["title"] or "", params["subtitle"] or "", params["text"] or "")
+  end
+end)
+
 -- Window Management
 -- move window to left half of current screen
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Left", function()
