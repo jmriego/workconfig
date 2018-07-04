@@ -28,7 +28,6 @@ if [ -n "$TMUX" ]
 then
   PROMPT_COMMAND='beforeprompt; settitle "$(hostname -s):$SHORTPWD"'
   PS1="\[\033[0;31m\]\$(show_error_code)\[\033[0m\]\$ "
-  export TERM=screen-256color
 else
   PROMPT_COMMAND='beforeprompt'
   PS1="\[\033[0;31m\]\$(show_error_code)\[\033[0m\]\h:\${SHORTPWD}\$ "

@@ -22,3 +22,8 @@ elif [ -n "$BASH_VERSION" ]
 then
   source "${my_dir}/bash/_bash_profile"
 fi
+
+if [ -n "$TMUX" ]
+then
+  export TERM=screen-256color
+fi
