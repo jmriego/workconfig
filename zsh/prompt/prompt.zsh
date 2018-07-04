@@ -9,7 +9,7 @@ autoload -U colors && colors
 source "$prompt_dir/prompt_icons.zsh"
 
 local -a prompt_sections
-export prompt_sections=(git virtualenv exit_code)
+export prompt_sections=(git virtualenv exit_code is_root)
 
 for section_name in $prompt_sections
 do

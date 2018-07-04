@@ -14,3 +14,5 @@ export PROMPT_ICON_HOME_SUB=" "
 export PROMPT_ICON_NOT_WRITABLE=" "
 
 export PROMPT_ICON_ERROR=" "
+
+export PROMPT_ICON_ROOT=" "
