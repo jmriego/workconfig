@@ -1,5 +1,10 @@
 local my_dir="$(dirname "$0")"
 source "${my_dir}/prompt/prompt.zsh"
+source "${my_dir}/virtualenv.zsh"
+
+if ! (( $chpwd_functions[(I)workon_cwd] )); then
+  chpwd_functions+=(workon_cwd)
+fi
 
 (( ${prompt_sections[(I)dir]} )) || source "${my_dir}/prompt/dir.zsh"
 
