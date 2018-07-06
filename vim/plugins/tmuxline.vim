@@ -6,4 +6,4 @@ let g:tmuxline_preset = {
       \'cwin' : '#I #W #F',
       \'x'    : ' %a %F',
       \'y'    : ' %R',
-      \'z'    : '#H'}
+      \'z'    : '#(~/workconfig/zsh/prompt/taskwarrior.zsh)'}

@@ -16,3 +16,5 @@ export PROMPT_ICON_NOT_WRITABLE=" "
 export PROMPT_ICON_ERROR=" "
 
 export PROMPT_ICON_ROOT=" "
+
+export PROMPT_ICON_TASK_INBOX="ﯬ "
