@@ -36,7 +36,7 @@ call plug#end()
 " for each plugin loaded above, load a file in vim/plugins with the name
 " <plugin name>.vim where plugin name is all after the slash in lowercase
 for plugin_name in g:plugs_order
-    let plugin_cfg_file = expand('<sfile>:h') . '/vim/plugins/' . plugin_name . '.vim' 
+    let plugin_cfg_file = expand('<sfile>:h') . '/vim/plugins/' . plugin_name . '.vim'
     if plugin_cfg_file =~ '\.vim\.vim$'
         let plugin_cfg_file = strpart(plugin_cfg_file, 0, strlen(plugin_cfg_file)-4)
     endif
@@ -94,6 +94,18 @@ elseif has('unix')
     set directory=~/tmp,.
     set backupdir=~/tmp,.
     set undodir=~/tmp,.
+    "
+    " map C-CR, S-CR and A-CR as F13, F14 and F15
+    execute "set <F13>=\e[13;5u"
+    execute "set <F14>=\e[13;1u"
+    execute "set <F15>=\e[13;3u"
+
+    map  <F13> <C-CR>
+    map! <F13> <C-CR>
+    map  <F14> <S-CR>
+    map! <F14> <S-CR>
+    map  <F15> <A-CR>
+    map! <F15> <A-CR>
 elseif has('win32')  || has('win64')
     " Set directories
     " Directory for finding files and Python
@@ -237,7 +249,7 @@ function DeleteHiddenBuffers() " Vim with the 'hidden' option
     for buf in filter(range(1, bufnr('$')), 'bufexists(v:val) && index(tpbl, v:val)==-1')
         silent execute 'bwipeout' buf
     endfor
-	endfunction
+    endfunction
 command! DeleteHiddenBuffers call DeleteHiddenBuffers()" }}}
 
 " File search settings {{{
