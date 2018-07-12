@@ -65,36 +65,12 @@ endif
 " }}}
 
 " Platform specific configuration {{{
-if has('mac')
+if has('mac') || has('unix')
     " Directory for swap files
     set directory=~/tmp,.
     set backupdir=~/tmp,.
     set undodir=~/tmp,.
 
-    " map C-CR, S-CR and A-CR in iTerm as F13, F14 and F15
-    "   it requires mapping them to the escape sequences O2P, O2Q and O2R
-    if exists('$TMUX') " Tmux has different escape sequences
-        execute "set <F13>=\e[1;2P"
-        execute "set <F14>=\e[1;2Q"
-        execute "set <F15>=\e[1;2R"
-    else
-        execute "set <F13>=\eO2P"
-        execute "set <F14>=\eO2Q"
-        execute "set <F15>=\eO2R"
-    endif
-
-    map  <F13> <C-CR>
-    map! <F13> <C-CR>
-    map  <F14> <S-CR>
-    map! <F14> <S-CR>
-    map  <F15> <A-CR>
-    map! <F15> <A-CR>
-elseif has('unix')
-    " Directory for swap files
-    set directory=~/tmp,.
-    set backupdir=~/tmp,.
-    set undodir=~/tmp,.
-    "
     " map C-CR, S-CR and A-CR as F13, F14 and F15
     execute "set <F13>=\e[13;5u"
     execute "set <F14>=\e[13;1u"
