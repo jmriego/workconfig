@@ -219,7 +219,7 @@ function! GetScriptNumber(script_name)
     endfor
 endfunction
 
-function DeleteHiddenBuffers() " Vim with the 'hidden' option
+function! DeleteHiddenBuffers() " Vim with the 'hidden' option
     let tpbl=[]
     call map(range(1, tabpagenr('$')), 'extend(tpbl, tabpagebuflist(v:val))')
     for buf in filter(range(1, bufnr('$')), 'bufexists(v:val) && index(tpbl, v:val)==-1')
@@ -331,12 +331,12 @@ noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs
 autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
 autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 
-autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>' : ':call VimuxSlime("Vip")<CR>'
-autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
-autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines("Vic")<CR>]c' : ':call VimuxSlime("Vip")<CR>})'
-autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>+' : ':call VimuxSlime()<CR>j'
-autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines("V")<CR>' : ':call VimuxSlime("V")<CR>'
-autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':callIPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
+autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':call IPythonRunLines("Vic")<CR>' : ':call VimuxSlime("Vip")<CR>'
+autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':call IPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
+autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':call IPythonRunLines("Vic") \| call GotoNextCell()<CR>' : ':call VimuxSlime("Vip")<CR>})'
+autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':call IPythonRunLines() \| normal! +<CR>' : ':call VimuxSlime()<CR>j'
+autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':call IPythonRunLines("V")<CR>' : ':call VimuxSlime("V")<CR>'
+autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':call IPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
 
 noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
 noremap <Leader>k :IPython<CR>

@@ -1,1 +1,1 @@
-let g:tcomment_textoject_inlinecomment = 'iC'
+let g:tcomment_textobject_inlinecomment = 'iC'
