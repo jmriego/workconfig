@@ -17,4 +17,6 @@ export PROMPT_ICON_ERROR=" "
 
 export PROMPT_ICON_ROOT=" "
 
+export PROMPT_ICON_TASK_DONE=" "
+export PROMPT_ICON_TASK_URGENT=" "
 export PROMPT_ICON_TASK_INBOX="ﯬ "

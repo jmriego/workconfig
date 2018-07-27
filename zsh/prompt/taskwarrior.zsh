@@ -6,7 +6,7 @@ taskwarrior_info() {
 
   local inbox="$(task count +in status:pending)"
   local due_today="$(task due=today status:pending count) "
-  local done_today="$(task end:today status:completed count)"
+  local done_today="$(task "status=completed" "end=today" _unique uuid | wc -l)"
   TASK_NUMBERS+=("${PROMPT_ICON_TASK_DONE}${done_today}")
   [[ $due_today -gt 0 ]] && TASK_NUMBERS+=("${PROMPT_ICON_TASK_URGENT}${due_today}")
   [[ $inbox -gt 0 ]] && TASK_NUMBERS+=("${PROMPT_ICON_TASK_INBOX}${inbox}")
