@@ -3,6 +3,10 @@ local -a precmd_functions
 source "${my_dir}/prompt/prompt.zsh"
 source "${my_dir}/virtualenv.zsh"
 
+HISTSIZE=5000               #How many lines of history to keep in memory
+HISTFILE=~/.zsh_history     #Where to save history to disk
+SAVEHIST=5000               #Number of history entries to save to disk
+
 if ! (( $chpwd_functions[(I)workon_cwd] )); then
   chpwd_functions+=(workon_cwd)
 fi
