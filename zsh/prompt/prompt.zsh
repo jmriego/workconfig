@@ -48,7 +48,7 @@ function get_prompt() {
   local prev_bgcolor fgcolor bgcolor text
   local p
   local p=""
-  local sep=''
+  local sep="$PROMPT_ICON_PROMPT_SEPARATOR"
 
   for section_name in $prompt_sections
   do
@@ -72,7 +72,7 @@ function get_prompt() {
   then
     echo "${p}%{$reset_color%}%{$fg[$bgcolor]%}${sep}%{$reset_color%} "
   else
-    echo "${sep} "
+    echo "${PROMPT_ICON_DEFAULT_PROMPT} "
   fi
 }
 
