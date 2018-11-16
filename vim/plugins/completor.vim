@@ -3,4 +3,4 @@ if has('win32')  || has('win64')
 else
     let s:path_python = systemlist('which python')
 endif
-let g:python_host_prog = s:path_python[0]
+let g:completor_python_binary = s:path_python[0]
