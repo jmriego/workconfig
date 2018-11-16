@@ -62,14 +62,14 @@ function assign_modal_hotkeys(key_params)
                     function()
                         hs.eventtap.keyStroke({}, "escape") -- to exit Mission Control
                         animating_timer()
-                        hs.timer.waitUntil(function() return not animating:running(); end, post_function, 0.1)
+                        hs.timer.waitUntil(function() return not animating:running(); end, function() post_function(); modal_f20:exit(); end, 0.1)
                     end,
                     0.1)
             else
                 hs.timer.waitUntil(function() return not animating:running(); end, post_function, 0.1)
+                modal_f20:exit()
             end
 
-            modal_f20:exit()
         end)
     end
 end

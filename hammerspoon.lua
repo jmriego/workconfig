@@ -10,7 +10,7 @@ require('hammerspoon.notifications')
 -- click on the lower bottom corner off the Gmail window to focus and allow hotkeys
 function after_gmail()
     gmail_frame = hs.window.focusedWindow():frame()
-    point_click = {x=gmail_frame["x"]+15.0, y=gmail_frame["y"]+gmail_frame["h"]-15.0}
+    point_click = {x=gmail_frame["x"]+gmail_frame["w"]-5.0, y=gmail_frame["y"]+5.0}
     mouseClick("left", point_click)
 end
 
