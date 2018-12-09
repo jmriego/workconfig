@@ -152,6 +152,9 @@ if has("multi_byte")
   "setglobal bomb
   set fileencodings=ucs-bom,utf-8,latin1
 endif
+
+" Avoid the press enter prompt when saving remote files
+let g:netrw_silent=1
 " }}}
 
 " Custom Functions {{{
