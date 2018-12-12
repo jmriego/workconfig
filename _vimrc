@@ -101,6 +101,13 @@ elseif has('win32')  || has('win64')
     set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:
 endif
 
+if has('win32unix')
+    " map C-CR, S-CR and A-CR as F13, F14 and F15 in mintty
+    execute "set <F13>=\e[25"
+    execute "set <F14>=\e[26"
+    execute "set <F15>=\e[27"
+endif
+
 " Making vim work properly in a terminal
 if has('mouse')
   set mouse=a
