@@ -341,12 +341,13 @@ noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs
 autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
 autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 
-autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':call IPythonRunLines("Vic")<CR>' : ':call VimuxSlime("Vip")<CR>'
+autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':call IPythonRunLines("Vic")<CR>' : ':call VimuxSlime("vip\<C-v>$o^")<CR>'
 autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':call IPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
-autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':call IPythonRunLines("Vic") \| call GotoNextCell()<CR>' : ':call VimuxSlime("Vip")<CR>})'
+autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':call IPythonRunLines("Vic") \| call GotoNextCell()<CR>' : ':call VimuxSlime("vip\<C-v>$o^")<CR>})'
 autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':call IPythonRunLines() \| normal! +<CR>' : ':call VimuxSlime()<CR>j'
-autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':call IPythonRunLines("V")<CR>' : ':call VimuxSlime("V")<CR>'
+autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':call IPythonRunLines("V")<CR>' : ':call VimuxSlime("^v$")<CR>'
 autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':call IPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
+nnoremap ]<CR> :call VimuxSendKeys("Enter")<CR>
 
 noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
 noremap <Leader>k :IPython<CR>

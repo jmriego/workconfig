@@ -2,7 +2,7 @@ let g:VimuxUseNearest = 0
 " Run selected range through vimux
 "  It accepts a parameter with the keys to press to make a selection
 function! VimuxSlime(...) range
-    let select_command = a:0 < 1 ? '' : substitute(a:1, '\(<[A-Za-z-()]*>\)', '\\\1', 'g')
+    let select_command = a:0 < 1 ? '' : substitute(a:1, '\(<[A-Za-z-()^$]*>\)', '\\\1', 'g')
     let winview = winsaveview()
     if select_command == ""
         " this would mean there was already selected text
