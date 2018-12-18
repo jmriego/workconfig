@@ -4,6 +4,7 @@ require('hammerspoon.events')
 require('hammerspoon.interact')
 require('hammerspoon.windows')
 require('hammerspoon.notifications')
+require('hammerspoon.ledming')
 
 -- special tasks needed after switching to certain apps
 
