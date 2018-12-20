@@ -20,24 +20,25 @@ done
 return_prompt_section() {
   echo "$1" #bgcolor
   echo "$2" #fgcolor
-  echo "$3" #text
+  echo "{$3:-none}" #attribute
+  echo "$4" #text
 }
 
 
 # expects a section name
 # build an array with the result of calling {section}_info
-# indexes 1: bg, 2: fg, 3: text
+# indexes 1: bg, 2: fg, 3: attributes, 4: text
 export prompt_section
 build_prompt_section() {
   prompt_section=("${(@f)$(${@}_info)}")
   # return error if the prompt is empty
-  [[ -n "${prompt_section[3]}" ]] || return 1
+  [[ -n "${prompt_section[4]}" ]] || return 1
 }
 
 
 echo_prompt_section() {
   prompt_section=("${(@f)$(${@}_info)}")
-  echo "${prompt_section[3]}"
+  echo "${prompt_section[4]}"
 }
 
 
@@ -59,18 +60,19 @@ function get_prompt() {
     build_prompt_section ${section_name} || continue
     bgcolor="${prompt_section[1]:-${DEFAULT_BG}}"
     fgcolor="${prompt_section[2]:-${DEFAULT_FG}}"
-    text="${prompt_section[3]}"
+    attribute="${prompt_section[3]}"
+    text="${prompt_section[4]}"
 
     if [[ -n "$p" ]]
     then
       p="${p}%{$fg[$prev_bgcolor]%}%{$bg[$bgcolor]%}${sep}"
     fi
-    p="${p}%{$bg[$bgcolor]%}%{$fg[$fgcolor]%}${text}"
+    p="${p}%{\033[${color[$attribute]}m%}%{$bg[$bgcolor]%}%{$fg[$fgcolor]%}${text}"
   done
 
   if [[ -n "$p" ]]
   then
-    echo "${p}%{$reset_color%}%{$fg[$bgcolor]%}${sep}%{$reset_color%} "
+    echo -e "${p}%{$reset_color%}%{$fg[$bgcolor]%}${sep}%{$reset_color%} "
   else
     echo "${PROMPT_ICON_DEFAULT_PROMPT} "
   fi

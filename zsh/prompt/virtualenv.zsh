@@ -10,6 +10,6 @@ function virtualenv_info() {
       local name=$(basename $VIRTUAL_ENV)
     fi
 
-    return_prompt_section "blue" "" "${PROMPT_ICON_PYTHON}${name}"
+    return_prompt_section "blue" "" "" "${PROMPT_ICON_PYTHON}${name}"
   fi
 }
