@@ -103,9 +103,9 @@ endif
 
 if has('win32unix')
     " map C-CR, S-CR and A-CR as F13, F14 and F15 in mintty
-    execute "set <F13>=\e[25"
-    execute "set <F14>=\e[26"
-    execute "set <F15>=\e[27"
+    execute "set <F13>=\e[25~"
+    execute "set <F14>=\e[26~"
+    execute "set <F15>=\e[27~"
 endif
 
 " Making vim work properly in a terminal
