@@ -70,7 +70,7 @@ function syncLedming(direction)
     if direction == 'both' or direction == 'get' then
         hs.execute('/usr/local/bin/task sync')
         hs.execute('/usr/local/bin/rclone copy onedrive:NewDatabase.kdbx ~/Downloads')
-        hs.execute('/usr/local/bin/rclone copy "ledming:/mnt/sda2/udisk1/Fitness/*.txt" ~/Documents/Fitness')
+        hs.execute('/usr/local/bin/rclone copy --include "*.txt" "ledming:/mnt/sda2/udisk1/Fitness" ~/Documents/Fitness')
     end
     if direction == 'both' or direction == 'put' then
         hs.execute('/usr/local/bin/rclone copy ~/Documents/Fitness/Fitness.ods ledming:/mnt/sda2/udisk1/Fitness')
