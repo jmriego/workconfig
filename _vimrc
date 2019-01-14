@@ -333,7 +333,7 @@ nmap <A-CR> :call VimuxSlime("V")<CR>
 xmap <A-CR> :call VimuxSlime()<CR>gv
 
 nnoremap <Leader>gd :Gdiff<CR>
-nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>gs :execute "vertical Gstatus \| wincmd L"<CR>
 nnoremap <Leader>gb :Gblame<CR>
 nnoremap <Leader>gl :Glog<CR>
 
