@@ -310,6 +310,7 @@ endif
 nnoremap <Leader>l :call NumberToggle()<CR>
 nnoremap <Leader>L :call RelNumberToggle()<CR>
 nnoremap <Leader>p :set list!<CR>
+nnoremap <Leader>s :set spell!<CR>
 nnoremap <Leader>w :execute "set wrap! \| set wrap?"<CR>
 nnoremap <Leader>W :execute "set wrapscan! \| set wrapscan?"<CR>
 nnoremap <Leader>c :execute "set ignorecase! \| set ignorecase?"<CR>
