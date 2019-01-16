@@ -1,9 +1,10 @@
-map i=:!r task add +@office +in 
+map i=:!r task add +@office +in
 map I=:!r task modify %TASKID -in<Return>
 map t=:!r task modify %TASKID +in wait:
 map T=:!r task modify %TASKID +in wait:+1d<Return>
 
 map w=:!r task %TASKID modify -in wait:
 
-map O=:!r task add +@office +next 
-map s=:!r task add +@office +someday due:someday 
+map o=:!r task add +@office
+map O=:!r task add +@office +next
+map s=:!r task add +@office +someday due:someday
