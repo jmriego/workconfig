@@ -29,6 +29,7 @@ function cdg() {
   fi
 }
 
+stty -ixon
 export EDITOR='vim'
 
 if [ -n "$ZSH_VERSION" ]
