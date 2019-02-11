@@ -29,6 +29,7 @@ if executable('ctags')
 endif
 Plug 'tomtom/tcomment_vim'
 Plug 'ryanoasis/vim-devicons'
+Plug 'vimwiki/vimwiki'
 call plug#end()
 " }}}
 
