@@ -33,6 +33,9 @@ function workon_cwd {
           workon "$ENV_NAME" && export CD_VIRTUAL_ENV="$ENV_NAME"
         elif [[ -e "$ENV_NAME/bin/activate" ]]; then
           source $ENV_NAME/bin/activate && export CD_VIRTUAL_ENV="$ENV_NAME"
+        elif [[ -n "$VIRTUAL_ENV" ]]; then
+          # We've just left the repo and went to one without a virtualenv
+          deactivate && unset CD_VIRTUAL_ENV
         fi
       fi
     elif [[ -n $CD_VIRTUAL_ENV && -n $VIRTUAL_ENV ]]; then
