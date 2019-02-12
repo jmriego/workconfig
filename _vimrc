@@ -303,7 +303,7 @@ if has('gui_running')
     set guioptions=i " by default, hide gui menus
 
     set noballooneval
-    set guifont=Ubuntu\ Mono\ derivative\ Powerline:h11,Ubuntu_Mono_derivative_Powerlin:h12
+    set guifont=UbuntuMono\ NF:h11,Ubuntu\ Mono\ derivative\ Powerline:h11
 endif
 " }}}
 
