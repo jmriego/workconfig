@@ -25,6 +25,7 @@ zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower
 zstyle ':completion:*' menu select
 autoload -Uz compinit
 compinit
+[[ -f /usr/share/zsh/vendor-completions/_tmuxinator ]] && source /usr/share/zsh/vendor-completions/_tmuxinator
 
 bindkey -v
 bindkey '^p' up-line-or-search
