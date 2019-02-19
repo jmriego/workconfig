@@ -1,3 +1,4 @@
+set encoding=utf-8
 set laststatus=2
 
 if !exists('g:airline_symbols')
