@@ -3,7 +3,7 @@ None, ExtBt8, Control_L|W
 "^epiphany"
 None, ExtBt8, Control_L|W
 "^DBeaver$"
-None, ExtBt8, Control_L|W
+None, ExtBt8, Control_L|F4
 "^xterm$"
 None, ExtBt8, None
 None, ExtBt9, Shift_L|Insert
