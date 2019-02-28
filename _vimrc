@@ -149,6 +149,7 @@ set autoindent
 " Show the wild mode menu
 set wildmenu
 set wildmode=full
+highlight WildMenu cterm=underline
 
 " Language and Unicode
 if has("multi_byte")
