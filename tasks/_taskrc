@@ -34,7 +34,7 @@ report.next.filter          = -in status:pending limit:page
 
 report.in.columns           = id,description
 report.in.description       = Inbox
-report.in.filter            = +in (status:waiting or status:pending) limit:page 
+report.in.filter            = +in status:pending limit:page 
 report.in.labels            = ID,Description
 
 report.someday.columns           = id,description
