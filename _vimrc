@@ -338,7 +338,7 @@ xmap <A-CR> :call VimuxSlime()<CR>gv
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gs :execute "vertical Gstatus \| wincmd L"<CR>
 nnoremap <Leader>gb :Gblame<CR>
-nnoremap <Leader>gl :Glog<CR>
+nnoremap <Leader>gl :0Glog<CR>
 
 noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
 autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
