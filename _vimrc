@@ -58,7 +58,6 @@ set linespace=0
 set ruler
 set showcmd
 
-
 if exists('$TMUX') " set transparent background for tmux
     hi! Normal ctermbg=NONE
     " hi! NonText ctermbg=NONE
@@ -366,6 +365,13 @@ let g:ctrlp_map = '<Leader><C-p>'
 nnoremap <Leader><C-]> :CtrlPTag<CR>
 nnoremap <C-\> :CtrlPBuffer<CR>
 nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
+
+if has('terminal')
+    tnoremap <C-h> <C-\><C-n><C-w>h
+    tnoremap <C-j> <C-\><C-n><C-w>j
+    tnoremap <C-k> <C-\><C-n><C-w>k
+    tnoremap <C-l> <C-\><C-n><C-w>l
+endif
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0
