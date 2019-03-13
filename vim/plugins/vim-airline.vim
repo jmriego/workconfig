@@ -39,6 +39,7 @@ let g:airline_mode_map = {
     \ 's'  : 'S',
     \ 'S'  : 'S',
     \ '' : 'S',
+    \ 't'  : 'T',
     \ }
 
 let g:airline_section_z = airline#section#create(['%4l', '%{g:airline_symbols.linenr}', '%3v'])

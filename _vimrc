@@ -62,6 +62,10 @@ if exists('$TMUX') " set transparent background for tmux
     hi! Normal ctermbg=NONE
     " hi! NonText ctermbg=NONE
 endif
+
+if has('terminal')
+    autocmd BufCreate,BufWinEnter * if &buftype == 'terminal' | setlocal nocursorline | endif
+endif
 " }}}
 
 " Platform specific configuration {{{
