@@ -170,7 +170,8 @@ let g:netrw_silent=1
 " }}}
 
 " Custom Functions {{{
-exec 'source ' . expand('<sfile>:h') . '/' . 'get_selected_text.vim'
+exec 'source ' . expand('<sfile>:h') . '/' . 'vim/get_selected_text.vim'
+exec 'source ' . expand('<sfile>:h') . '/' . 'vim/slime.vim'
 
 " Add command for counting word frequency
 function! WordFrequency() range
@@ -331,12 +332,12 @@ map <Leader>vi :VimuxInspectRunner<CR>
 map <Leader>vz :VimuxZoomRunner<CR>
 map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
 
-nmap <C-CR> :call VimuxSlime("Vip")<CR>
-xmap <C-CR> :call VimuxSlime()<CR>
-nmap <S-CR> :call VimuxSlime("Vip")<CR>})
-xmap <S-CR> :call VimuxSlime()<CR>j
-nmap <A-CR> :call VimuxSlime("V")<CR>
-xmap <A-CR> :call VimuxSlime()<CR>gv
+nmap <silent> <C-CR> :call VimSlime("block", 0)<CR>
+xmap <silent> <C-CR> :call VimSlime("", 0, 0)<CR>
+nmap <silent> <S-CR> :call VimSlime("block", 1)<CR>
+xmap <silent> <S-CR> :call VimSlime("", 1, 0)<CR>
+nmap <silent> <A-CR> :call VimSlime("line", "")<CR>
+xmap <silent> <A-CR> :call VimSlime("", 0, 0)<CR>gv
 
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gs :execute "vertical Gstatus \| wincmd L"<CR>
@@ -347,12 +348,6 @@ noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs
 autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
 autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 
-autocmd FileType python nnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':call IPythonRunLines("Vic")<CR>' : ':call VimuxSlime("vip\<C-v>$o^")<CR>'
-autocmd FileType python xnoremap <expr> <silent> <C-CR> IPythonConnected() ? ':call IPythonRunLines()<CR>' : ':call VimuxSlime()<CR>'
-autocmd FileType python nnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':call IPythonRunLines("Vic") \| call GotoNextCell()<CR>' : ':call VimuxSlime("vip\<C-v>$o^")<CR>})'
-autocmd FileType python xnoremap <expr> <silent> <S-CR> IPythonConnected() ? ':call IPythonRunLines() \| normal! +<CR>' : ':call VimuxSlime()<CR>j'
-autocmd FileType python nnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':call IPythonRunLines("V")<CR>' : ':call VimuxSlime("^v$")<CR>'
-autocmd FileType python xnoremap <expr> <silent> <A-CR> IPythonConnected() ? ':call IPythonRunLines()<CR>gv' : ':call VimuxSlime()<CR>gv'
 nnoremap ]<CR> :call VimuxSendKeys("Enter")<CR>
 
 noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
@@ -371,10 +366,11 @@ nnoremap <C-\> :CtrlPBuffer<CR>
 nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
 
 if has('terminal')
-    tnoremap <C-h> <C-\><C-n><C-w>h
-    tnoremap <C-j> <C-\><C-n><C-w>j
-    tnoremap <C-k> <C-\><C-n><C-w>k
-    tnoremap <C-l> <C-\><C-n><C-w>l
+    tnoremap <C-w><C-w> <C-\><C-n>
+    tnoremap <C-h> <C-w>h
+    tnoremap <C-j> <C-w>j
+    tnoremap <C-k> <C-w>k
+    tnoremap <C-l> <C-w>l
 endif
 " }}}
 

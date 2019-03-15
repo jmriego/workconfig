@@ -59,32 +59,6 @@ function! s:get_col_in_visual(pos) abort
     return c + d
 endfunction
 
-function! DedentText(lines)
-    if type(a:lines) == type([])
-        let l:lines = a:lines
-    else
-        let l:lines = split(a:lines, '\n')
-    endif
-    echo l:lines
-
-    let l:idx = 0
-    for line in lines
-        if !exists('l:first_line_indent') || l:first_line_indent < 0
-            let l:first_line_indent = match(line, '\S')
-        endif
-        if l:first_line_indent >= 0
-            let l:lines[l:idx] = strpart(line, l:first_line_indent)
-        endif
-        let l:idx += 1
-    endfor
-
-    if type(a:lines) == type([])
-        return l:lines
-    else
-        return join(l:lines, "X")
-    endif
-endfunction
-
 " Assume the current mode is middle of visual mode.
 " @return selected text
 function! GetSelectedText(...) abort
@@ -123,7 +97,16 @@ function! GetSelectedText(...) abort
     endif
 
     if dedent
-        let lines = DedentText(lines)
+        let l:idx = 0
+        for line in lines
+            if !exists('l:first_line_indent') || l:first_line_indent < 0
+                let l:first_line_indent = match(line, '\S')
+            endif
+            if l:first_line_indent >= 0
+                let lines[l:idx] = strpart(line, l:first_line_indent)
+            endif
+            let l:idx += 1
+        endfor
     endif
 
     return join(lines, "\n") . (mode ==# 'V' ? "\n" : '')
