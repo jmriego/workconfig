@@ -81,7 +81,7 @@ function! VimSlime(...) range
         execute "normal! V"
         let l:selected_text = GetSelectedText(l:dedent)
     elseif l:mode == "cell"
-        execute "normal! Vic"
+        execute "normal Vic"
         let l:selected_text = GetSelectedText(l:dedent)
     elseif l:mode == "paragraph"
         execute "normal! Vip"
@@ -97,11 +97,7 @@ function! VimSlime(...) range
 
     " run it in either IPython, terminal or vimux
     if l:ipython_connected
-        if l:mode == ""
-            call IPythonRunLines()
-        else
-            call IPythonRunLines(l:selected_text)
-        endif
+        call IPythonRunLines(l:selected_text)
     elseif HasTermOpen()
         call VimTermSlime(l:selected_text)
     elseif HasVimuxOpen()
