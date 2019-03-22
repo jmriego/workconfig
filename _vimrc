@@ -79,6 +79,7 @@ if has('mac') || has('unix')
     execute "set <F13>=\e[13;5u"
     execute "set <F14>=\e[13;1u"
     execute "set <F15>=\e[13;3u"
+    execute "set <F16>=\e[8;5u"
 
     map  <F13> <C-CR>
     map! <F13> <C-CR>
@@ -86,6 +87,8 @@ if has('mac') || has('unix')
     map! <F14> <S-CR>
     map  <F15> <A-CR>
     map! <F15> <A-CR>
+    map  <F16> <C-BS>
+    map! <F16> <C-BS>
 elseif has('win32')  || has('win64')
     " Set directories
     " Directory for finding files and Python
@@ -110,6 +113,7 @@ if has('win32unix')
     execute "set <F13>=\e[25~"
     execute "set <F14>=\e[26~"
     execute "set <F15>=\e[27~"
+    execute "set <F16>=\e[28~"
 endif
 
 " Making vim work properly in a terminal
@@ -371,6 +375,8 @@ if has('terminal')
     tnoremap <C-j> <C-w>j
     tnoremap <C-k> <C-w>k
     tnoremap <C-l> <C-w>l
+    " F16 was mapped to <C-BS>
+    tnoremap <F16> <C-w>.
 endif
 " }}}
 
