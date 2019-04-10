@@ -343,12 +343,13 @@ xmap <silent> <S-CR> :call VimSlime("", 1, 0)<CR>
 nmap <silent> <A-CR> :call VimSlime("line", "")<CR>
 xmap <silent> <A-CR> :call VimSlime("", 0, 0)<CR>gv
 
-nnoremap <expr> <leader>t ":wincmd b \| botright terminal ++close ++rows=".winheight(0)/3."\<CR>"
+nnoremap <expr> <leader>t ":wincmd b \| botright terminal ++close ++rows=".winheight(0)/4."\<CR>"
 
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gs :execute "vertical Gstatus \| wincmd L"<CR>
 nnoremap <Leader>gb :Gblame<CR>
 nnoremap <Leader>gl :0Glog<CR>
+nnoremap <Leader>ge :Gedit<CR>
 
 noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
 autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
