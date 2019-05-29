@@ -36,9 +36,9 @@ then
         [[ ! -z $fg ]] && TMUX_FORMAT+=("fg=$fg")
         if [[ ${#TMUX_FORMAT[@]} -gt 0 ]]
         then
-            echo "#[${(j:,:)TMUX_FORMAT}] $4#[default]";
+            echo "#[${(j:,:)TMUX_FORMAT}]$4#[default]";
         else
-            echo " $4"
+            echo "$4"
         fi
     } &&
     taskwarrior_info
