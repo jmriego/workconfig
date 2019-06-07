@@ -2,6 +2,8 @@
 None, Up,     Button4, 3
 None, Down,   Button5, 3
 None, ExtBt8, Control_L|W
+"^Firefox$"
+None, ExtBt8, Control_L|W
 "^epiphany"
 None, ExtBt8, Control_L|W
 "^DBeaver$"
