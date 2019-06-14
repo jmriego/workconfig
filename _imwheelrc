@@ -11,6 +11,9 @@ None, ExtBt8, Control_L|F4
 "^xterm$"
 None, ExtBt8, None
 None, ExtBt9, Shift_L|Insert
+"^Alacritty$"
+None, ExtBt8, None
+None, ExtBt9, Shift_L|Insert
 "^kitty$"
 None, ExtBt8, None
 None, ExtBt9, Shift_L|Insert
