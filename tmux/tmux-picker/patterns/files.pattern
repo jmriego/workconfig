@@ -1,0 +1,38 @@
+# Every pattern have be of form ((A)B) where:
+#  - A is part that will not be highlighted (e.g. escape sequence, whitespace) 
+#  - B is part will be highlighted (can contain subgroups)
+#
+# Valid examples:
+#   (( )([a-z]+))
+#   (( )[a-z]+)
+#   (( )(http://)[a-z]+)
+#   (( )(http://)([a-z]+))
+#   (( |^)([a-z]+))
+#   (( |^)(([a-z]+)|(bar)))
+#   ((( )|(^))|(([a-z]+)|(bar)))
+#   (()([0-9]+))
+#   (()[0-9]+)
+#
+# Invalid examples:
+#   (([0-9]+))
+#   ([0-9]+)
+#   [0-9]+
+
+CS=$'\x1b'"\[[0-9;]{1,9}m" # color escape sequence
+FILE_CHARS="[[:alnum:]_.#$%&+=/@~-]"
+FILE_START_CHARS="[[:space:]:<>)(&#'\"]"
+
+# default patterns group
+PATTERNS_LIST1=(
+"(($CS|^|$FILE_START_CHARS)$FILE_CHARS*/$FILE_CHARS+)" # file paths with /
+)
+
+# alternative patterns group (shown after pressing the SPACE key)
+PATTERNS_LIST2=(
+"(^|^\.|[[:space:]]|[[:space:]]\.|[[:space:]]\.\.|^\.\.)[[:alnum:]~_-]*/[][[:alnum:]_.#$%&+=/@-]*"
+)
+
+# items that will not be hightlighted
+BLACKLIST=(
+"(deleted|modified|renamed|copied|master|mkdir|[Cc]hanges|update|updated|committed|commit|working|discard|directory|staged|add/rm|checkout)"
+)

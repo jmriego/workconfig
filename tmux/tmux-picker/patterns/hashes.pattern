@@ -1,0 +1,12 @@
+# default patterns group
+PATTERNS_LIST1=(
+"(()[0-9a-fA-F]{7,40})" # hex numbers (e.g. git hashes)
+)
+
+# alternative patterns group (shown after pressing the SPACE key)
+PATTERNS_LIST2=$PATTERNS_LIST1
+
+# items that will not be hightlighted
+BLACKLIST=(
+"(deleted|modified|renamed|copied|master|mkdir|[Cc]hanges|update|updated|committed|commit|working|discard|directory|staged|add/rm|checkout)"
+)
