@@ -1,0 +1,27 @@
+# default patterns group
+PATTERNS_LIST1=(
+"(()[0-9a-fA-F]{7,40})" # hex numbers (e.g. git hashes)
+)
+
+if [[ $(cd $current_pane_path; git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]]; then
+  root_path=$(cd $current_pane_path; git rev-parse --show-toplevel)
+  git_flags="--git-dir=$root_path/.git --work-tree=$root_path"
+
+  # add branch names
+  while read -r line; do
+    PATTERNS_LIST1+=( "(()$line)" )
+  done < <(git $git_flags for-each-ref --count=30 --sort=-committerdate --format="%(refname:short)")
+
+  # add git status file names
+  while read -r line; do
+    PATTERNS_LIST1+=( "(()$line)" )
+  done < <(git $git_flags status --porcelain | cut -c 4-)
+fi
+
+# alternative patterns group (shown after pressing the SPACE key)
+PATTERNS_LIST2=$PATTERNS_LIST1
+
+# items that will not be hightlighted
+BLACKLIST=(
+"(deleted|modified|renamed|copied|mkdir|[Cc]hanges|update|updated|committed|commit|working|discard|directory|staged|add/rm|checkout)"
+)

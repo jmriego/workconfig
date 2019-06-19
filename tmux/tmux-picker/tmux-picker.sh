@@ -81,6 +81,7 @@ function prompt_picker_for_pane() {
 
 last_pane_id=$(tmux display -pt':.{last}' '#{pane_id}' 2>/dev/null)
 current_pane_id=$(tmux list-panes -F "#{pane_id}:#{?pane_active,active,nope}" | grep active | cut -d: -f1)
+current_pane_path="$(tmux display-message -p "#{pane_current_path}")"
 
 source $CURRENT_DIR/patterns/$1.pattern
 set_tmux_env PICKER_PATTERNS1 $(array_join "|" "${PATTERNS_LIST1[@]}")
