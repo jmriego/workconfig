@@ -2,17 +2,6 @@
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-function set_tmux_env() {
-    local option_name="$1"
-    local final_value="$2"
-
-    tmux setenv -g "$option_name" "$final_value"
-}
-
-function array_join() {
-    local IFS="$1"; shift; echo "$*";
-}
-
 function init_picker_pane() {
     local picker_ids=$(tmux new-window -F "#{pane_id}:#{window_id}" -P -d -n "[picker]" "/bin/sh")
     local picker_pane_id=$(echo "$picker_ids" | cut -f1 -d:)
@@ -81,11 +70,4 @@ function prompt_picker_for_pane() {
 
 last_pane_id=$(tmux display -pt':.{last}' '#{pane_id}' 2>/dev/null)
 current_pane_id=$(tmux list-panes -F "#{pane_id}:#{?pane_active,active,nope}" | grep active | cut -d: -f1)
-current_pane_path="$(tmux display-message -p "#{pane_current_path}")"
-
-source $CURRENT_DIR/patterns/$1.pattern
-set_tmux_env PICKER_PATTERNS1 $(array_join "|" "${PATTERNS_LIST1[@]}")
-set_tmux_env PICKER_PATTERNS2 $(array_join "|" "${PATTERNS_LIST2[@]}")
-set_tmux_env PICKER_BLACKLIST_PATTERNS $(array_join "|" "${BLACKLIST[@]}")
-
 picker_pane_id=$(prompt_picker_for_pane "$current_pane_id" "$last_pane_id")
