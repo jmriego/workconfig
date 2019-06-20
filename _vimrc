@@ -13,7 +13,8 @@ if has('python') || has ('python3')
 endif
 Plug 'tmhedberg/SimpylFold'
 Plug 'Konfekt/FastFold'
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 Plug 'kana/vim-textobj-user'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -368,10 +369,9 @@ nmap ga <Plug>(EasyAlign)
 nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
 nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
-let g:ctrlp_map = '<Leader><C-p>'
-nnoremap <Leader><C-]> :CtrlPTag<CR>
-nnoremap <C-\> :CtrlPBuffer<CR>
-nnoremap <C-p> :call CallCtrlP(getcwd())<CR>
+nnoremap <C-p> :Files<CR>
+nnoremap <Leader><C-]> :Tags<CR>
+nnoremap <Leader>0 :History<CR>
 
 if has('terminal')
     tnoremap <C-w><C-w> <C-\><C-n>

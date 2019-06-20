@@ -45,6 +45,9 @@ function cdg() {
 stty -ixon
 export EDITOR='vim'
 
+# fzf options
+export FZF_DEFAULT_OPTS="--bind tab:toggle-in,ctrl-z:toggle-out"
+
 if [ -n "$ZSH_VERSION" ]
 then
   source "${my_dir}/zsh/_zsh_profile"
