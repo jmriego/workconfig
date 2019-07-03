@@ -1,30 +1,30 @@
-call textobj#user#plugin('pythoncell', {
-    \ '-': {
-    \     '*sfile*': expand('<sfile>:p'),
-    \     'select-a': 'ac',  '*select-a-function*': 's:cell_select_a',
-    \     'select-i': 'ic',  '*select-i-function*': 's:cell_select_i',
-    \  },
-    \ 'class': {
-    \     '*sfile*': expand('<sfile>:p'),
-    \     'select-a': 'apc',
-    \     'select-i': 'ipc',
-    \     'select-a-function': 's:class_select_a',
-    \     'select-i-function': 's:class_select_i',
-    \     'pattern': '^\s*\zsclass \(.\|\n\)\{-}:',
-    \     'move-p': '<buffer>[pc',
-    \     'move-n': '<buffer>]pc',
-    \  },
-    \ 'function': {
-    \     '*sfile*': expand('<sfile>:p'),
-    \     'select-a': 'af',
-    \     'select-i': 'if',
-    \     'select-a-function': 's:function_select_a',
-    \     'select-i-function': 's:function_select_i',
-    \     'pattern': '^\s*\zs\(def\|async def\) \(.\|\n\)\{-}:',
-    \     'move-p': '<buffer>[pf',
-    \     'move-n': '<buffer>]pf',
-    \  },
-    \ })
+silent! call textobj#user#plugin('pythoncell', {
+        \ '-': {
+        \     '*sfile*': expand('<sfile>:p'),
+        \     'select-a': 'ac',  '*select-a-function*': 's:cell_select_a',
+        \     'select-i': 'ic',  '*select-i-function*': 's:cell_select_i',
+        \  },
+        \ 'class': {
+        \     '*sfile*': expand('<sfile>:p'),
+        \     'select-a': 'apc',
+        \     'select-i': 'ipc',
+        \     'select-a-function': 's:class_select_a',
+        \     'select-i-function': 's:class_select_i',
+        \     'pattern': '^\s*\zsclass \(.\|\n\)\{-}:',
+        \     'move-p': '<buffer>[pc',
+        \     'move-n': '<buffer>]pc',
+        \  },
+        \ 'function': {
+        \     '*sfile*': expand('<sfile>:p'),
+        \     'select-a': 'af',
+        \     'select-i': 'if',
+        \     'select-a-function': 's:function_select_a',
+        \     'select-i-function': 's:function_select_i',
+        \     'pattern': '^\s*\zs\(def\|async def\) \(.\|\n\)\{-}:',
+        \     'move-p': '<buffer>[pf',
+        \     'move-n': '<buffer>]pf',
+        \  },
+        \ })
 
 function! s:cell_select_a()
     return s:python_cell_object('a')
