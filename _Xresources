@@ -6,6 +6,8 @@ Xft.weight: heavy
 Xft.lcdfilter: none
 Xft.dpi: 166.0
 
+XTerm*eightBitInput:   false
+XTerm*eightBitOutput:  true
 XTerm.*backarrowKey: false 
 XTerm*ttyModes: erase ^?
 XTerm.vt100.locale: true

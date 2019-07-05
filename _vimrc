@@ -1,5 +1,25 @@
 " Loaded plugins {{{
-call plug#begin()
+if has('ipackages')
+    packadd minpac
+
+    let g:plugs_order = []
+    function! s:track_plugin(plugin_source, ...)
+        let options = get(a:, 1, {})
+        let plugin_name = split(a:plugin_source, '/')[1]
+        call add(g:plugs_order, plugin_name)
+        if (has_key(options, 'dir'))
+            execute 'set rtp+=' . options['dir']
+        else
+            call minpac#add(a:plugin_source)
+        endif
+    endfunction
+
+    call minpac#init()
+    command! -nargs=+ Plug call s:track_plugin(<args>)
+else
+    call plug#begin()
+endif
+
 Plug 'altercation/vim-colors-solarized'
 Plug 'junegunn/vim-easy-align'
 if has('python') || has ('python3')
@@ -13,13 +33,12 @@ if has('python') || has ('python3')
 endif
 Plug 'tmhedberg/SimpylFold'
 Plug 'Konfekt/FastFold'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': ':silent! !./install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'kana/vim-textobj-user'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'christoomey/vim-tmux-navigator'
-" Plug 'edkolev/tmuxline.vim' " only while modifying the tmux status line
 Plug 'benmills/vimux'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-unimpaired'
@@ -31,7 +50,10 @@ endif
 Plug 'tomtom/tcomment_vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'vimwiki/vimwiki'
-call plug#end()
+
+if !has('ipackages')
+    call plug#end()
+endif
 " }}}
 
 " Load plugin configuration files loop {{{
@@ -373,15 +395,6 @@ nnoremap <C-p> :Files<CR>
 nnoremap <Leader><C-]> :Tags<CR>
 nnoremap <Leader>0 :History<CR>
 
-if has('terminal')
-    tnoremap <C-w><C-w> <C-\><C-n>
-    tnoremap <C-h> <C-w>h
-    tnoremap <C-j> <C-w>j
-    tnoremap <C-k> <C-w>k
-    tnoremap <C-l> <C-w>l
-    " F16 was mapped to <C-BS>
-    tnoremap <F16> <C-w>.
-endif
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0
