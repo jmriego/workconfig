@@ -1,5 +1,27 @@
+filetype plugin on
+
 " Loaded plugins {{{
-call plug#begin()
+if has('packages')
+    packadd minpac
+
+    let g:plugs_order = []
+    function! s:track_plugin(plugin_source, ...)
+        let options = get(a:, 1, {})
+        let plugin_name = split(a:plugin_source, '/')[1]
+        call add(g:plugs_order, plugin_name)
+        if (has_key(options, 'dir'))
+            execute 'set rtp+=' . options['dir']
+        else
+            call minpac#add(a:plugin_source)
+        endif
+    endfunction
+
+    call minpac#init()
+    command! -nargs=+ Plug call s:track_plugin(<args>)
+else
+    call plug#begin()
+endif
+
 Plug 'altercation/vim-colors-solarized'
 Plug 'junegunn/vim-easy-align'
 if has('python') || has ('python3')
@@ -13,7 +35,7 @@ if has('python') || has ('python3')
 endif
 Plug 'tmhedberg/SimpylFold'
 Plug 'Konfekt/FastFold'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': ':silent! !./install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'kana/vim-textobj-user'
 Plug 'vim-airline/vim-airline'
@@ -31,7 +53,10 @@ endif
 Plug 'tomtom/tcomment_vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'vimwiki/vimwiki'
-call plug#end()
+
+if !has('packages')
+    call plug#end()
+endif
 " }}}
 
 " Load plugin configuration files loop {{{
