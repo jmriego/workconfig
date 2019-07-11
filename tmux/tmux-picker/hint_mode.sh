@@ -140,7 +140,7 @@ function run_picker_copy_command() {
     fi
 
     if [[ ! -z "$command_to_run" ]]; then
-        tmux run-shell -b "printf '$result' | $command_to_run"
+        tmux run-shell -b "echo -n '$result' | $command_to_run"
     fi
 }
 
