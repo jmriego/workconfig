@@ -6,6 +6,8 @@ Xft.weight: heavy
 Xft.lcdfilter: none
 Xft.dpi: 166.0
 
+XTerm*eightBitInput:   false
+XTerm*eightBitOutput:  true
 XTerm.*backarrowKey: false 
 XTerm*ttyModes: erase ^?
 XTerm.vt100.locale: true
@@ -23,7 +25,7 @@ XTerm*cursorColor: blue
 XTerm*vt100.translations: #override \
     Ctrl <Key>Return:string(0x1b) string("[13;5u") \n\
     Shift <Key>Return:string(0x1b) string("[13;1u") \n\
-    Alt <Key>Return:string(0x1b) string("[13;3u")
+    Alt <Key>Return:string(0x1b) string("[13;3u") \n\
     <Key>BackSpace: string(0x7f) \n\
     <Key>Delete:    string(0x1b) string("[3~")
 
