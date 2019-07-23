@@ -9,6 +9,8 @@ map o=:!r task add +@office
 map O=:!r task add +@office +next 
 map s=:!r task add +@office +someday due:someday 
 
+map +=:!r task modify %TASKID +next<Return>
+map -=:!r task modify %TASKID -next<Return>
 
 map <F1>=:in<Return>
 map <F2>=:next<Return>
