@@ -12,7 +12,9 @@ SAVEHIST=5000               #Number of history entries to save to disk
 settermtitle() {
   settitle "$(hostname -s):$(echo_prompt_section dir)"
 }
-precmd_functions+=(settermtitle)
+
+parent_process=`ps -o comm= -p $PPID`
+[[ $parent_process != "java" ]] && precmd_functions+=(settermtitle)
 
 precmd() {
   eval "${precmd_functions}"
