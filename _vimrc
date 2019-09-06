@@ -375,6 +375,7 @@ nnoremap <Leader>] <C-w><C-]><C-w>L
 
 map <Leader>vp :VimuxPromptCommand<CR>
 map <Leader>vl :VimuxRunLastCommand<CR>
+map <Leader>vc :VimuxInterrupRunner<CR>
 map <Leader>vi :VimuxInspectRunner<CR>
 map <Leader>vI :VimuxInspectRunner<CR>:VimuxZoomRunner<CR>
 map <Leader>vz :VimuxZoomRunner<CR>
