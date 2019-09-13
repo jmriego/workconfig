@@ -42,9 +42,9 @@ report.someday.description       = Inbox
 report.someday.filter            = status:pending limit:page (+someday)
 report.someday.labels            = ID,Description
 
-taskd.certificate = private.certificate.pem
-taskd.key = private.key.pem
-taskd.ca = ca.cert.pem
+taskd.certificate = ~/.task/private.certificate.pem
+taskd.key = ~/.task/private.key.pem
+taskd.ca = ~/.task/ca.cert.pem
 taskd.credentials = inthe_am/josemiquai/61d25447-6a85-45d8-b839-0bc603c73232
 
 taskd.server = taskwarrior.inthe.am:53589
