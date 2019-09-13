@@ -1,4 +1,6 @@
-let g:coc_global_extensions = ['coc-python']
+let g:coc_global_extensions = ['coc-python', 'coc-yaml']
+
+set completeopt=menuone,noselect,preview
 
 set hidden
 

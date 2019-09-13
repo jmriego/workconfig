@@ -390,6 +390,7 @@ nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
 nnoremap <C-p> :Files<CR>
 nnoremap <Leader><C-]> :Tags<CR>
+nnoremap gb :Buffers<CR>
 nnoremap <Leader>0 :History<CR>
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
@@ -434,9 +435,9 @@ nmap <leader>ac  <Plug>(coc-codeaction)
 nmap <leader>qf  <Plug>(coc-fix-current)
 
 " Use <tab> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-nmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
+" nmap <silent> <TAB> <Plug>(coc-range-select)
+" xmap <silent> <TAB> <Plug>(coc-range-select)
+" xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
 
 " Using CocList
 " Show all diagnostics
