@@ -70,7 +70,6 @@ endfor
 " Appearance {{{
 "hi CursorLine guibg=#303030
 syntax on
-set cursorline
 set fdm=syntax
 set modelines=1
 set linespace=0
@@ -304,6 +303,10 @@ au BufNewFile,BufRead *.py
     " Preview windows and help windows open in a vertical split
     autocmd WinEnter * if &previewwindow | wincmd L | endif
     autocmd FileType help wincmd L
+    augroup mycursorline
+      autocmd!
+      autocmd CursorHold,BufLeave * execute 'match CursorLine /\%'.line('.').'l/'
+    augroup end
 
     " Minimized Windows only take one line for the filename/status line
     " set wmh=0
