@@ -209,6 +209,7 @@ let g:netrw_silent=1
 " }}}
 
 " Custom Functions {{{
+exec 'source ' . expand('<sfile>:h') . '/' . 'vim/source_line.vim'
 exec 'source ' . expand('<sfile>:h') . '/' . 'vim/get_selected_text.vim'
 exec 'source ' . expand('<sfile>:h') . '/' . 'vim/slime.vim'
 
@@ -303,10 +304,6 @@ au BufNewFile,BufRead *.py
     " Preview windows and help windows open in a vertical split
     autocmd WinEnter * if &previewwindow | wincmd L | endif
     autocmd FileType help wincmd L
-    augroup mycursorline
-      autocmd!
-      autocmd CursorHold,BufLeave * execute 'match CursorLine /\%'.line('.').'l/'
-    augroup end
 
     " Minimized Windows only take one line for the filename/status line
     " set wmh=0
