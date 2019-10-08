@@ -1,20 +1,20 @@
 set cursorline
 
-let g:buffer_entered_at = 0.0
+let g:just_entered_buffer = 1
 
 function! s:cursorMoved()
-  if reltimefloat(reltime()) > g:buffer_entered_at + 0.1
-    echo g:buffer_entered_at
+  if g:just_entered_buffer <= 0
     set nocursorline
     autocmd! mycursorline CursorMoved *
+  else
+    let g:just_entered_buffer -= 1
   endif
 endfunction
 
 augroup mycursorline
   autocmd!
   autocmd CursorHold,BufLeave,BufEnter * set cursorline
-  autocmd BufEnter * let g:buffer_entered_at = reltimefloat(reltime())
+  autocmd BufEnter * let g:just_entered_buffer = 1
   autocmd CursorHold,BufEnter *
-      \ autocmd CursorMoved * call s:cursorMoved()
-  autocmd CursorMoved * call s:cursorMoved()
+      \ autocmd! mycursorline CursorMoved * call s:cursorMoved()
 augroup end
