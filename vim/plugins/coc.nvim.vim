@@ -1,6 +1,29 @@
 let g:coc_global_extensions = ['coc-python', 'coc-yaml']
 
-set completeopt=menuone,noselect,preview
+set completeopt=menuone,preview
+
+" Fix for making <C-x> mode work properly
+let g:just_entered_insert = 0
+
+function! CompletionCallCX()
+  if g:just_entered_insert > 0
+    " for ignoring the next insert mode enter
+    let g:just_entered_insert = -1
+    return "\<C-o>\<Esc>\<C-x>"
+  else
+    return "\<C-x>"
+  endif
+endfunction
+
+function s:enteredInsertCoc()
+  if g:just_entered_insert < 0
+    let g:just_entered_insert = 0
+  else
+    let g:just_entered_insert = 1
+  endif
+endfunction
+
+inoremap <expr> <silent> <C-x> CompletionCallCX()
 
 set hidden
 
@@ -17,8 +40,9 @@ set shortmess+=c
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-augroup mygroup
+augroup cocgroup
   autocmd!
+  autocmd InsertEnter * call s:enteredInsertCoc()
   " Setup formatexpr specified filetype(s).
   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
   " Update signature help on jump placeholder
