@@ -22,4 +22,4 @@ paste() {
     fi
 }
 
-paste | tmux load-buffer - && tmux paste-buffer
+paste | tmux load-buffer - && tmux paste-buffer && tmux delete-buffer
