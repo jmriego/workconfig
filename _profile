@@ -2,7 +2,7 @@ local my_dir="$(dirname "$0")"
 
 settitle() {
   ESC=$(printf "\e")
-  printf "$ESC]2${1}$ESC\\"
+  printf "$ESC]2;${1}$ESC\\"
 }
 
 
