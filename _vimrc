@@ -349,6 +349,7 @@ nnoremap <Leader>? :%s///gn<CR>
 nnoremap <Leader>h :%! xxd<CR>
 nnoremap <Leader>H :%! xxd -r<CR>
 nnoremap <Leader>] <C-w><C-]><C-w>L
+nnoremap <Leader>r :redraw!<CR>
 
 map <Leader>vp :VimuxPromptCommand<CR>
 map <Leader>vl :VimuxRunLastCommand<CR>
