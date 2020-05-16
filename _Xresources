@@ -26,6 +26,11 @@ XTerm*vt100.translations: #override \
     Ctrl <Key>Return:string(0x1b) string("[13;5u") \n\
     Shift <Key>Return:string(0x1b) string("[13;1u") \n\
     Alt <Key>Return:string(0x1b) string("[13;3u") \n\
+    Ctrl Shift <Key>space:string(0x1b) string("[32;6u") \n\
+    Ctrl Shift <Key>h:string(0x1b) string("[72;6u") \n\
+    Ctrl Shift <Key>j:string(0x1b) string("[74;6u") \n\
+    Ctrl Shift <Key>k:string(0x1b) string("[75;6u") \n\
+    Ctrl Shift <Key>l:string(0x1b) string("[76;6u") \n\
     <Key>BackSpace: string(0x7f) \n\
     <Key>Delete:    string(0x1b) string("[3~")
 

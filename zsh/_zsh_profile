@@ -14,10 +14,11 @@ gethostname() {
 }
 
 settermtitle() {
-  settitle "$(gethostname):$(echo_prompt_section dir)"
+  settitle "$(gethostname):$(echo_prompt_section dir)${TMUX_VERSION+:tmux}"
 }
 
-ps -p $PPID | grep "java" || precmd_functions+=(settermtitle)
+parent_process=`ps -o comm= -p $PPID`
+[[ $parent_process != "java" ]] && precmd_functions+=(settermtitle)
 
 precmd() {
   eval "${precmd_functions}"
