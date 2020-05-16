@@ -2,7 +2,11 @@ local my_dir="$(dirname "$0")"
 
 settitle() {
   ESC=$(printf "\e")
-  printf "$ESC]2;${1}$ESC\\"
+  OSC_START="${ESC}Ptmux;${ESC}"
+  OSC_END="${ESC}\\"
+  title_sequence="$ESC]2;${1}$ESC\\"
+  printf "$OSC_START$title_sequence$OSC_END"
+  printf "$title_sequence"
 }
 
 
