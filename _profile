@@ -1,5 +1,7 @@
 local my_dir="$(dirname "$0")"
 
+export PATH="$my_dir/bin:$PATH"
+
 settitle() {
   ESC=$(printf "\e")
   OSC_START="${ESC}Ptmux;${ESC}"
