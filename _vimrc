@@ -7,17 +7,20 @@ if has('packages')
     let g:plugs_order = []
     function! s:track_plugin(plugin_source, ...)
         let options = get(a:, 1, {})
-        let plugin_name = split(a:plugin_source, '/')[1]
-        call add(g:plugs_order, plugin_name)
-        if (has_key(options, 'dir'))
-            execute 'set rtp+=' . options['dir']
-        else
-            call minpac#add(a:plugin_source, options)
-        endif
+        call minpac#add(a:plugin_source, options)
+        for plugin_name in keys(g:minpac#pluglist)
+            " add the plugin name just added to minpac to g:plugs_order
+            " it will be the only one in g:minpac#pluglist we dont have yet
+            if index(g:plugs_order, plugin_name) == -1
+                call add(g:plugs_order, plugin_name)
+                break
+            endif
+        endfor
     endfunction
 
     call minpac#init()
     command! -nargs=+ Plug call s:track_plugin(<args>)
+    command! -nargs=0 PlugUpdate call minpac#update('', {'do': 'call minpac#status()'})
 else
     call plug#begin()
 endif
@@ -31,7 +34,7 @@ if has('python') || has ('python3')
     Plug 'wilywampa/vim-ipython'
     Plug 'jmcantrell/vim-virtualenv'
 endif
-Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': ':silent! !./install --all' }
+Plug 'junegunn/fzf', {'do': ':silent! !./install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'kana/vim-textobj-user'
 Plug 'vim-airline/vim-airline'
@@ -240,20 +243,6 @@ function! s:DiffWithSaved()
     exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
 endfunction
 com! DiffSaved call s:DiffWithSaved()
-
-" Toggle line numbers and relative line numbers
-function! NumberToggle()
-  if(&number == 1 || &relativenumber == 1)
-    if(&number == 1 )
-      set nonumber
-    endif
-    if(&relativenumber == 1 )
-      set norelativenumber
-    endif
-  else
-    set number
-  endif
-endfunc
 
 function! GetScriptNumber(script_name)
     redir => s:scriptnames
