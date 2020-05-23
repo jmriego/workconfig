@@ -38,11 +38,19 @@ function get_ignore {
 if [ "$1" = "--default-target" ]
 then
   [[ "$1" = *:* ]] && echo "cannot use --default-target for remote repos"
-  DST="$($DIR/projectionist_query.sh "$(ensure_dir "$1")/.projections.json" grsync)"
   shift
+  for p in "$@"
+  do
+    if [[ ! "$p" = -* ]]
+    then
+      f="$p"
+      break
+    fi
+  done
+  DST="$($DIR/projectionist_query.sh "$(ensure_dir "${f:-$PWD}")/.projections.json" grsync)"
   set -- "$@" "${DST}"
 fi
 
-rsync -nir --delete \
+rsync -r --delete \
     --exclude-from=<(get_ignore) \
     "$@"
