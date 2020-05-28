@@ -10,4 +10,10 @@ function! s:run_projections() abort
         endif
         break
     endfor
+    for [root, value] in projectionist#query('suffixesadd')
+        for ext in value
+        execute 'setlocal suffixesadd+=' . ext
+        endfor
+        break
+    endfor
 endfunction
