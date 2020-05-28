@@ -1,4 +1,5 @@
 let g:coc_global_extensions = ['coc-python', 'coc-yaml']
+let g:coc_disable_startup_warning = 1
 
 set completeopt=menuone,preview
 
