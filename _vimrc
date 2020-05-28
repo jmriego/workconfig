@@ -72,6 +72,8 @@ for plugin_name in g:plugs_order
 endfor
 " }}}
 
+exec 'set runtimepath+=' . expand('<sfile>:h') . '/vim/after'
+
 " Appearance {{{
 "hi CursorLine guibg=#303030
 syntax on
@@ -211,6 +213,7 @@ endif
 
 " Avoid the press enter prompt when saving remote files
 let g:netrw_silent=1
+let g:netrw_banner=0
 " }}}
 
 " Custom Functions {{{
