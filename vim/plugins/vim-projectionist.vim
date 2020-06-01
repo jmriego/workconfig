@@ -16,4 +16,8 @@ function! s:run_projections() abort
         endfor
         break
     endfor
+    for [root, value] in projectionist#query('localdir')
+        execute 'lcd' . value
+        break
+    endfor
 endfunction
