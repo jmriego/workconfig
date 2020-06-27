@@ -16,6 +16,10 @@ elif [ "$direction" = "right" ]
 then
   keys="C-l"
   pane="-R"
+elif [ "$direction" = "last" ]
+then
+  keys="C-\\"
+  pane="-l"
 fi
 
 is_vim() {
