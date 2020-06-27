@@ -338,7 +338,6 @@ endif
 " }}}
 
 " Key mappings {{{
-nnoremap <Leader>W :execute "set wrapscan! \| set wrapscan?"<CR>
 nnoremap <Leader>/ :noh<CR>
 nnoremap <Leader>? :%s///gn<CR>
 nnoremap <Leader>h :%! xxd<CR>
@@ -385,9 +384,12 @@ nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
 nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
 nnoremap <C-p> :Files<CR>
+nnoremap <Leader>gf :GFiles<CR>
 nnoremap <Leader><C-]> :Tags<CR>
 nnoremap gb :Buffers<CR>
 nnoremap <Leader>0 :History<CR>
+
+nnoremap <expr> d<Space> ":Dispatch " . b:dispatch
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
