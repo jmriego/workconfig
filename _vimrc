@@ -373,6 +373,8 @@ autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Si
 autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 
 nnoremap ]<CR> :call VimuxSendKeys("Enter")<CR>
+autocmd FileType scala nnoremap <buffer> [<CR> :call VimuxSlime(":paste")<CR>:let g:scala_paste_mode=1<CR>
+autocmd FileType scala nnoremap <buffer> ]<CR> :call VimuxSlime("C-d", 0)<CR>:let g:scala_paste_mode=0<CR>
 
 noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
 noremap <Leader>pk :IPython<CR>

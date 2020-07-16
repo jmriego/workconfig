@@ -43,6 +43,43 @@ function! HasTermOpen()
     return len(term_list()) > 0
 endfunction
 
+function! IsPythonKernelConnected()
+    if &filetype == "python" && exists("*IPythonConnected")
+        return IPythonConnected()
+    else
+        return 0
+    endif
+endfunction
+
+function! SendText(...)
+    let l:ipython_connected = IsPythonKernelConnected()
+    let l:text = get(a:, 1, "")
+    let l:scala_paste_mode = get(a:, 2, get(g:, "scala_paste_mode", 0))
+
+    " run it in either IPython, terminal or vimux
+    if l:ipython_connected
+        call call(function("IPythonRunLines"), l:text)
+    elseif HasTermOpen()
+        if &filetype == "scala" && !l:scala_paste_mode
+            call VimTermSlime(":paste")
+            call VimTermSlime(l:text)
+            call VimTermSlime("C-d", 0)
+        else
+            call VimTermSlime(l:text)
+        endif
+    elseif HasVimuxOpen()
+        if &filetype == "scala" && !l:scala_paste_mode
+            call VimuxSlime(":paste")
+            call VimuxSlime(l:text)
+            call VimuxSlime("C-d", 0)
+        else
+            call VimuxSlime(l:text)
+        endif
+    else
+        echo('You need to connect to a Python kernel, open a terminal buffer or open a vimux runner pane/window')
+    endif
+endfunction
+
 " function to run some text through IPython, a terminal or a vimux pane/window
 " parameter 1. mode: It accepts the following values
 "   * line (current line)
@@ -61,11 +98,7 @@ function! VimSlime(...) range
         let l:selection = SavePreviousSelection()
     endif
 
-    if &filetype == "python" && exists("*IPythonConnected")
-        let l:ipython_connected = IPythonConnected()
-    else
-        let l:ipython_connected = 0
-    endif
+    let l:ipython_connected = IsPythonKernelConnected()
 
     " block can either mean python cell or paragraph
     if l:mode == "block"
@@ -79,31 +112,20 @@ function! VimSlime(...) range
     " select the text if necessary and populate the variable with its content
     if l:mode == "line"
         execute "normal! V"
-        let l:selected_text = GetSelectedText(l:dedent)
+        call SendText(GetSelectedText(l:dedent), 1)
     elseif l:mode == "cell"
         execute "normal Vic"
-        let l:selected_text = GetSelectedText(l:dedent)
+        call SendText(GetSelectedText(l:dedent))
     elseif l:mode == "paragraph"
         execute "normal! Vip"
-        let l:selected_text = GetSelectedText(l:dedent)
+        call SendText(GetSelectedText(l:dedent))
     elseif l:mode == ""
-        let l:selected_text = GetSelectedText(l:dedent, "gv")
+        call SendText(GetSelectedText(l:dedent, "gv"))
     else
         " this is in case the mode contains text such as "vip\<C-v>$o^"
         let l:select_command = substitute(l:mode, '\(<[A-Za-z-()^$]*>\)', '\\\1', 'g')
         execute "normal! " . l:select_command
-        let l:selected_text = GetSelectedText(l:dedent)
-    endif
-
-    " run it in either IPython, terminal or vimux
-    if l:ipython_connected
-        call IPythonRunLines(l:selected_text)
-    elseif HasTermOpen()
-        call VimTermSlime(l:selected_text)
-    elseif HasVimuxOpen()
-        call VimuxSlime(l:selected_text)
-    else
-        echo('You need to connect to a Python kernel, open a terminal buffer or open a vimux runner pane/window')
+        call SendText(GetSelectedText(l:dedent))
     endif
 
     " Deselect text and restore previous selection info
@@ -124,5 +146,4 @@ function! VimSlime(...) range
             execute "normal! j"
         endif
     endif
-    let g:try = l:selected_text
 endfunction
