@@ -1,0 +1,15 @@
+#!/bin/sh
+
+interface=$1
+status=$2
+
+case $status in
+    up*)
+        service vimwiki start
+        service onedrive start
+        ;;
+    down*)
+        service vimwiki stop
+        service onedrive stop
+        ;;
+esac
