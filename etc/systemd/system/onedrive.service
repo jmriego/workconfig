@@ -1,0 +1,26 @@
+[Unit]
+Description=OneDrive (rclone)
+AssertPathIsDirectory=/home/jvalenzuela/onedrive
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=jvalenzuela
+ExecStart=/usr/bin/rclone mount \
+        --config=/home/jvalenzuela/.config/rclone/rclone.conf \
+        onedrive: /home/jvalenzuela/onedrive \
+        --dir-cache-time 1000h \
+        --log-level INFO \
+        --poll-interval 15s \
+        --umask 002 \
+        --rc \
+        --rc-addr :5772
+        --vfs-read-chunk-size 32M
+ExecStop=/bin/fusermount -u /home/jvalenzuela/onedrive
+ExecStartPost=/usr/bin/rclone rc vfs/refresh recursive=true --rc-addr 127.0.0.1:5572 _async=true
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
