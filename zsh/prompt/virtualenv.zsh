@@ -10,6 +10,13 @@ function virtualenv_info() {
       local name=$(basename $VIRTUAL_ENV)
     fi
 
-    return_prompt_section "blue" "" "" "${PROMPT_ICON_PYTHON}${name}"
+    if [[ "$(which python)" =~ "$VIRTUAL_ENV" ]]; then
+      # we have changed the default python
+      local icon="${PROMPT_ICON_PYTHON}"
+    else
+      local icon="${PROMPT_ICON_CONSOLE}"
+    fi
+
+    return_prompt_section "blue" "" "" "${icon}${name}"
   fi
 }
