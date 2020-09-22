@@ -17,6 +17,9 @@ None, ExtBt9, Shift_L|Insert
 "^kitty$"
 None, ExtBt8, None
 None, ExtBt9, Shift_L|Insert
+"^slack$"
+None, Thumb1, Alt_L|Left
+None, Thumb2, Alt_L|Right
 ".*"
 None, Thumb1, XF86Back
 None, Thumb2, XF86Forward
