@@ -1,0 +1,14 @@
+# default patterns group
+PATTERNS_LIST1=(
+" (()\<([A-Z]+-[0-9]+)\>)" # Jira tickets
+)
+
+# alternative patterns group (shown after pressing the SPACE key)
+PATTERNS_LIST2=$PATTERNS_LIST1
+
+# items that will not be hightlighted
+BLACKLIST=(
+""
+)
+
+tmux setenv -g PICKER_COPY_COMMAND_UPPERCASE "$TMUX_CONF_DIR/system-open-jira.sh"
