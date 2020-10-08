@@ -3,7 +3,7 @@ if exists(":CompilerSet") != 2    " older Vim always used :setlocal
 endif
 
 let current_compiler = "dbt"
-CompilerSet makeprg=dbt.sh\ $*
+CompilerSet makeprg=dbt\ $*
 
 let b:context_errorformat = ''
     \ . '%-GRunning with dbt%.%#,'
