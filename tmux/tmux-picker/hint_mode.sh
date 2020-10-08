@@ -23,7 +23,7 @@ function lookup_match() {
 }
 
 function get_pane_contents() {
-    cat $pane_input_temp
+    sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" $pane_input_temp
 }
 
 function extract_hints() {
