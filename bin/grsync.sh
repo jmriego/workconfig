@@ -51,6 +51,7 @@ then
   set -- "$@" "${DST}"
 fi
 
-rsync -r --delete \
+rsync -rtv --delete \
+    --no-perms --no-owner --no-group \
     --exclude-from=<(get_ignore) \
     "$@"
