@@ -382,16 +382,21 @@ noremap <Leader>pk :IPython<CR>
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
+nnoremap g<Space> :Git<Space>
+
 nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
 nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
-nnoremap <C-p> :Files<CR>
+nnoremap <expr> <C-p> exists('b:git_dir') ? (":GFiles" . fnamemodify(b:git_dir, ':h') . "<CR>") : ":Files<CR>"
 nnoremap <Leader>gf :GFiles<CR>
+nnoremap <Leader>f :Files<CR>
 nnoremap <Leader><C-]> :Tags<CR>
 nnoremap gb :Buffers<CR>
 nnoremap <Leader>0 :History<CR>
 
-nnoremap <expr> d<Space> ":Dispatch " . b:dispatch
+nnoremap <expr> d<Space> ":Dispatch " . b:dispatch . " "
+nnoremap Co :Copen<CR>
+nnoremap C! :Copen!<CR>
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
@@ -422,8 +427,8 @@ endfunction
 nmap <leader>rn <Plug>(coc-rename)
 
 " Remap for format selected region
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+xmap <A-f>  <Plug>(coc-format-selected)
+nmap <A-f>  <Plug>(coc-format-selected)
 
 " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
 xmap <leader>a  <Plug>(coc-codeaction-selected)
