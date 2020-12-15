@@ -30,9 +30,9 @@ function workon_cwd {
       # Activate the environment only if it is not already active
       if [[ "$VIRTUAL_ENV" != "$WORKON_HOME/$ENV_NAME" ]]; then
         if [[ -e "$WORKON_HOME/$ENV_NAME/bin/activate" ]]; then
-          workon "$ENV_NAME" && export CD_VIRTUAL_ENV="$ENV_NAME"
+          source "$WORKON_HOME/$ENV_NAME/bin/activate" && export CD_VIRTUAL_ENV="$ENV_NAME"
         elif [[ -e "$ENV_NAME/bin/activate" ]]; then
-          source $ENV_NAME/bin/activate && export CD_VIRTUAL_ENV="$ENV_NAME"
+          source "$ENV_NAME/bin/activate" && export CD_VIRTUAL_ENV="$ENV_NAME"
         elif [[ -n "$VIRTUAL_ENV" ]]; then
           # We've just left the repo and went to one without a virtualenv
           deactivate && unset CD_VIRTUAL_ENV
