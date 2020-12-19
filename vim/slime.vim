@@ -58,7 +58,7 @@ function! SendText(...)
 
     " run it in either IPython, terminal or vimux
     if l:ipython_connected
-        call call(function("IPythonRunLines"), l:text)
+        call call(function("IPythonRunLines"), [l:text])
     elseif HasTermOpen()
         if &filetype == "scala" && !l:scala_paste_mode
             call VimTermSlime(":paste")
