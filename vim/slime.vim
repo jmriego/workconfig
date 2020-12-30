@@ -52,32 +52,68 @@ function! IsPythonKernelConnected()
 endfunction
 
 function! SendText(...)
-    let l:ipython_connected = IsPythonKernelConnected()
     let l:text = get(a:, 1, "")
-    let l:scala_paste_mode = get(a:, 2, get(g:, "scala_paste_mode", 0))
+    let l:ignore_slime_affixes = get(a:, 2, get(g:, "ignore_slime_affixes", 0))
+
+    let l:slime_preffix = exists("b:slime_preffix_suffix") ? b:slime_preffix_suffix[0] : ""
+    let l:slime_suffix = exists("b:slime_preffix_suffix") ? b:slime_preffix_suffix[1] : ""
+
+    if &filetype == "python"
+        let l:ipython_connected = IsPythonKernelConnected()
+    elseif &filetype == "sql"
+        try
+            silent! wincmd P
+            let l:ipython_connected = IsPythonKernelConnected()
+            silent! wincmd p
+        catch /^Vim\%((\a\+)\)\=:E441/
+            let l:ipython_connected = 0
+        endtry
+    else
+        let l:ipython_connected = 0
+    end
 
     " run it in either IPython, terminal or vimux
     if l:ipython_connected
-        call call(function("IPythonRunLines"), [l:text])
+        if !l:ignore_slime_affixes
+            let l:text = l:slime_preffix . l:text . l:slime_suffix
+        endif
+        if &filetype == "sql"
+            silent! wincmd P
+            call call(function("IPythonRunLines"), [l:text])
+            silent! wincmd p
+        else
+            call call(function("IPythonRunLines"), [l:text])
+        endif
     elseif HasTermOpen()
-        if &filetype == "scala" && !l:scala_paste_mode
-            call VimTermSlime(":paste")
+        if &filetype == "scala" && !l:ignore_slime_affixes
+            call VimTermSlime(l:slime_preffix, 0)
             call VimTermSlime(l:text)
-            call VimTermSlime("C-d", 0)
+            call VimTermSlime(l:slime_suffix, 0)
         else
             call VimTermSlime(l:text)
         endif
     elseif HasVimuxOpen()
-        if &filetype == "scala" && !l:scala_paste_mode
-            call VimuxSlime(":paste")
+        if &filetype == "scala" && !l:ignore_slime_affixes
+            call VimuxSlime(l:slime_preffix, 0)
             call VimuxSlime(l:text)
-            call VimuxSlime("C-d", 0)
+            call VimuxSlime(l:slime_suffix, 0)
         else
             call VimuxSlime(l:text)
         endif
     else
         echo('You need to connect to a Python kernel, open a terminal buffer or open a vimux runner pane/window')
     endif
+endfunction
+
+function! VimSlimePrompt(...)
+    let l:prompt = get(a:, 1, "")
+    let l:ignore_slime_affixes = get(a:, 2, 0)
+
+    call inputsave()
+    let l:input_text = input(l:prompt)
+    call inputrestore()
+
+    call SendText(l:input_text, l:ignore_slime_affixes)
 endfunction
 
 " function to run some text through IPython, a terminal or a vimux pane/window
@@ -112,12 +148,15 @@ function! VimSlime(...) range
     " select the text if necessary and populate the variable with its content
     if l:mode == "line"
         execute "normal! V"
-        call SendText(GetSelectedText(l:dedent), 1)
+        call SendText(GetSelectedText(l:dedent), &ft=="scala" ? 1 : 0)
     elseif l:mode == "cell"
         execute "normal Vic"
         call SendText(GetSelectedText(l:dedent))
     elseif l:mode == "paragraph"
         execute "normal! Vip"
+        call SendText(GetSelectedText(l:dedent))
+    elseif l:mode == "file"
+        execute "normal! ggVG"
         call SendText(GetSelectedText(l:dedent))
     elseif l:mode == ""
         call SendText(GetSelectedText(l:dedent, "gv"))

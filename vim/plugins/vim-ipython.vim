@@ -2,6 +2,33 @@ let g:ipy_perform_mappings = 0
 let g:ipy_completefunc = 'global'
 let g:ipy_monitor_subchannel = 1
 
+function! IPythonDBTRPC(...)
+    vnew
+    set filetype=python
+    execute "IPython"
+    close!
+
+    try
+        silent! wincmd P
+    catch /^Vim\%((\a\+)\)\=:E441/
+        silent pedit
+        silent! wincmd P
+    endtry
+    if expand("%") != 'vim-ipython'
+        pcl
+        silent pedit +set\ ma vim-ipython
+        silent! wincmd P
+        set filetype=python
+    endif
+
+    call SendText("%load_ext dbt-ipy")
+    if index(a:000, "--existing") != -1
+        call SendText("%dbt rpc" . join(a:000, " "))
+    endif
+
+    silent! wincmd p
+endfunction
+
 " Run text passed as parameter or use current selection
 function! IPythonRunLines(...) range
     if a:0 < 1

@@ -20,6 +20,7 @@ if has('packages')
 
     call minpac#init()
     command! -nargs=+ Plug call s:track_plugin(<args>)
+    command! -nargs=* IPythonDBTRPC call IPythonDBTRPC()
     command! -nargs=0 PlugUpdate call minpac#update('', {'do': 'call minpac#status()'})
 else
     call plug#begin()
@@ -297,7 +298,7 @@ au BufNewFile,BufRead *.py
     nnoremap <C-H> <C-W><C-H>
 
     " Preview windows and help windows open in a vertical split
-    autocmd WinEnter * if &previewwindow | wincmd L | endif
+    autocmd BufNew * if &previewwindow | wincmd L | endif
     autocmd FileType help wincmd L
 
     " Minimized Windows only take one line for the filename/status line
@@ -353,7 +354,7 @@ map <Leader>vI :VimuxInspectRunner<CR>:VimuxZoomRunner<CR>
 map <Leader>vz :VimuxZoomRunner<CR>
 map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
 
-nmap <silent> <C-CR> :call VimSlime("block", 0)<CR>
+nmap <silent> <C-CR> :call VimSlime(&ft=="sql" ? "file" : "block", 0)<CR>
 xmap <silent> <C-CR> :call VimSlime("", 0, 0)<CR>
 nmap <silent> <S-CR> :call VimSlime("block", 1)<CR>
 xmap <silent> <S-CR> :call VimSlime("", 1, 0)<CR>
@@ -368,13 +369,19 @@ nnoremap <Leader>gb :Gblame<CR>
 nnoremap <Leader>gl :0Glog<CR>
 nnoremap <Leader>ge :Gedit<CR>
 
-noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 if update_subchannel_msgs(force=True) and not current_stdin_prompt: echo("vim-ipython shell updated",'Operator')<CR>
-autocmd FileType python nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
+noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 update_subchannel_msgs(force=True)<CR>
+autocmd FileType python,sql nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
 autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
+autocmd FileType python,sql nmap <buffer> <Leader>: :call VimSlimePrompt("In []: ", 1)<CR>
 
 nnoremap ]<CR> :call VimuxSendKeys("Enter")<CR>
-autocmd FileType scala nnoremap <buffer> [<CR> :call VimuxSlime(":paste")<CR>:let g:scala_paste_mode=1<CR>
-autocmd FileType scala nnoremap <buffer> ]<CR> :call VimuxSlime("C-d", 0)<CR>:let g:scala_paste_mode=0<CR>
+autocmd FileType scala nnoremap <buffer> [<CR> :call VimuxSlime(":paste")<CR>:let g:ignore_slime_affixes=1<CR>
+autocmd FileType scala nnoremap <buffer> ]<CR> :call VimuxSlime("C-d", 0)<CR>:let g:ignore_slime_affixes=0<CR>
+autocmd FileType scala let b:slime_preffix_suffix = [":paste" . "\n", "C-d"]
+
+autocmd FileType sql let g:dbt_default_command = get(g:, "dbt_default_command", "%%compile_sql") | let b:slime_preffix_suffix = [g:dbt_default_command . "\n", ""]
+autocmd FileType sql nnoremap <buffer> [<CR> :let g:dbt_default_command = "%%compile_sql" \| let b:slime_preffix_suffix = [g:dbt_default_command . "\n", ""]<CR>
+autocmd FileType sql nnoremap <buffer> ]<CR> :let g:dbt_default_command = "%%run_sql" \| let b:slime_preffix_suffix = [g:dbt_default_command . "\n", ""]<CR>
 
 noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
 noremap <Leader>pk :IPython<CR>
