@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XLaunch WindowMode="MultiWindow" ClientMode="StartProgram" LocalClient="True" Display="-1" LocalProgram="wsl bash -c 'export DISPLAY=localhost:0; cd; xrdb ~/.Xresources; xterm'" RemoteProgram="xterm" RemotePassword="" PrivateKey="" RemoteHost="" RemoteUser="" XDMCPHost="" XDMCPBroadcast="False" XDMCPIndirect="False" Clipboard="True" ClipboardPrimary="True" ExtraParams="" Wgl="True" DisableAC="True" XDMCPTerminate="False"/>
