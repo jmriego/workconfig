@@ -54,3 +54,5 @@ function! IPythonConnected()
     Python2or3 vim.command('let g:ipy_connected = {}'.format(1 if kc else 0))
     return g:ipy_connected
 endfunction
+
+command! -nargs=* IPythonDBTRPC call IPythonDBTRPC()

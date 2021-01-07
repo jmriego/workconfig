@@ -18,10 +18,9 @@ if has('packages')
         endfor
     endfunction
 
-    call minpac#init()
+    call minpac#init({'progress_open': 'vertical'})
     command! -nargs=+ Plug call s:track_plugin(<args>)
-    command! -nargs=* IPythonDBTRPC call IPythonDBTRPC()
-    command! -nargs=0 PlugUpdate call minpac#update('', {'do': 'call minpac#status()'})
+    command! -nargs=0 PlugUpdate call minpac#update()
 else
     call plug#begin()
 endif
