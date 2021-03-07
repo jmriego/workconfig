@@ -393,7 +393,7 @@ nnoremap g<Space> :Git<Space>
 nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
 nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
-nnoremap <expr> <C-p> exists('b:git_dir') ? (":GFiles" . fnamemodify(b:git_dir, ':h') . "<CR>") : ":Files<CR>"
+nnoremap <expr> <silent> <C-p> (exists('b:git_dir') ? (haslocaldir() ? ":GFiles" : (":lcd " . fnameescape(expand('%:p:h')) . "<CR>:GFiles<CR>:lcd " . fnameescape(getcwd(-1)) )) : ":Files") . "<CR>" 
 nnoremap <Leader>gf :GFiles<CR>
 nnoremap <Leader>f :Files<CR>
 nnoremap <Leader><C-]> :Tags<CR>
