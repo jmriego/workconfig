@@ -403,6 +403,7 @@ nnoremap <Leader>0 :History<CR>
 nnoremap <expr> d<Space> ":Dispatch " . b:dispatch . " "
 nnoremap c<CR> :Copen<CR>
 nnoremap C<CR> :Copen!<CR>
+nnoremap c<BS> :cclose<CR>
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
