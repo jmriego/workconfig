@@ -17,7 +17,5 @@ function! HasVimuxOpen()
 endfunction
 
 function! VimuxReusePrevious()
-    call _VimuxTmux("last-"._VimuxRunnerType())
-    let g:VimuxRunnerIndex = _VimuxTmuxIndex()
-    call _VimuxTmux("last-"._VimuxRunnerType())
+    let g:VimuxRunnerIndex = substitute(VimuxTmux("display -p -t '{last}' '#{".g:VimuxRunnerType."_id}'"), '\n$', '', '')
 endfunction

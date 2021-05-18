@@ -41,7 +41,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'christoomey/vim-tmux-navigator'
 " Plug 'edkolev/tmuxline.vim' " only while modifying the tmux status line
-Plug 'benmills/vimux'
+Plug 'preservim/vimux'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-projectionist'
