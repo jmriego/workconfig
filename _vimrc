@@ -355,7 +355,7 @@ map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
 
 nmap <silent> <C-CR> :call VimSlime(&ft=="sql" ? "file" : "block", 0)<CR>
 xmap <silent> <C-CR> :call VimSlime("", 0, 0)<CR>
-nmap <silent> <S-CR> :call VimSlime("block", 1)<CR>
+nmap <silent> <S-CR> :call VimSlime(&ft=="sql" ? "file" : "block", 1)<CR>
 xmap <silent> <S-CR> :call VimSlime("", 1, 0)<CR>
 nmap <silent> <A-CR> :call VimSlime("line", "")<CR>
 xmap <silent> <A-CR> :call VimSlime("", 0, 0)<CR>gv
@@ -363,7 +363,7 @@ xmap <silent> <A-CR> :call VimSlime("", 0, 0)<CR>gv
 nnoremap <expr> <leader>t ":wincmd b \| botright terminal ++close ++rows=".winheight(0)/4."\<CR>"
 
 nnoremap <Leader>gd :Gvdiffsplit!<CR>
-nnoremap <Leader>gs :execute "vertical Gstatus \| wincmd L"<CR>
+nnoremap <Leader>gs :execute "vertical Git \| wincmd L"<CR>
 nnoremap <Leader>gb :Gblame<CR>
 nnoremap <Leader>gl :0Glog<CR>
 nnoremap <Leader>ge :Gedit<CR>
