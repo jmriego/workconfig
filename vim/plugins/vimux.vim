@@ -6,7 +6,7 @@ function! VimuxSlime(...) range
     let l:text = get(a:, 1, "")
     let g:include_enter = get(a:, 2, 1)
 
-    call VimuxSendText(l:text)
+    call VimuxSendKeys(shellescape(l:text))
     if g:include_enter == 1 && l:text !~ '\n$'
         call VimuxSendKeys("Enter")
     endif
