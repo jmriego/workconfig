@@ -222,6 +222,7 @@ let g:netrw_banner=0
 exec 'source ' . expand('<sfile>:h') . '/' . 'vim/source_line.vim'
 exec 'source ' . expand('<sfile>:h') . '/' . 'vim/get_selected_text.vim'
 exec 'source ' . expand('<sfile>:h') . '/' . 'vim/slime.vim'
+exec 'source ' . expand('<sfile>:h') . '/' . 'vim/command_line_processing.vim'
 
 " Add command for counting word frequency
 function! WordFrequency() range
@@ -390,11 +391,13 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 nnoremap g<Space> :Git<Space>
+" This is mainly to replace Git push/fetch with dispatch
+cnoremap <CR> <C-\>eCommandLineProcessing()<CR><CR>
 
 nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
 nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
-nnoremap <expr> <silent> <C-p> (exists('b:git_dir') ? (haslocaldir() ? ":GFiles" : (":lcd " . fnameescape(expand('%:p:h')) . "<CR>:GFiles<CR>:lcd " . fnameescape(getcwd(-1)) )) : ":Files") . "<CR>" 
+nnoremap <expr> <silent> <C-p> (exists('b:git_dir') ? (":GFiles " . (haslocaldir() ? fnameescape(expand('%:p:h')) : fnamemodify(b:git_dir, ':h'))  ) : ":Files") . "<CR>" 
 nnoremap <Leader>gf :GFiles<CR>
 nnoremap <Leader>f :Files<CR>
 nnoremap <Leader><C-]> :Tags<CR>
