@@ -21,4 +21,14 @@ function! s:ag_with_opts(arg, bang)
   call fzf#vim#ag_raw(ag_opts . " " . query, a:bang)
 endfunction
 
+func! ChooseCtrlPFunc()
+    if exists('b:git_dir')
+        return "GFiles " . fnamemodify(b:git_dir, ':h')
+    elseif haslocaldir()
+        return "Files " . expand('%:p:h')
+    else
+        return "Files"
+    endif
+endfunc
+
 autocmd VimEnter * command! -nargs=* -bang Ag call s:ag_with_opts(<q-args>, <bang>0)

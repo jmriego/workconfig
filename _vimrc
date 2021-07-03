@@ -397,7 +397,7 @@ cnoremap <CR> <C-\>eCommandLineProcessing()<CR><CR>
 nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
 nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
-nnoremap <expr> <silent> <C-p> (exists('b:git_dir') ? (":GFiles " . (haslocaldir() ? fnameescape(expand('%:p:h')) : fnamemodify(b:git_dir, ':h'))  ) : ":Files") . "<CR>" 
+nnoremap <expr> <silent> <C-p> ":" . ChooseCtrlPFunc() . "<CR>" 
 nnoremap <Leader>gf :GFiles<CR>
 nnoremap <Leader>f :Files<CR>
 nnoremap <Leader><C-]> :Tags<CR>
