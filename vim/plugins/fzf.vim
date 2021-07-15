@@ -23,7 +23,9 @@ endfunction
 
 func! ChooseCtrlPFunc()
     if exists('b:git_dir')
-        return "GFiles " . fnamemodify(b:git_dir, ':h')
+        " return "GFiles " . fnamemodify(b:git_dir, ':h')
+        return "call fzf#vim#gitfiles('', fzf#vim#with_preview({ 'dir': '" . fnamemodify(b:git_dir, ':h') . "' }), 0)"
+
     elseif haslocaldir()
         return "Files " . expand('%:p:h')
     else
