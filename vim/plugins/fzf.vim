@@ -24,7 +24,8 @@ endfunction
 func! ChooseCtrlPFunc()
     if exists('b:git_dir')
         " return "GFiles " . fnamemodify(b:git_dir, ':h')
-        return "call fzf#vim#gitfiles('', fzf#vim#with_preview({ 'dir': '" . fnamemodify(b:git_dir, ':h') . "' }), 0)"
+        let git_dir = trim(system("git -C '" . substitute(b:git_dir, "/\.git$", "", "") . "' rev-parse --show-toplevel"))
+        return "call fzf#vim#gitfiles('', fzf#vim#with_preview({ 'dir': '" . git_dir . "' }), 0)"
 
     elseif haslocaldir()
         return "Files " . expand('%:p:h')
@@ -32,5 +33,3 @@ func! ChooseCtrlPFunc()
         return "Files"
     endif
 endfunc
-
-autocmd VimEnter * command! -nargs=* -bang Ag call s:ag_with_opts(<q-args>, <bang>0)
