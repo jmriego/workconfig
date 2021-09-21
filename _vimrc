@@ -367,7 +367,7 @@ nnoremap <expr> <leader>t ":wincmd b \| botright terminal ++close ++rows=".winhe
 nnoremap <Leader>gd :Gvdiffsplit!<CR>
 nnoremap <Leader>gs :execute "vertical Git \| wincmd L"<CR>
 nnoremap <Leader>gb :Gblame<CR>
-nnoremap <Leader>gl :0Glog<CR>
+nnoremap <Leader>gl :0Gclog<CR>
 nnoremap <Leader>ge :Gedit<CR>
 
 noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 update_subchannel_msgs(force=True)<CR>
