@@ -6,6 +6,10 @@ function! VimuxSlime(...) range
     let l:text = get(a:, 1, "")
     let g:include_enter = get(a:, 2, 1)
 
+    if get(g:, "vimux_dos_lines", 0) == 1
+        let l:text = substitute(l:text, '\n', '\r\n', 'g')
+    endif
+
     call VimuxSendKeys(shellescape(l:text))
     if g:include_enter == 1 && l:text !~ '\n$'
         call VimuxSendKeys("Enter")

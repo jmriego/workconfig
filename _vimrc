@@ -375,7 +375,9 @@ autocmd FileType python,sql nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShel
 autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 autocmd FileType python,sql nmap <buffer> <Leader>: :call VimSlimePrompt("In []: ", 1)<CR>
 
+nnoremap [<CR> :let g:vimux_dos_lines = !get(g:, "vimux_dos_lines", 0)<CR>
 nnoremap ]<CR> :call VimuxSendKeys("Enter")<CR>
+
 autocmd FileType scala nnoremap <buffer> [<CR> :call VimuxSlime(":paste")<CR>:let g:ignore_slime_affixes=1<CR>
 autocmd FileType scala nnoremap <buffer> ]<CR> :call VimuxSlime("C-d", 0)<CR>:let g:ignore_slime_affixes=0<CR>
 autocmd FileType scala let b:slime_preffix_suffix = [":paste" . "\n", "C-d"]
