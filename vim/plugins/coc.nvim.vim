@@ -1,4 +1,4 @@
-let g:coc_global_extensions = ['coc-pyright', 'coc-yaml']
+let g:coc_global_extensions = ['coc-pyright', 'coc-yaml', 'coc-snippets']
 let g:coc_disable_startup_warning = 1
 
 set completeopt=menuone,preview

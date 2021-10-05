@@ -23,7 +23,7 @@ function! IPythonDBTRPC(...)
 
     call SendText("%load_ext dbt-ipy")
     if index(a:000, "--existing") != -1
-        call SendText("%dbt rpc" . join(a:000, " "))
+        call SendText("%dbt rpc" . join(a:000, " "), 1)
     endif
 
     silent! wincmd p
@@ -55,4 +55,4 @@ function! IPythonConnected()
     return g:ipy_connected
 endfunction
 
-command! -nargs=* IPythonDBTRPC call IPythonDBTRPC()
+command! -nargs=* IPythonDBTRPC call IPythonDBTRPC(<f-args>)
