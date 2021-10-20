@@ -367,7 +367,7 @@ nnoremap <expr> <leader>t ":wincmd b \| botright terminal ++close ++rows=".winhe
 
 nnoremap <Leader>gd :Gvdiffsplit!<CR>
 nnoremap <Leader>gs :execute "vertical Git \| wincmd L"<CR>
-nnoremap <Leader>gb :Gblame<CR>
+nnoremap <Leader>gb :Git blame<CR>
 nnoremap <Leader>gl :0Gclog<CR>
 nnoremap <Leader>ge :Gedit<CR>
 
