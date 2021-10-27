@@ -55,7 +55,6 @@ CompilerSet errorformat=
       \%+ECONFLIT\ %.%#,
       \%+EXUNG\ ĐỘT\ %.%#,
       \%+E冲突\ %.%#,
-      \%+Eremote:\ %.%#\,
       \%\\w%\\t%f
 
 let &cpo = s:cpo_save
