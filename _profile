@@ -61,8 +61,7 @@ stty -ixon
 export EDITOR='vim'
 
 # fzf options
-source "${my_dir}/bash/_fzf_colors"
-export FZF_DEFAULT_OPTS="$FZF_SOLARIZED_LIGHT --bind tab:toggle-in,ctrl-z:toggle-out"
+source "${my_dir}/bash/_fzf_config"
 
 if [ -n "$ZSH_VERSION" ]
 then

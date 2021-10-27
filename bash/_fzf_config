@@ -23,4 +23,6 @@ _gen_fzf_default_opts() {
       --color info:$yellow,prompt:$yellow,pointer:$base03,marker:$base03,spinner:$yellow
   "
 }
+
 _gen_fzf_default_opts
+export FZF_DEFAULT_OPTS="$FZF_SOLARIZED_LIGHT --bind tab:toggle-out,shift-tab:toggle-in"
