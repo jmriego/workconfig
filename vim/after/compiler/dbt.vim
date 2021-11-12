@@ -14,6 +14,9 @@ let b:context_errorformat = ''
     \ . '%-G%[0-9: ]%.%#| Done.,'
     \ . '%-GEncountered an error:,'
     \ . '%ECompilation Error %.%#(%f),'
+    \ . '%EDatabase Error %.%#(%f),'
+    \ . '%ERuntime Error %.%#(%f),'
+    \ . '%ESyntax error %.%#,'
     \ . '%C %#%m,'
 
 execute 'CompilerSet errorformat=' . escape(b:context_errorformat, ' |')
