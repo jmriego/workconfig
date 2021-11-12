@@ -14,12 +14,16 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Identifier'],
   \ 'header':  ['fg', 'Statement'] }
 
-function! s:ag_with_opts(arg, bang)
-  let tokens  = split(a:arg)
-  let ag_opts = join(filter(copy(tokens), 'v:val =~ "^-"'))
-  let query   = join(filter(copy(tokens), 'v:val !~ "^-"'))
-  call fzf#vim#ag_raw(ag_opts . " " . query, a:bang)
-endfunction
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case -- '
+  \ .(substitute(<q-args>, "^$", expand("<cword>"), "")), 1,
+  \   fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(
+  \   (substitute(<q-args>, "^$", expand("<cword>"), "")),
+  \   fzf#vim#with_preview(), <bang>0)
 
 func! ChooseCtrlPFunc()
     if exists('b:git_dir')

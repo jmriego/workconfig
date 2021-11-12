@@ -25,4 +25,4 @@ _gen_fzf_default_opts() {
 }
 
 _gen_fzf_default_opts
-export FZF_DEFAULT_OPTS="$FZF_SOLARIZED_LIGHT --bind tab:toggle-out,shift-tab:toggle-in"
+export FZF_DEFAULT_OPTS="$FZF_SOLARIZED_LIGHT --bind 'tab:toggle-out,shift-tab:toggle-in,ctrl-f:reload(find -L -type f),ctrl-p:reload(ag -l)'"
