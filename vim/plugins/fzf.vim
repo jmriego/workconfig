@@ -21,7 +21,7 @@ command! -bang -nargs=* Rg
   \   fzf#vim#with_preview(), <bang>0)
 
 command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(
+  \ call fzf#vim#ag_raw(
   \   (substitute(<q-args>, "^$", expand("<cword>"), "")),
   \   fzf#vim#with_preview(), <bang>0)
 
