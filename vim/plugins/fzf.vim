@@ -30,9 +30,10 @@ func! ChooseCtrlPFunc()
         " return "GFiles " . fnamemodify(b:git_dir, ':h')
         let git_dir = trim(system("git -C '" . substitute(b:git_dir, "/\.git$", "", "") . "' rev-parse --show-toplevel"))
         return "call fzf#vim#gitfiles('', fzf#vim#with_preview({ 'dir': '" . git_dir . "' }), 0)"
-
     elseif haslocaldir()
         return "Files " . expand('%:p:h')
+    elseif expand("%") == "" && isdirectory(".git")
+        return "call fzf#vim#gitfiles('', fzf#vim#with_preview(), 0)"
     else
         return "Files"
     endif
