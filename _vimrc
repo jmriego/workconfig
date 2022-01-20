@@ -366,7 +366,7 @@ xmap <silent> <A-CR> :call VimSlime("", 0, 0)<CR>gv
 nnoremap <expr> <leader>t ":wincmd b \| botright terminal ++close ++rows=".winheight(0)/4."\<CR>"
 
 nnoremap <Leader>gd :Gvdiffsplit!<CR>
-nnoremap <Leader>gs :execute "vertical Git \| wincmd L"<CR>
+nnoremap <Leader>gs :execute "vertical Git \| wincmd L \| norm gU"<CR>
 nnoremap <Leader>gb :Git blame<CR>
 nnoremap <Leader>gl :0Gclog<CR>
 nnoremap <Leader>ge :Gedit<CR>
