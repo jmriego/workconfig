@@ -60,7 +60,8 @@ function! SendText(...)
 
     if &filetype == "python"
         let l:ipython_connected = IsPythonKernelConnected()
-    elseif &filetype == "sql"
+    " this should work for filetype sql and sql.jinja
+    elseif index(split(&filetype, "\\."), "sql") != -1
         try
             silent! wincmd P
             let l:ipython_connected = IsPythonKernelConnected()
