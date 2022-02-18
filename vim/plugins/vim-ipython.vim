@@ -23,7 +23,7 @@ function! IPythonDBTRPC(...)
 
     call SendText("%load_ext dbt-ipy")
     if index(a:000, "--existing") != -1
-        call SendText("%dbt rpc" . join(a:000, " "), 1)
+        call SendText("%dbt rpc " . join(a:000, " "), 1)
     endif
 
     silent! wincmd p
