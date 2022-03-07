@@ -19,6 +19,7 @@ function! IPythonDBTRPC(...)
         silent pedit +set\ ma vim-ipython
         silent! wincmd P
         set filetype=python
+        let b:coc_diagnostic_disable = 1
     endif
 
     call SendText("%load_ext dbt-ipy")
