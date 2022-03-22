@@ -43,6 +43,17 @@ function! HasTermOpen()
     return len(term_list()) > 0
 endfunction
 
+function! GetPreviewWindowId()
+    for tab_num in range(1, tabpagenr('$'))
+        for win_num in range(1, winnr('$'))
+            if gettabwinvar(tab_num, win_num, "&pvw") == 1
+                return win_getid(win_num, tab_num)
+            endif  
+        endfor
+    endfor
+    return 0
+endfunction
+
 function! IsPythonKernelConnected()
     if &filetype == "python" && exists("*IPythonConnected")
         return IPythonConnected()
@@ -62,15 +73,12 @@ function! SendText(...)
         let l:ipython_connected = IsPythonKernelConnected()
     " this should work for filetype sql and sql.jinja
     elseif index(split(&filetype, "\\."), "sql") != -1
-        try
-            silent! wincmd P
-            let l:ipython_connected = IsPythonKernelConnected()
-            silent! wincmd p
-        catch /^Vim\%((\a\+)\)\=:E441/
+        let l:preview_window_nr = GetPreviewWindowId()
+        if l:preview_window_nr > 0
+            let l:ipython_connected = trim(win_execute(l:preview_window_nr, 'echo IsPythonKernelConnected()'))
+        else
             let l:ipython_connected = 0
-        endtry
-    else
-        let l:ipython_connected = 0
+        endif
     end
 
     " run it in either IPython, terminal or vimux
@@ -152,6 +160,12 @@ function! VimSlime(...) range
         call SendText(GetSelectedText(l:dedent), &ft=="scala" ? 1 : 0)
     elseif l:mode == "cell"
         execute "normal Vic"
+        call SendText(GetSelectedText(l:dedent))
+    elseif l:mode == "query-i"
+        execute "normal viq"
+        call SendText(GetSelectedText(l:dedent))
+    elseif l:mode == "query-a"
+        execute "normal Vaq"
         call SendText(GetSelectedText(l:dedent))
     elseif l:mode == "paragraph"
         execute "normal! Vip"

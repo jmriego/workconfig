@@ -356,9 +356,9 @@ map <Leader>vI :VimuxInspectRunner<CR>:VimuxZoomRunner<CR>
 map <Leader>vz :VimuxZoomRunner<CR>
 map <Leader>vP :call VimuxReusePrevious()<CR>:VimuxPromptCommand<CR>
 
-nmap <silent> <C-CR> :call VimSlime(&ft=="sql" ? "file" : "block", 0)<CR>
+nmap <silent> <C-CR> :call VimSlime(&ft=="sql" ? "query-a" : "block", 0)<CR>
 xmap <silent> <C-CR> :call VimSlime("", 0, 0)<CR>
-nmap <silent> <S-CR> :call VimSlime(&ft=="sql" ? "file" : "block", 1)<CR>
+nmap <silent> <S-CR> :call VimSlime(&ft=="sql" ? "query-i" : "block", 1)<CR>
 xmap <silent> <S-CR> :call VimSlime("", 1, 0)<CR>
 nmap <silent> <A-CR> :call VimSlime("line", "")<CR>
 xmap <silent> <A-CR> :call VimSlime("", 0, 0)<CR>gv
@@ -373,6 +373,8 @@ nnoremap <Leader>ge :Gedit<CR>
 
 noremap <Plug>(IPython-UpdateShell-Silent) :Python2or3 update_subchannel_msgs(force=True)<CR>
 autocmd FileType python,sql nmap <buffer> <Leader><CR> <Plug>(IPython-UpdateShell-Silent)
+autocmd FileType python nmap <buffer> <Leader>y :call SendText("import pyperclip; pyperclip.copy(_)", 1)<CR>
+autocmd FileType sql nmap <buffer> <Leader>y :call SendText("%dbt_clipboard", 1)<CR>
 autocmd FileType python nmap <buffer> <Leader>i :IPythonInput<CR><Plug>(IPython-UpdateShell-Silent)
 autocmd FileType python,sql nmap <buffer> <Leader>: :call VimSlimePrompt("In []: ", 1)<CR>
 

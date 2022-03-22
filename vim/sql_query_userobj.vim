@@ -34,26 +34,25 @@ function! s:query_select_i()
 endfunction
 
 function! s:query_select_a()
-    " if we find it, the next line would be the start
+    " if we find a semicolon, the query should start after that
     if search(s:query_limit_re, 'bc') > 0
-        " select i cell
-        if line('$') > line('.')
-            call cursor(line('.') + 1, 1)
-        endif
+        " the cursor might be on a semicolon. search start of query
+        call search('[^;\s]', 'c')
     else
         " no previous marker found. select to start of file
         call cursor(1, 1)
     endif
     let start_selection = getcurpos()
 
-    " end of the current cell
+    " end of the current query
     if search(s:query_limit_re, 'c') > 0
-        " line of next cell marker
+        " the cursor might be on a semicolon. search start of query
+        call search('[^;\s]', 'bc')
     else
         " no next cell found. end at end of file
-        call cursor(line('$'), 1)
+        call cursor(line('$'), col([line('$'), '$']))
     endif
     let end_selection = getcurpos()
 
-    return ['V', start_selection, end_selection]
+    return ['v', start_selection, end_selection]
 endfunction
