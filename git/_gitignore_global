@@ -7,4 +7,6 @@
 *.swp
 *.swa
 Session.vim
-coc-settings.json
+.vim/
+.venv/
+venv/
