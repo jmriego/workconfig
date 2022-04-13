@@ -69,6 +69,7 @@ function! SendText(...)
     let l:slime_preffix = exists("b:slime_preffix_suffix") ? b:slime_preffix_suffix[0] : ""
     let l:slime_suffix = exists("b:slime_preffix_suffix") ? b:slime_preffix_suffix[1] : ""
 
+    let l:ipython_connected = 0
     if &filetype == "python"
         let l:ipython_connected = IsPythonKernelConnected()
     " this should work for filetype sql and sql.jinja
@@ -76,8 +77,6 @@ function! SendText(...)
         let l:preview_window_nr = GetPreviewWindowId()
         if l:preview_window_nr > 0
             let l:ipython_connected = trim(win_execute(l:preview_window_nr, 'echo IsPythonKernelConnected()'))
-        else
-            let l:ipython_connected = 0
         endif
     end
 
