@@ -263,14 +263,16 @@ function! GetScriptNumber(script_name)
     endfor
 endfunction
 
-function! DeleteHiddenBuffers() " Vim with the 'hidden' option
+function! DeleteHiddenBuffers(force) " Vim with the 'hidden' option
     let tpbl=[]
     call map(range(1, tabpagenr('$')), 'extend(tpbl, tabpagebuflist(v:val))')
     for buf in filter(range(1, bufnr('$')), 'bufexists(v:val) && index(tpbl, v:val)==-1')
-        silent execute 'bwipeout' buf
+        silent execute 'bwipeout' . (a:force ? '! ' : ' ') . buf
     endfor
     endfunction
-command! DeleteHiddenBuffers call DeleteHiddenBuffers()" }}}
+command! -bang DeleteHiddenBuffers call DeleteHiddenBuffers(<bang>0)
+
+" }}}
 
 " File search settings {{{
 " The Silver Searcher
