@@ -38,3 +38,23 @@ func! ChooseCtrlPFunc()
         return "Files"
     endif
 endfunc
+
+function! s:get_quickfix_urls(...)
+  let l:strings = []
+  let l:url_regex = 'https\?:\/\/\(www\.\)\?[-a-zA-Z0-9@:%._\+~#=]\{2,256}\.[a-z]\{2,4}\>\([-a-zA-Z0-9@:%_\+.~#?&//=]*\)'
+  for line in getqflist()
+      call substitute(line['text'], l:url_regex, '\=add(l:strings, submatch(0))', 'g')
+  endfor
+  return fzf#vim#_uniq(sort(l:strings))
+endfunction
+
+function! s:open_url(url)
+  call system('xdg-open "' . a:url . '"')
+endfunction
+
+function! ChooseOpenURL()
+  call fzf#run({
+    \ 'source': s:get_quickfix_urls(),
+    \ 'sink': function('s:open_url'),
+    \ 'options': '--select-1 --margin 15%,0' })
+endfunction

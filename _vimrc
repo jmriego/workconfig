@@ -415,6 +415,7 @@ nnoremap <Leader>0 :History<CR>
 nnoremap <expr> d<Space> ":Dispatch " . b:dispatch . " "
 nnoremap c<CR> :Copen<CR>
 nnoremap C<CR> :Copen!<CR>
+nnoremap cu<CR> :call ChooseOpenURL()<CR>
 nnoremap c<BS> :cclose<CR>
 
 " Make <CR> auto-select the first completion item
