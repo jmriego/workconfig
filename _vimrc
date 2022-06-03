@@ -190,6 +190,7 @@ set nowrapscan
 set backspace=indent
 set tagcase=match
 set diffopt=filler,vertical
+set history=5000
 
 " Set whitespace options
 set tabstop=4
