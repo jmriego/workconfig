@@ -15,7 +15,7 @@ function go_to_app {
       ;;
 
     dbeaver)
-      focus_windows --classname "DBeaver" || dbeaver-ce
+      focus_windows --classname "DBeaver" || /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=/app/dbeaver/dbeaver io.dbeaver.DBeaverCommunity
       ;;
 
     firefox)
@@ -47,7 +47,7 @@ function go_to_app {
       ;;
 
     zoom)
-      focus_windows --class "zoom" || zoom
+      focus_windows --name "Zoom Meeting" || zoom
       ;;
 
     *)
