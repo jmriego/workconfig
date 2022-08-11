@@ -26,7 +26,7 @@ command! -bang -nargs=* Ag
   \   fzf#vim#with_preview(), <bang>0)
 
 func! ChooseCtrlPFunc()
-    if exists('b:git_dir')
+    if exists('b:git_dir') && b:git_dir != ""
         " return "GFiles " . fnamemodify(b:git_dir, ':h')
         let git_dir = trim(system("git -C '" . substitute(b:git_dir, "/\.git$", "", "") . "' rev-parse --show-toplevel"))
         return "call fzf#vim#gitfiles('', fzf#vim#with_preview({ 'dir': '" . git_dir . "' }), 0)"
