@@ -7,7 +7,9 @@ func CommandLineProcessing()
         let timer_id = timer_start(500, function('win_execute', [git_status_win, 'close']))
         return substitute(cmd, "Git", "Dispatch git", "")
     elseif cmd =~ "^Git fetch"
-        return substitute(cmd, "Git", "Dispatch git", "")
+       return substitute(cmd, "Git", "Dispatch git", "")
+    elseif cmd =~ "^Ag$"
+       return cmd . " " . expand("<cword>")
     else
         return cmd
     endif
