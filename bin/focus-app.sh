@@ -2,7 +2,7 @@
 
 function focus_windows {
   found_windows="$(xdotool search --onlyvisible "$@")"
-  xdotool windowactivate "$(echo "$found_windows" | head -1)"
+  xdotool windowactivate "$(echo "$found_windows" | tail -1)"
 }
 
 function go_to_app {
@@ -19,7 +19,7 @@ function go_to_app {
       ;;
 
     firefox)
-      focus_windows --class "Firefox" || firefox
+      focus_windows --name "Mozilla Firefox" || firefox
       ;;
 
     gmail)
