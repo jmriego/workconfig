@@ -61,3 +61,7 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 
 " Add status line support, for integration with other plugin, checkout `:h coc-status`
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Overwrite some config without using coc-settings.json
+let g:coc_user_config = {}
+let g:coc_user_config['suggest.noselect'] = v:true
