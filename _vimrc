@@ -116,9 +116,9 @@ endif
 " Platform specific configuration {{{
 if has('mac') || has('unix')
     " Directory for swap files
-    set directory=~/tmp,.
-    set backupdir=~/tmp,.
-    set undodir=~/tmp,.
+    set directory=~/.vim/tmp,.
+    set backupdir=~/.vim/tmp,.
+    set undodir=~/.vim/tmp,.
 
     " map C-CR, S-CR and A-CR as F13, F14 and F15
     execute "set <F13>=\e[13;5u"
@@ -147,9 +147,9 @@ elseif has('win32')  || has('win64')
         let $PATH .= '; ' . conda_packages_root
     endif
     " Directory for swap files
-    set directory=%USERPROFILE%/tmp,.
-    set backupdir=%USERPROFILE%/tmp,.
-    set undodir=%USERPROFILE%/tmp,.
+    set directory=%USERPROFILE%/vimfiles/tmp,.
+    set backupdir=%USERPROFILE%/vimfiles/tmp,.
+    set undodir=%USERPROFILE%/vimfiles/tmp,.
     set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:
 endif
 
