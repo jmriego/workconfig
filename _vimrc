@@ -407,11 +407,11 @@ nnoremap <expr> <silent> [c &diff ? '[c' : ':call GotoPreviousCell()<CR>'
 nnoremap <expr> <silent> ]c &diff ? ']c' : ':call GotoNextCell()<CR>'
 
 nnoremap <expr> <silent> <C-p> ":" . ChooseCtrlPFunc() . "<CR>" 
-nnoremap <Leader>gf :GFiles<CR>
-nnoremap <Leader>f :Files<CR>
+nnoremap <C-p><C-s> :GFiles?<CR>
+nnoremap <C-p><C-b> :GDiffBranch master...<CR>
+nnoremap <C-p><C-h> :History<CR>
 nnoremap <Leader><C-]> :Tags<CR>
 nnoremap gb :Buffers<CR>
-nnoremap <Leader>0 :History<CR>
 
 nnoremap <expr> d<Space> ":Dispatch " . b:dispatch . " "
 nnoremap c<CR> :Copen<CR>

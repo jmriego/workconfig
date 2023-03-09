@@ -58,3 +58,25 @@ function! ChooseOpenURL()
     \ 'sink': function('s:open_url'),
     \ 'options': '--select-1 --margin 15%,0' })
 endfunction
+
+function! s:git_list_branches(typed, ...)
+  let branches = systemlist('git branch | cut -c 3-')
+  if empty(a:typed)
+    return branches
+  endif
+  return filter(branches, { idx, val -> stridx(val, a:typed) >= 0 })
+endfunction
+
+function! s:git_diff_branch(branch)
+  let branch = len(a:branch) ? a:branch : 'master'
+  let source = 'git diff --name-status ' .. branch
+  let preview = 'git diff --color=always ' .. branch .. ' -- {-1}'
+  let spec = { 'source': source, 'options': ['--preview', preview] }
+  function spec.sink(match)
+    execute 'e' split(a:match, "\t")[-1]
+  endfunction
+
+  call fzf#run(fzf#wrap(spec))
+endfunction
+
+command! -nargs=? -complete=customlist,s:git_list_branches GDiffBranch call s:git_diff_branch(<q-args>)
