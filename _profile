@@ -55,6 +55,10 @@ function cdg() {
 stty -ixon
 export EDITOR='vim'
 
+if [ -f /usr/local/bin/vim.appimage ]; then
+    alias vim=/usr/local/bin/vim.appimage
+fi
+
 # fzf options
 source "${my_dir}/bash/_fzf_config"
 
