@@ -80,3 +80,7 @@ function! s:git_diff_branch(branch)
 endfunction
 
 command! -nargs=? -complete=customlist,s:git_list_branches GDiffBranch call s:git_diff_branch(<q-args>)
+
+if has('popupwin')
+  let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 0.4, 'relative': v:false, 'yoffset': 1.0 } }
+endif
