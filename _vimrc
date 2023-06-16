@@ -359,7 +359,7 @@ endfunction
 
 augroup vimrc
     autocmd!
-    autocmd VimEnter * source /home/joseriego/workconfig/vim/mappings.vim
+    autocmd VimEnter * exec 'source ' . expand('<sfile>:h') . '/vim/mappings.vim'
 augroup END
 
 
