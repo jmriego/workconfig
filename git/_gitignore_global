@@ -10,3 +10,4 @@ Session.vim
 .vim/
 .venv/
 venv/
+.projections.json
