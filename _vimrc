@@ -31,7 +31,7 @@ endif
 Plug 'altercation/vim-colors-solarized'
 Plug 'junegunn/vim-easy-align'
 if has('python') || has ('python3')
-    Plug 'jmriego/vim-ipython'
+    Plug 'jupyter-vim/jupyter-vim'
     Plug 'jmcantrell/vim-virtualenv'
 endif
 Plug 'junegunn/fzf', {'do': ':silent! !./install --all' }

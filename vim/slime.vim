@@ -55,7 +55,7 @@ function! GetPreviewWindowId()
 endfunction
 
 function! IsPythonKernelConnected()
-    if &filetype == "python" && exists("*IPythonConnected")
+    if exists("*IPythonConnected")
         return IPythonConnected()
     else
         return 0
@@ -70,14 +70,9 @@ function! SendText(...)
     let l:slime_suffix = exists("b:slime_preffix_suffix") ? b:slime_preffix_suffix[1] : ""
 
     let l:ipython_connected = 0
-    if &filetype == "python"
+    " this should work for python and also filetype sql and sql.jinja
+    if &filetype == "python" || index(split(&filetype, "\\."), "sql") != -1
         let l:ipython_connected = IsPythonKernelConnected()
-    " this should work for filetype sql and sql.jinja
-    elseif index(split(&filetype, "\\."), "sql") != -1
-        let l:preview_window_nr = GetPreviewWindowId()
-        if l:preview_window_nr > 0
-            let l:ipython_connected = trim(win_execute(l:preview_window_nr, 'echo IsPythonKernelConnected()'))
-        endif
     end
 
     " run it in either IPython, terminal or vimux
