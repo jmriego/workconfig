@@ -35,7 +35,7 @@ function! IPythonRunLines(...) range
 endfunction
 
 function! IPythonConnected()
-    py3 vim.command('let g:ipy_connected = {}'.format(int(_jupyter_session.kernel_client.check_connection())))
+    py3 vim.command('let g:ipy_connected = {}'.format(int('_jupyter_session' in locals() and _jupyter_session.kernel_client.check_connection())))
     return g:ipy_connected == 1
 endfunction
 
