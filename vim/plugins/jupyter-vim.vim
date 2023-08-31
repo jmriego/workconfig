@@ -13,7 +13,7 @@ function! IPythonDBTRPC(...)
         sleep 100m
     endwhile
 
-    call SendText("%load_ext dbt-ipy")
+    call SendText("%load_ext dbt-ipy", 1)
     if index(a:000, "--existing") != -1
         call SendText("%dbt rpc " . join(a:000, " "), 1)
     endif
