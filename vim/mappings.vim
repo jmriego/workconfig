@@ -48,7 +48,7 @@ autocmd FileType sql nnoremap <buffer> [<CR> :let g:dbt_default_command = "%%com
 autocmd FileType sql nnoremap <buffer> ]<CR> :let g:dbt_default_command = "%%run_sql" \| let b:slime_preffix_suffix = [g:dbt_default_command . "\n", ""]<CR>
 
 noremap <Leader>d<CR> <C-w>P:%d<CR><C-w>p
-autocmd FileType python nnoremap <buffer> <Leader>pk :IPython<CR>
+autocmd FileType python nnoremap <buffer> <Leader>pk :JupyterConnect<CR>
 autocmd FileType sql nnoremap <buffer> <Leader>pk :IPythonDBTRPC --existing<CR>
 
 xmap ga <Plug>(EasyAlign)

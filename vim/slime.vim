@@ -55,8 +55,8 @@ function! GetPreviewWindowId()
 endfunction
 
 function! IsPythonKernelConnected()
-    if exists("*IPythonConnected")
-        return IPythonConnected()
+    if exists("*IsJupyterConnected")
+        return IsJupyterConnected()
     else
         return 0
     endif
@@ -82,10 +82,10 @@ function! SendText(...)
         endif
         if &filetype == "sql"
             silent! wincmd P
-            call call(function("IPythonRunLines"), [l:text])
+            call call(function("JupyterRunLines"), [l:text])
             silent! wincmd p
         else
-            call call(function("IPythonRunLines"), [l:text])
+            call call(function("JupyterRunLines"), [l:text])
         endif
     elseif HasTermOpen()
         if &filetype == "scala" && !l:ignore_slime_affixes
