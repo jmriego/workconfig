@@ -13,6 +13,7 @@ endfunction
 augroup fugitive_config
   autocmd!
   autocmd BufReadPost fugitive://* set bufhidden=delete
+  autocmd BufReadPost fugitive://* set foldlevel=99
   autocmd BufWinEnter */COMMIT_EDITMSG call s:replace_commit_msg()
   autocmd FileType fugitive call s:ftplugin_fugitive()
 augroup END
