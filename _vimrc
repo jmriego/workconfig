@@ -25,9 +25,6 @@ else
     call plug#begin()
 endif
 
-if executable('nodejs') || executable('node')
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
-endif
 Plug 'altercation/vim-colors-solarized'
 Plug 'junegunn/vim-easy-align'
 if has('python') || has ('python3')
