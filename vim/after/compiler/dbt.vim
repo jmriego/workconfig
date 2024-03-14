@@ -8,7 +8,8 @@ CompilerSet makeprg=dbt\ $*
 let b:context_errorformat = ''
     \ . '%-GRunning with dbt%.%#,'
     \ . '%-GFound%.%#models%.%#,'
-    \ . '%-G %#,'
+    \ . '%-G %#%.%#,'
+    \ . '%-G%#%.%#,'
     \ . '%-G%.%#Concurrency%.%#threads%.%#,'
     \ . '%-G%[0-9: ]%.%#|,'
     \ . '%-G%[0-9: ]%.%#| Done.,'
@@ -17,6 +18,5 @@ let b:context_errorformat = ''
     \ . '%EDatabase Error %.%#(%f),'
     \ . '%ERuntime Error %.%#(%f),'
     \ . '%ESyntax error %.%#,'
-    \ . '%C %#%m,'
 
 execute 'CompilerSet errorformat=' . escape(b:context_errorformat, ' |')
