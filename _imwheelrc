@@ -25,6 +25,9 @@ None, Thumb2, Alt_L|Right
 "^spotify$"
 None, Thumb1, Alt_L|Left
 None, Thumb2, Alt_L|Right
+"^obsidian$"
+None, Thumb1, Alt_L|Left
+None, Thumb2, Alt_L|Right
 ".*"
 None, Thumb1, XF86Back
 None, Thumb2, XF86Forward

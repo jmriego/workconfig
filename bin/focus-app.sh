@@ -34,6 +34,10 @@ function go_to_app {
       focus_windows --classname "KeePassXC" || keepassxc
       ;;
 
+    obsidian)
+      focus_windows --classname "obsidian" || obsidian
+      ;;
+
     slack)
       focus_windows --classname "Slack" || slack
       ;;
