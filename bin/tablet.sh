@@ -24,10 +24,20 @@ then
 fi
 
 #for each id of wacom devices set correct output monitor
-xinput | grep 'PenTablet' |
-while IFS= read -r line; do
-  #get id of wacom device in line
-  TABLET_ID="$(echo $line | sed 's/.*id=\([0-9]*\).*/\1/')"
-  #set monitor as output
-  xinput map-to-output $TABLET_ID $MON_CON
+TABLET_XINPUT_NAME="UGTABLET 6 inch PenTablet"
+PEN_XINPUT_NAME="UGTABLET 6 inch PenTablet Pen"
+
+echo Waiting to detect pen
+
+while [[ -z "$TABLET_ID" ]]; do
+    if !( xinput | grep -q "$TABLET_XINPUT_NAME"); then
+      echo Tablet not found. Exiting...
+      exit -1
+    fi
+
+    PEN_XINPUT_LINE="$( xinput | grep "$PEN_XINPUT_NAME" | tail -1)"
+    TABLET_ID="$(echo "$PEN_XINPUT_LINE" | sed 's/.*id=\([0-9]*\).*/\1/')"
+    sleep 1
 done
+
+xinput map-to-output $TABLET_ID $MON_CON
