@@ -15,7 +15,7 @@ if [ "$1" == "toggle-todo" ]; then
 elif [ "$1" == "prev" ]; then
 
   if [[ $(num_sessions) -lt 2 ]]; then
-      tmux new-session -d
+      tmux confirm-before -p "create session? (y/n)" 'new-session -d; switch-client -p'
   fi
 
   tmux switch-client -p
@@ -26,7 +26,7 @@ elif [ "$1" == "prev" ]; then
 else
 
   if [[ $(num_sessions) -lt 2 ]]; then
-      tmux new-session -d
+      tmux confirm-before -p "create session? (y/n)" 'new-session -d; switch-client -n'
   fi
 
   tmux switch-client -n
