@@ -10,7 +10,8 @@ function num_sessions {
 
 if [ "$1" == "toggle-todo" ]; then
 
-  (tmux display-message -p '#S' | grep -iqE '^todo:' && tmux switch-client -l) || tmuxinator todo
+  tmux display-message -p '#S' >> /tmp/tmuxtodo.log
+  (tmux display-message -p '#S' | grep -iqE '^todo$' && tmux switch-client -l) || tmuxinator todo
 
 elif [ "$1" == "prev" ]; then
 
