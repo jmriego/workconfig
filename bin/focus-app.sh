@@ -51,7 +51,7 @@ function go_to_app {
       ;;
 
     zoom)
-      focus_windows --name "Zoom Meeting" || zoom
+      focus_windows --class "zoom" || zoom
       ;;
 
     *)
