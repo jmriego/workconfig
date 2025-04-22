@@ -1,4 +1,4 @@
-spaces = require("hs._asm.undocumented.spaces")
+spaces = require("hs.spaces")
 
 -- timer that tells whether screen is animating and I can't do anything else
 animating = nil
@@ -61,25 +61,6 @@ function launchOrFocus(app, win, inclusive)
             if title:len() > 0 and (title:find(win)==nil) ~= inclusive
             then
                 found_window = window
-                local found_window_space = found_window:spaces()[1] -- can it be in several spaces?
-                if not has_value(visible_spaces, found_window_space) then
-                    local found_window_space_pos = index_of_space(found_window_space)
-                    local visible_space_pos = index_of_space(visible_spaces[found_window:screen():spacesUUID()])
-                    local pt = hs.mouse.getAbsolutePosition()
-                    moveCenterScreen(window:screen())
-
-                    while visible_space_pos < found_window_space_pos do
-                        hs.eventtap.keyStroke({'ctrl'}, "right")
-                        visible_space_pos = visible_space_pos + 1
-                        animating_timer()
-                    end
-                    while visible_space_pos > found_window_space_pos do
-                        hs.eventtap.keyStroke({'ctrl'}, "left")
-                        visible_space_pos = visible_space_pos - 1
-                        animating_timer()
-                    end
-                    hs.mouse.setAbsolutePosition(pt)
-                end
                 found_window:application():activate(false)
                 return
             end

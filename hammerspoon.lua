@@ -1,88 +1,90 @@
 require('hammerspoon.utils')
-require('hammerspoon.spaces')
 require('hammerspoon.events')
 require('hammerspoon.interact')
 require('hammerspoon.windows')
 require('hammerspoon.notifications')
-require('hammerspoon.ledming')
 
 -- special tasks needed after switching to certain apps
 
--- click on the lower bottom corner off the Gmail window to focus and allow hotkeys
-function after_gmail()
-    gmail_frame = hs.window.focusedWindow():frame()
-    point_click = {x=gmail_frame["x"]+gmail_frame["w"]-5.0, y=gmail_frame["y"]+5.0}
-    mouseClick("left", point_click)
-end
-
 -- go to tab with Jira or open a new one
 function after_jira()
-    hs.execute('/usr/local/bin/chrome-cli activate -t $(/usr/local/bin/chrome-cli list links | grep "filter=50263" | grep -o "[0-9][0-9]*\\]" | head -1) || /usr/local/bin/chrome-cli open "https://bugs.indeed.com/issues/?filter=50263"')
+    local cmd = [[ set searchString to "SDP/boards/11163"
+
+                   tell application "Google Chrome"
+                       set win_List to every window
+                       set win_num to 0
+
+                       repeat with win in win_List
+                           set win_num to win_num + 1
+                           set tab_list to every tab of win
+                           set tab_num to 0
+
+                           repeat with t in tab_list
+                               set tab_num to tab_num + 1
+
+                               if searchString is in (URL of t as string) then
+                                   tell application "System Events" to tell process "Google Chrome"
+                                       perform action "AXRaise" of window win_num
+                                       set frontmost to true
+                                   end tell
+                                   set active tab index of front window to tab_num
+                               end if
+                           end repeat
+                       end repeat
+                   end tell ]]
+    hs.osascript.applescript(cmd)
+
 end
 
 -- keyboard keys to be used in mission control and the program/window to open
 -- the name of the app should be the names found in Applications folder
 key_params = {
-    ["i"] = "Google Chrome";
-    ["j"] = {["app"] = "Google Chrome", ["after"]=after_jira};
-    ["h"] = "YakYak";
+    ["b"] = "Google Chrome";
+    ["p"] = {["app"] = "Google Chrome", ["after"]=after_jira};
     ["c"] = "Google Calendar";
-    ["g"] = {["app"] = "Gmail", ["after"]=after_gmail};
-    ["n"] = "Notes";
-    ["e"] = "TextEdit";
-    ["f"] = "Finder";
-    ["t"] = "iTerm2";
-    ["p"] = "Preview";
-    ["x"] = "Microsoft Excel";
-    ["w"] = "Microsoft Word";
-    ["m"] = "Oracle Data Modeler";
-    ["d"] = "DBeaver";
-    ["k"] = "Slack";
-    ["r"] = "iBooks";
-    ["s"] = "Spotify"
+    ["g"] = "Gmail";
+    ["t"] = "Obsidian";
+    ["f"] = "Firefox";
+    ["space"] = "iTerm";
+    ["s"] = "Slack";
+    ["m"] = "Spotify"
 }
-assign_modal_hotkeys(key_params)
+assign_app_hotkeys(key_params)
 
--- add hammerspoon://notification?title=...&subtitle=...&text=...
--- mandatory to have either title or text
-hs.urlevent.bind("notification", function(eventName, params)
-  if params["title"] or params["text"] then
-    hs.notify.show(params["title"] or "", params["subtitle"] or "", params["text"] or "")
-  end
-end)
 
 -- Window Management
 -- move window to left half of current screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Left", function()
+hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Left", nil, function()
     split_window_left()
 end)
 
 -- move window to right half of current screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Right", function()
+hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Right", nil, function()
     split_window_right()
 end)
 
 -- make window take the entire screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Up", function()
+hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Up", nil, function()
     maximize_window()
 end)
 
 -- make window take the entire screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Return", function()
+hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Return", nil, function()
     fullscreen_window()
 end)
 
+hs.hotkey.bind({"cmd", "alt"}, "h", nil, function()
+    hs.window.focusedWindow():focusWindowWest()
+end)
 
--- ---------------
--- bind shortcuts
--- ---------------
+hs.hotkey.bind({"cmd", "alt"}, "j", nil, function()
+    hs.window.focusedWindow():focusWindowSouth()
+end)
 
--- Music control
-hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
-hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
+hs.hotkey.bind({"cmd", "alt"}, "k", nil, function()
+    hs.window.focusedWindow():focusWindowNorth()
+end)
 
--- Switch to Google Chrome and press ctrl+. for Tabli
-hs.hotkey.bind({'cmd'}, '.', function()
-    launchOrFocus("Google Chrome")
-    hs.eventtap.keyStroke({'ctrl'}, ".")
+hs.hotkey.bind({"cmd", "alt"}, "l", nil, function()
+    hs.window.focusedWindow():focusWindowEast()
 end)
