@@ -1,8 +1,5 @@
-require('hammerspoon.utils')
-require('hammerspoon.events')
-require('hammerspoon.interact')
-require('hammerspoon.windows')
-require('hammerspoon.notifications')
+local shortcuts = require('hammerspoon.shortcuts')
+local notifications = require('hammerspoon.notifications')
 local chrome = require('hammerspoon.chrome')
 
 -- special tasks needed after switching to certain apps
@@ -23,9 +20,10 @@ key_params = {
     ["f"] = "Firefox";
     ["space"] = "iTerm";
     ["s"] = "Slack";
+    ["x"] = "KeepassXC";
     ["m"] = "Spotify"
 }
-assign_app_hotkeys(key_params)
+shortcuts.assign_app_shortcuts(key_params)
 
 
 -- Window Management
@@ -44,3 +42,12 @@ end)
 hs.hotkey.bind({"cmd", "alt"}, "l", nil, function()
     hs.window.focusedWindow():focusWindowEast()
 end)
+
+-- Notifications
+-- open -g "hammerspoon://show_notification?title=Pay Attenttion&text=I just finished this long proccess"
+-- the title and text are optional parameters
+hs.urlevent.bind("show_notification",
+                 function(eventName, params)
+                   notifications.send_notification(params["title"], params["text"])
+                  end
+                   )
