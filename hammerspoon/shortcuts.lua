@@ -1,17 +1,20 @@
 local module = {}
 module.__index = module
 
-function module.assign_app_shortcuts(key_params)
+function module.assign_app_shortcuts(default_modifiers, key_params)
     for index, value in pairs(key_params) do
-        hs.hotkey.bind({"cmd", "alt"}, index, nil, function()
+        local app
+        local modifiers
 
-            local app;
-            if type(value) == 'string' then
-                app = value
-            else
-                app = value['app']
-            end
+        if type(value) == 'string' then
+            app = value
+            modifiers = default_modifiers
+        else
+            app = value['app']
+            modifiers = value['modifiers'] or default_modifiers
+        end
 
+        hs.hotkey.bind(modifiers, index, nil, function()
             hs.application.launchOrFocus(app)
             hs.alert(app)
 
