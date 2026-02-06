@@ -16,12 +16,12 @@ elif command_exists "pbcopy"; then
     else
         pbcopy
     fi
-elif command_exists "clip.exe"; then # WSL clipboard command
-    clip.exe
 elif command_exists "xsel"; then
     xsel -i --clipboard
 elif command_exists "xclip"; then
     xclip -selection clipboard
 elif command_exists "putclip"; then # cygwin clipboard command
     putclip
+elif command_exists "clip.exe"; then # WSL clipboard command
+    clip.exe
 fi
