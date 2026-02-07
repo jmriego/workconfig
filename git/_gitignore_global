@@ -1,6 +1,7 @@
 # Compiled source #
 ###################
 *.pyc
+__pycache__/
  
 # Vim #
 #######
@@ -11,3 +12,8 @@ Session.vim
 .venv/
 venv/
 .projections.json
+
+# MacOS #
+#########
+
+.DS_Store

@@ -24,4 +24,4 @@ paste() {
     fi
 }
 
-paste | tmux load-buffer -b clipboard - && tmux paste-buffer
+paste | tmux load-buffer -b clipboard - && tmux paste-buffer -b clipboard

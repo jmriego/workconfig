@@ -6,6 +6,10 @@ nnoremap <Leader>H :%! xxd -r<CR>
 nnoremap <Leader>] <C-w><C-]><C-w>L
 nnoremap <Leader>r :redraw!<CR>
 
+nnoremap <C-W>S :Sex<CR>
+nnoremap <C-W>V :Vex<CR>
+nnoremap <C-W>E :Ex<CR>
+
 map <Leader>vp :VimuxPromptCommand<CR>
 map <Leader>vl :VimuxRunLastCommand<CR>
 map <Leader>vc :VimuxInterruptRunner<CR>
@@ -75,7 +79,6 @@ nnoremap C<CR> :Copen!<CR>
 nnoremap cu<CR> :call ChooseOpenURL()<CR>
 nnoremap c<BS> :cclose<CR>
 nnoremap <Leader>S :mksession!<CR>
-
 
 if has('terminal')
     tnoremap <C-w><C-w> <C-\><C-n>

@@ -1,88 +1,60 @@
-require('hammerspoon.utils')
-require('hammerspoon.spaces')
-require('hammerspoon.events')
-require('hammerspoon.interact')
-require('hammerspoon.windows')
-require('hammerspoon.notifications')
-require('hammerspoon.ledming')
+local shortcuts = require('hammerspoon.shortcuts')
+local notifications = require('hammerspoon.notifications')
+local chrome = require('hammerspoon.chrome')
 
 -- special tasks needed after switching to certain apps
 
--- click on the lower bottom corner off the Gmail window to focus and allow hotkeys
-function after_gmail()
-    gmail_frame = hs.window.focusedWindow():frame()
-    point_click = {x=gmail_frame["x"]+gmail_frame["w"]-5.0, y=gmail_frame["y"]+5.0}
-    mouseClick("left", point_click)
+-- go to tab with Jira or open a new one
+function after_jira()
+  chrome.switch_tab("SDP.boards.11163")
 end
 
 -- go to tab with Jira or open a new one
-function after_jira()
-    hs.execute('/usr/local/bin/chrome-cli activate -t $(/usr/local/bin/chrome-cli list links | grep "filter=50263" | grep -o "[0-9][0-9]*\\]" | head -1) || /usr/local/bin/chrome-cli open "https://bugs.indeed.com/issues/?filter=50263"')
+function after_tab()
+  hs.eventtap.keyStroke({"cmd", "shift"}, "a") -- to open tab selection
 end
 
 -- keyboard keys to be used in mission control and the program/window to open
 -- the name of the app should be the names found in Applications folder
 key_params = {
-    ["i"] = "Google Chrome";
-    ["j"] = {["app"] = "Google Chrome", ["after"]=after_jira};
-    ["h"] = "YakYak";
+    ["b"] = "Google Chrome";
+    ["p"] = {["app"] = "Google Chrome", ["after"]=after_jira};
+    ["."] = {["app"] = "Google Chrome", ["modifiers"] = {"cmd"}, ["after"]=after_tab};
     ["c"] = "Google Calendar";
-    ["g"] = {["app"] = "Gmail", ["after"]=after_gmail};
-    ["n"] = "Notes";
-    ["e"] = "TextEdit";
-    ["f"] = "Finder";
-    ["t"] = "iTerm2";
-    ["p"] = "Preview";
-    ["x"] = "Microsoft Excel";
-    ["w"] = "Microsoft Word";
-    ["m"] = "Oracle Data Modeler";
-    ["d"] = "DBeaver";
-    ["k"] = "Slack";
-    ["r"] = "iBooks";
-    ["s"] = "Spotify"
+    ["f"] = "Firefox";
+    ["g"] = "Gmail";
+    ["s"] = "Slack";
+    ["t"] = "Obsidian";
+    ["x"] = "KeepassXC";
+    ["z"] = "zoom.us";
+    ["m"] = "Spotify";
+    ["space"] = "iTerm"
 }
-assign_modal_hotkeys(key_params)
+shortcuts.assign_app_shortcuts({"cmd", "alt"}, key_params)
 
--- add hammerspoon://notification?title=...&subtitle=...&text=...
--- mandatory to have either title or text
-hs.urlevent.bind("notification", function(eventName, params)
-  if params["title"] or params["text"] then
-    hs.notify.show(params["title"] or "", params["subtitle"] or "", params["text"] or "")
-  end
-end)
 
 -- Window Management
--- move window to left half of current screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Left", function()
-    split_window_left()
+hs.hotkey.bind({"cmd", "alt"}, "h", nil, function()
+    hs.window.focusedWindow():focusWindowWest()
 end)
 
--- move window to right half of current screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Right", function()
-    split_window_right()
+hs.hotkey.bind({"cmd", "alt"}, "j", nil, function()
+    hs.window.focusedWindow():focusWindowSouth()
 end)
 
--- make window take the entire screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Up", function()
-    maximize_window()
+hs.hotkey.bind({"cmd", "alt"}, "k", nil, function()
+    hs.window.focusedWindow():focusWindowNorth()
 end)
 
--- make window take the entire screen
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Return", function()
-    fullscreen_window()
+hs.hotkey.bind({"cmd", "alt"}, "l", nil, function()
+    hs.window.focusedWindow():focusWindowEast()
 end)
 
-
--- ---------------
--- bind shortcuts
--- ---------------
-
--- Music control
-hs.hotkey.bind({"cmd"}, "pagedown", function() hs.spotify.next() end)
-hs.hotkey.bind({"cmd"}, "pageup", function() hs.spotify.previous() end)
-
--- Switch to Google Chrome and press ctrl+. for Tabli
-hs.hotkey.bind({'cmd'}, '.', function()
-    launchOrFocus("Google Chrome")
-    hs.eventtap.keyStroke({'ctrl'}, ".")
-end)
+-- Notifications
+-- open -g "hammerspoon://show_notification?title=Pay Attenttion&text=I just finished this long proccess"
+-- the title and text are optional parameters
+hs.urlevent.bind("show_notification",
+                 function(eventName, params)
+                   notifications.send_notification(params["title"], params["text"])
+                 end
+                 )

@@ -116,21 +116,6 @@ if has('mac') || has('unix')
     set directory=~/.vim/tmp,.
     set backupdir=~/.vim/tmp,.
     set undodir=~/.vim/tmp,.
-
-    " map C-CR, S-CR and A-CR as F13, F14 and F15
-    execute "set <F13>=\e[13;5u"
-    execute "set <F14>=\e[13;1u"
-    execute "set <F15>=\e[13;3u"
-    execute "set <F16>=\e[8;5u"
-
-    map  <F13> <C-CR>
-    map! <F13> <C-CR>
-    map  <F14> <S-CR>
-    map! <F14> <S-CR>
-    map  <F15> <A-CR>
-    map! <F15> <A-CR>
-    map  <F16> <C-BS>
-    map! <F16> <C-BS>
 elseif has('win32')  || has('win64')
     " Set directories
     " Directory for finding files and Python
